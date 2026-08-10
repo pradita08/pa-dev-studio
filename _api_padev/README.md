@@ -1,116 +1,121 @@
-# _api_padev — API autentikasi PA DEV STUDIO
+# _api_padev — PA DEV STUDIO authentication API
 
-Express + JWT + MySQL. Satu proses ini mengerjakan dua hal: melayani API
-autentikasi, dan menyajikan halaman `/auth` (PA DEV Auth) serta `/adminpanel`
-(PA DEV Admin) hasil build dari `_app_padev_auth` dan `_app_padev_admin`.
+Express + JWT + MySQL. This single process does two jobs: it serves the
+authentication API, and it serves the `/auth` (PA DEV Auth) and `/adminpanel`
+(PA DEV Admin) pages built from `_app_padev_auth` and `_app_padev_admin`.
 
-Halaman dan API disatukan supaya penjagaan halaman admin memakai verifikasi
-token yang sama persis dengan API — tidak ada dua definisi "sudah login" yang
-bisa berbeda. Homepage publik React tetap di service `pa_dev` dan tidak
-disentuh dari sini.
+Pages and API are combined so that guarding the admin pages uses exactly the
+same token verification as the API — there is no second definition of "logged
+in" that could drift. The public React homepage stays in the `pa_dev` service
+and is not touched from here.
 
-## Endpoint
+## Endpoints
 
-| Method | Path | Keterangan |
+| Method | Path | Description |
 |---|---|---|
-| `POST` | `/api/auth/login` | `{ email, password, remember }` → cookie sesi + `accessToken` |
-| `POST` | `/api/auth/refresh` | Tukar cookie refresh dengan pasangan token baru |
-| `POST` | `/api/auth/logout` | Cabut refresh token, hapus cookie |
-| `GET` | `/api/auth/me` | Profil pengguna sesi berjalan |
-| `GET` | `/api/health` | Status service |
+| `POST` | `/api/auth/login` | `{ email, password, remember }` → session cookie + `accessToken` |
+| `POST` | `/api/auth/refresh` | Exchange the refresh cookie for a fresh token pair |
+| `POST` | `/api/auth/logout` | Revoke the refresh token, clear cookies |
+| `GET` | `/api/auth/me` | Profile of the current session's user |
+| `GET` | `/api/health` | Service status |
 
-Halaman: `GET /auth/` (login) dan `GET /adminpanel/*` (dashboard dan seluruh
-halaman tema admin, wajib sesi).
+Pages: `GET /auth/` (login) and `GET /adminpanel/*` (dashboard and every admin
+theme page, session required).
 
-## Endpoint konten
+## Content endpoints
 
-Empat modul memakai satu route generik. `:module` hanya boleh bernilai
-`articles`, `projects`, `templates`, atau `inquiries` — nama tabel dan kolom
-tidak pernah datang dari request, melainkan dari `src/content-modules.js`.
+Four modules share one generic route. `:module` may only be `articles`,
+`projects`, `templates`, or `inquiries` — table and column names never come
+from the request, only from `src/content-modules.js`.
 
-| Method | Path | Akses | Keterangan |
+| Method | Path | Access | Description |
 |---|---|---|---|
-| `GET` | `/api/content/:module` | publik | Hanya berstatus `published`. Untuk landing |
-| `POST` | `/api/inquiries` | publik | Kiriman form kontak, dibatasi 5 per 15 menit per IP |
-| `GET` | `/api/admin/:module` | sesi | Daftar + pencarian (`q`) + saringan (`status`) |
-| `GET` | `/api/admin/:module/:id` | sesi | Satu baris |
-| `POST` | `/api/admin/:module` | sesi | Buat baru (kecuali `inquiries`) |
-| `PATCH` | `/api/admin/:module/:id` | sesi | Ubah sebagian |
-| `DELETE` | `/api/admin/:module/:id` | sesi | Hapus baris beserta gambarnya |
-| `POST` | `/api/admin/uploads` | sesi | Unggah satu gambar, balasannya berisi URL |
+| `GET` | `/api/content/:module` | public | `published` rows only. For the landing page |
+| `POST` | `/api/inquiries` | public | Contact form submission, capped at 5 per 15 minutes per IP |
+| `GET` | `/api/admin/:module` | session | List + search (`q`) + filter (`status`) |
+| `GET` | `/api/admin/:module/:id` | session | A single row |
+| `POST` | `/api/admin/:module` | session | Create (except `inquiries`) |
+| `PATCH` | `/api/admin/:module/:id` | session | Partial update |
+| `DELETE` | `/api/admin/:module/:id` | session | Delete the row along with its images |
+| `POST` | `/api/admin/uploads` | session | Upload one image, response carries the URL |
 
-`inquiries` sengaja tidak bisa dibuat dari admin (`405`) dan isi pesannya tidak
-bisa disunting — hanya `status` dan `note` yang boleh berubah. Pesan itu bukti
-dari pengunjung, bukan catatan internal.
+`inquiries` deliberately cannot be created from the admin panel (`405`), and
+their message body cannot be edited — only `status` and `note` may change. A
+message is evidence from a visitor, not an internal note.
 
-## Aturan pasangan gambar
+## Image pairing rule
 
-Landing memakai komponen `ThemeImage` yang merender berkas terang **dan** gelap
-lalu menyembunyikan salah satunya lewat CSS. Satu gambar saja berarti kartu
-kosong di salah satu mode, dan itu baru ketahuan setelah tayang.
+The landing page uses a `ThemeImage` component that renders both the light
+**and** the dark file and hides one of them with CSS. A single image therefore
+means an empty card in one of the modes, and that only surfaces after
+publishing.
 
-Karena itu `image_light` dan `image_dark` **wajib berpasangan saat status
-`published`**, dan aturannya ditegakkan di server — bukan hanya di form admin.
-Saat masih `draft`, salah satu boleh kosong supaya penulisan bisa dicicil.
+So `image_light` and `image_dark` are **required as a pair when status is
+`published`**, and the rule is enforced on the server — not just in the admin
+form. While still a `draft`, either may be empty so that writing can be done in
+stages.
 
-Gambar hanya diterima dalam bentuk URL hasil `POST /api/admin/uploads`; nilai
-yang tidak diawali `/uploads/` ditolak. SVG tidak diterima karena bisa memuat
-skrip dan disajikan dari origin yang sama dengan panel admin.
+Images are only accepted as URLs produced by `POST /api/admin/uploads`; any
+value not starting with `/uploads/` is rejected. SVG is not accepted, because it
+can carry script and would be served from the same origin as the admin panel.
 
-Berkas tersimpan di volume `padev_uploads`, bukan di dalam image — kalau ikut
-image, seluruh unggahan akan hilang setiap kali container dibangun ulang.
+Files are stored in the `padev_uploads` volume, not inside the image — baked
+into the image, every rebuild would erase every upload.
 
-## Model token
+## Token model
 
-| Token | Umur | Tempat | Dicabut lewat |
+| Token | Lifetime | Location | Revoked via |
 |---|---|---|---|
-| Access | 15 menit | Cookie httpOnly `padev_session`, atau header `Authorization: Bearer` | kedaluwarsa sendiri |
-| Refresh | 7 hari | Cookie httpOnly `padev_refresh` | `padev_auth_refresh_tokens.revoked_at` |
+| Access | 15 minutes | `padev_session` httpOnly cookie, or `Authorization: Bearer` header | its own expiry |
+| Refresh | 7 days | `padev_refresh` httpOnly cookie | `padev_auth_refresh_tokens.revoked_at` |
 
-Refresh token **dirotasi**: sekali pakai, dan yang lama langsung dicabut. Token
-refresh yang tercuri jadi tidak berguna begitu pemilik sahnya memakai miliknya.
+Refresh tokens are **rotated**: single-use, with the old one revoked
+immediately. A stolen refresh token becomes worthless the moment its rightful
+owner uses theirs.
 
-Halaman admin dibuka lewat navigasi browser, yang tidak bisa memasang header
-`Authorization` — karena itu sesi dibawa cookie httpOnly. Saat access token
-habis tetapi refresh masih berlaku, middleware halaman merotasi sesi diam-diam
-sehingga pengguna tidak terlempar ke login di tengah pekerjaan.
+Admin pages are opened by browser navigation, which cannot attach an
+`Authorization` header — hence the httpOnly session cookie. When the access
+token has expired but the refresh token is still valid, the page middleware
+rotates the session silently so nobody is thrown back to the login screen
+mid-task.
 
 ## Database
 
-Tabel milik API memakai awalan `padev_`:
+Tables owned by this API are prefixed `padev_`:
 
-- `padev_users` — akun admin (`password_hash` bcrypt cost 12)
-- `padev_auth_refresh_tokens` — `jti` sesi refresh, untuk pencabutan
+- `padev_users` — admin accounts (`password_hash`, bcrypt cost 12)
+- `padev_auth_refresh_tokens` — refresh session `jti`, for revocation
 
-**Skema legacy CodeIgniter 4 + Shield di database `pa_dev` (`users`,
-`auth_identities`, `auth_groups_users`, dan seterusnya) tidak dibaca, tidak
-diubah, dan tidak dipakai ulang.** Nama `users` tanpa awalan sudah menjadi
-milik legacy dengan bentuk kolom yang sama sekali berbeda.
+**The legacy CodeIgniter 4 + Shield schema in the `pa_dev` database (`users`,
+`auth_identities`, `auth_groups_users`, and so on) is never read, never
+modified, and never reused.** The unprefixed name `users` already belongs to
+that legacy system, with an entirely different column shape.
 
-Skema dibuat saat container naik (`CREATE TABLE IF NOT EXISTS`) dan admin awal
-di-seed hanya kalau `ADMIN_EMAIL` belum ada di `padev_users`. Mengubah
-`ADMIN_PASSWORD` di `.env` setelah akun terbentuk **tidak** mengganti password
-akun tersebut.
+The schema is created when the container comes up (`CREATE TABLE IF NOT
+EXISTS`), and the first admin is seeded only when `ADMIN_EMAIL` is not yet
+present in `padev_users`. Changing `ADMIN_PASSWORD` in `.env` after the account
+exists does **not** change that account's password.
 
-## Konfigurasi
+## Configuration
 
-Seluruh nilai dari environment; lihat `../.env.example`. Yang wajib diperhatikan:
+Everything comes from the environment; see `../.env.example`. Two values that
+need attention:
 
-- `JWT_SECRET` — minimal 32 karakter. Proses menolak start di
-  `NODE_ENV=production` kalau lebih pendek. Menggantinya membatalkan semua sesi.
-- `COOKIE_SECURE` — set `true` hanya setelah situs dilayani lewat HTTPS. Pada
-  HTTP, cookie `Secure` tidak pernah dikirim browser dan login akan gagal.
+- `JWT_SECRET` — at least 32 characters. The process refuses to start under
+  `NODE_ENV=production` if it is shorter. Changing it invalidates all sessions.
+- `COOKIE_SECURE` — set `true` only once the site is served over HTTPS. Over
+  plain HTTP a `Secure` cookie is never sent by the browser, and login fails.
 
-## Test
+## Tests
 
 ```bash
-npm test        # verifikasi token dan pembatas percobaan login
+npm test        # token verification and login throttling
 ```
 
-Test tidak membutuhkan database.
+The tests need no database.
 
-## Catatan operasional
+## Operational note
 
-Pembatas percobaan login dihitung di memori proses. Cukup untuk satu container;
-kalau API diskalakan ke beberapa replika, hitungan itu perlu dipindah ke
-penyimpanan bersama.
+Login throttling is counted in process memory. That is fine for a single
+container; if the API is ever scaled to multiple replicas, the counter needs to
+move to shared storage.
