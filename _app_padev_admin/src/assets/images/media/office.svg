@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" role="img" aria-labelledby="title desc">
+  <title id="title">PA DEV workspace desk</title><desc id="desc">Abstract blue illustration of a bright professional workspace desk with monitor.</desc>
+  <rect width="800" height="520" fill="#eff6ff"/>
+  <rect x="64" y="64" width="288" height="180" rx="20" fill="#dbeafe"/>
+  <rect x="384" y="64" width="352" height="180" rx="20" fill="#fff" stroke="#dbeafe" stroke-width="4"/>
+  <rect x="416" y="96" width="180" height="12" rx="6" fill="#1e3a8a"/>
+  <rect x="416" y="122" width="120" height="9" rx="4" fill="#93c5fd"/>
+  <path d="M416 208c40-46 70-20 96-54 22 28 40 32 62 12 18 16 34 18 50 6" fill="none" stroke="#2563eb" stroke-width="8" stroke-linecap="round"/>
+  <rect x="96" y="104" width="224" height="108" rx="14" fill="#fff"/>
+  <rect x="118" y="128" width="96" height="10" rx="5" fill="#1e3a8a"/>
+  <rect x="118" y="150" width="140" height="8" rx="4" fill="#93c5fd"/>
+  <rect x="118" y="172" width="112" height="8" rx="4" fill="#dbeafe"/>
+  <rect x="64" y="300" width="672" height="24" rx="12" fill="#1e3a8a"/>
+  <rect x="140" y="324" width="20" height="120" rx="8" fill="#93c5fd"/>
+  <rect x="640" y="324" width="20" height="120" rx="8" fill="#93c5fd"/>
+  <rect x="300" y="200" width="200" height="128" rx="16" fill="#3b82f6"/>
+  <rect x="324" y="224" width="152" height="80" rx="10" fill="#eff6ff"/>
+  <path d="M340 288c26-30 46-14 62-36 14 18 26 21 40 8" fill="none" stroke="#2563eb" stroke-width="6" stroke-linecap="round"/>
+  <rect x="380" y="328" width="40" height="34" rx="6" fill="#1e3a8a"/>
+  <g fill="#dbeafe"><circle cx="704" cy="120" r="16"/><circle cx="704" cy="168" r="10"/></g>
+</svg>

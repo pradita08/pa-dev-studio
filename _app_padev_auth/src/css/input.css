@@ -1,0 +1,2634 @@
+/**
+ * PA DEV Frontpage — stylesheet halaman publik.
+ *
+ * Diturunkan dari source/backpage/src/css/input.css, TAPI hanya bagian yang
+ * dipakai halaman publik. Admin theme membawa sidebar, tabel, chart, dan
+ * overlay yang membuat CSS-nya ~839 KB — terlalu berat untuk halaman yang
+ * dikunjungi orang luar dan menentukan kesan pertama.
+ *
+ * Berkas ini punya DUA bagian, dan pembagiannya penting:
+ *
+ *   [INTI BERSAMA]  @layer base + seluruh design token & 12 preset tema.
+ *                   Disalin APA ADANYA dari backpage. Kalau token di backpage
+ *                   berubah, ganti bagian ini seluruhnya — jangan disunting
+ *                   sebagian, supaya kedua produk tidak pelan-pelan berbeda.
+ *
+ *   [KHUSUS PUBLIK] Kelas .landing-* dan primitif yang dipakainya
+ *                   (.ui-button, .ui-form, .dropdown-*). Bagian ini milik
+ *                   frontpage sendiri dan boleh berkembang bebas.
+ */
+
+/* ======================= [INTI BERSAMA] ======================= */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-primary: theme('colors.primary.600');
+    --color-primary-light: theme('colors.primary.400');
+    --color-primary-dark: theme('colors.primary.900');
+    --color-success: theme('colors.success');
+    --color-warning: theme('colors.warning');
+    --color-danger: theme('colors.danger');
+    --color-info: theme('colors.info');
+    --color-canvas: theme('colors.canvas');
+    /* Backward-compatible alias; seluruh shell tetap mengambil satu canvas source. */
+    --pa-canvas: var(--color-canvas);
+    --color-surface: theme('colors.surface');
+    --color-border: theme('colors.line');
+    --color-text-primary: theme('colors.ink.heading');
+    --color-text-secondary: theme('colors.ink.body');
+    --color-text-muted: theme('colors.ink.muted');
+    --color-hover: theme('colors.state.hover');
+    --color-active: theme('colors.state.active');
+    --color-disabled: theme('colors.state.disabled');
+
+    --font-heading: theme('fontFamily.display');
+    --font-body: theme('fontFamily.ui');
+
+    --space-4: theme('spacing.pa-4');
+    --space-8: theme('spacing.pa-8');
+    --space-12: theme('spacing.pa-12');
+    --space-16: theme('spacing.pa-16');
+    --space-20: theme('spacing.pa-20');
+    --space-24: theme('spacing.pa-24');
+    --space-32: theme('spacing.pa-32');
+    --space-40: theme('spacing.pa-40');
+    --space-48: theme('spacing.pa-48');
+    --space-64: theme('spacing.pa-64');
+
+    --radius-xs: theme('borderRadius.pa-xs');
+    --radius-sm: theme('borderRadius.pa-sm');
+    --radius-md: theme('borderRadius.pa-md');
+    --radius-lg: theme('borderRadius.pa-lg');
+    --radius-xl: theme('borderRadius.pa-xl');
+    --radius-2xl: theme('borderRadius.pa-2xl');
+    --radius-full: theme('borderRadius.pa-full');
+
+    --shadow-xs: theme('boxShadow.elevation-xs');
+    --shadow-sm: theme('boxShadow.elevation-sm');
+    --shadow-md: theme('boxShadow.elevation-md');
+    --shadow-lg: theme('boxShadow.elevation-lg');
+    --shadow-xl: theme('boxShadow.elevation-xl');
+    --shadow-premium: theme('boxShadow.elevation-premium');
+
+    --duration-fast: theme('transitionDuration.motion-fast');
+    --duration-base: theme('transitionDuration.motion-base');
+    --duration-slow: theme('transitionDuration.motion-slow');
+    --ease-standard: theme('transitionTimingFunction.standard');
+    --ease-entrance: theme('transitionTimingFunction.entrance');
+    --ease-exit: theme('transitionTimingFunction.exit');
+
+    --surface-sidebar-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 72 72'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='.01'/%3E%3C/svg%3E");
+    --surface-sidebar-ambient-primary: radial-gradient(ellipse at 10% -2%, rgb(255 255 255 / 0.095), rgb(255 255 255 / 0.032) 22%, transparent 44%);
+    --surface-sidebar-ambient-secondary: radial-gradient(ellipse at 92% 46%, rgb(96 132 211 / 0.055), transparent 52%);
+    --surface-sidebar-sculpting: radial-gradient(ellipse at -12% 82%, rgb(7 20 58 / 0.07), transparent 48%);
+    --surface-sidebar-gradient: linear-gradient(180deg, #274da2 0%, #25499a 20%, #1f3d8e 48%, #1a347c 80%, #162d6a 100%);
+    --surface-sidebar-shadow: inset 0 1px 0 rgb(255 255 255 / 0.045), inset 1px 0 0 rgb(255 255 255 / 0.035), inset -1px 0 0 rgb(255 255 255 / 0.025), 10px 0 28px rgb(15 23 42 / 0.075);
+    --surface-info-background: linear-gradient(145deg, rgb(255 255 255 / 0.095), rgb(255 255 255 / 0.045));
+    --surface-info-shadow: inset 0 1px 0 rgb(255 255 255 / 0.075), 0 8px 24px rgb(7 20 58 / 0.13);
+    --surface-glass-background: rgb(255 255 255 / 0.72);
+    --surface-modal-background: theme('colors.surface');
+  }
+
+  /* Outfit variable latin (100–900), self-hosted — seluruh UI content. */
+  @font-face {
+    font-family: 'Outfit';
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url('../fonts/Outfit.woff2') format('woff2');
+  }
+
+  /* Josefin Sans variable latin (100–700), self-hosted — application shell. */
+  @font-face {
+    font-family: 'Josefin Sans';
+    font-style: normal;
+    font-weight: 100 700;
+    font-display: swap;
+    src: url('../fonts/JosefinSans.woff2') format('woff2');
+  }
+
+  body {
+    @apply bg-canvas font-ui text-body text-ink-body antialiased;
+    background-color: var(--color-canvas);
+  }
+
+  html {
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--color-text-muted) 55%, transparent) transparent;
+  }
+
+  html::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  html::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  html::-webkit-scrollbar-thumb {
+    min-height: 2.5rem;
+    border: 3px solid transparent;
+    border-radius: var(--radius-full);
+    background: color-mix(in srgb, var(--color-text-muted) 55%, transparent);
+    background-clip: padding-box;
+  }
+
+  html::-webkit-scrollbar-thumb:hover {
+    background: color-mix(in srgb, var(--color-text-secondary) 68%, transparent);
+    background-clip: padding-box;
+  }
+
+  /* Heading shell/display memakai identitas Josefin; body dan UI content memakai Outfit. */
+  h1, h2, h3 {
+    @apply font-display font-semibold text-ink-heading;
+    letter-spacing: -0.01em;
+  }
+
+  h4, h5, h6 {
+    @apply font-semibold text-ink-heading;
+    letter-spacing: -0.01em;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-primary-500/50;
+  }
+}
+
+:root {
+  --primary-50: 242 246 254;
+  --primary-100: 229 236 253;
+  --primary-200: 203 218 250;
+  --primary-300: 168 193 247;
+  --primary-400: 120 158 243;
+  --primary-500: 72 124 238;
+  --primary-700: 32 85 202;
+  --primary-800: 27 71 169;
+  --primary-900: 21 57 136;
+  --primary-950: 16 44 103;
+  --primary-600: 37 99 235;
+  --color-primary: #2563EB;
+  --color-primary-hover: #2055CA;
+  --color-primary-active: #1B49AE;
+  --color-primary-soft: color-mix(in srgb, #2563EB 12%, white);
+  --color-primary-border: color-mix(in srgb, #2563EB 40%, white);
+  --color-primary-ring: rgb(37 99 235 / .45);
+  --color-primary-foreground: #FFFFFF;
+  --theme-sidebar-start: #F8FAFC;
+  --theme-sidebar-mid-1: #EEF3F8;
+  --theme-sidebar-mid-2: #E5EBF2;
+  --theme-sidebar-end: #DCE5EE;
+  --surface-sidebar-gradient: linear-gradient(180deg, #F8FAFC 0%, #EEF3F8 30%, #E5EBF2 65%, #DCE5EE 100%);
+  --color-canvas: #F5F8FC;
+  --color-surface: #FFFFFF;
+  --color-border: #D8E0EA;
+  --color-text-primary: #1E293B;
+  --color-text-secondary: #475569;
+  --color-text-muted: #64748B;
+  --canvas-ch: 245 248 252;
+  --surface-ch: 255 255 255;
+  --line-ch: 216 224 234;
+  --ink-heading-ch: 30 41 59;
+  --ink-body-ch: 71 85 105;
+  --ink-muted-ch: 100 116 139;
+  --surface-canvas: var(--color-canvas);
+  --surface-card: var(--color-surface);
+  --surface-raised: var(--color-surface);
+  --text-primary: var(--color-text-primary);
+  --text-secondary: var(--color-text-secondary);
+  --text-muted: var(--color-text-muted);
+  --border-default: var(--color-border);
+}
+
+html[data-padev-theme='ocean-deep'] {
+  --primary-50: 240 251 252;
+  --primary-100: 225 246 250;
+  --primary-200: 195 237 245;
+  --primary-300: 155 226 238;
+  --primary-400: 101 210 228;
+  --primary-500: 46 194 219;
+  --primary-700: 5 157 182;
+  --primary-800: 4 131 153;
+  --primary-900: 3 106 123;
+  --primary-950: 3 80 93;
+  --primary-600: 6 182 212;
+  --color-primary: #06B6D4;
+  --color-primary-hover: #059DB6;
+  --color-primary-active: #04879D;
+  --color-primary-soft: color-mix(in srgb, #06B6D4 12%, white);
+  --color-primary-border: color-mix(in srgb, #06B6D4 40%, white);
+  --color-primary-ring: rgb(6 182 212 / .45);
+  --color-primary-foreground: #FFFFFF;
+  --theme-sidebar-start: #06222E;
+  --preset-sidebar-ink-primary: #F8FAFC;
+  --sidebar-pill-ink: rgb(var(--primary-900));
+  /* langkah 700 terlalu terang di atas permukaan aktif; pakai 900 */
+  --nav-active-ink: rgb(var(--primary-900));
+  --preset-sidebar-ink-secondary: #CBD5E1;
+  --preset-sidebar-ink-muted: #94A3B8;
+  --preset-sidebar-hover: rgb(255 255 255 / .10);
+  --preset-sidebar-open: rgb(255 255 255 / .12);
+  --preset-sidebar-divider: rgb(255 255 255 / .15);
+  --preset-sidebar-shadow: inset 0 1px 0 rgb(255 255 255 / .045), inset 1px 0 0 rgb(255 255 255 / .035);
+  --theme-sidebar-mid-1: #0A2E3D;
+  --theme-sidebar-mid-2: #0E3A4C;
+  --theme-sidebar-end: #14485D;
+  --surface-sidebar-gradient: linear-gradient(180deg, #06222E 0%, #0A2E3D 30%, #0E3A4C 65%, #14485D 100%);
+  --canvas-ch: 248 250 252;
+  --surface-ch: 255 255 255;
+  --line-ch: 226 232 240;
+  --ink-heading-ch: 15 23 42;
+  --ink-body-ch: 71 85 105;
+  --ink-muted-ch: 148 163 184;
+  --surface-canvas: var(--color-canvas);
+  --surface-card: var(--color-surface);
+  --surface-raised: var(--color-surface);
+  --text-primary: var(--color-text-primary);
+  --text-secondary: var(--color-text-secondary);
+  --text-muted: var(--color-text-muted);
+  --border-default: var(--color-border);
+}
+
+html[data-padev-theme='sandstone'] {
+  --primary-50: 250 245 240;
+  --primary-100: 246 234 225;
+  --primary-200: 237 214 196;
+  --primary-300: 225 186 157;
+  --primary-400: 208 148 102;
+  --primary-500: 192 111 48;
+  --primary-700: 155 71 8;
+  --primary-800: 130 60 6;
+  --primary-900: 104 48 5;
+  --primary-950: 79 37 4;
+  --primary-600: 180 83 9;
+  --color-primary: #B45309;
+  --color-primary-hover: #9B4708;
+  --color-primary-active: #853D07;
+  --color-primary-soft: color-mix(in srgb, #B45309 12%, white);
+  --color-primary-border: color-mix(in srgb, #B45309 40%, white);
+  --color-primary-ring: rgb(180 83 9 / .45);
+  --color-primary-foreground: #FFFFFF;
+  --theme-sidebar-start: #F7F3EC;
+  --theme-sidebar-mid-1: #F1EAE0;
+  --theme-sidebar-mid-2: #EAE1D3;
+  --theme-sidebar-end: #E2D6C4;
+  --surface-sidebar-gradient: linear-gradient(180deg, #F7F3EC 0%, #F1EAE0 30%, #EAE1D3 65%, #E2D6C4 100%);
+  --color-canvas: #FAF7F2;
+  --color-surface: #FFFFFF;
+  --color-border: #E4DACB;
+  --color-text-primary: #3F3428;
+  --color-text-secondary: #6B5D4F;
+  --color-text-muted: #8A7A68;
+  --canvas-ch: 250 247 242;
+  --surface-ch: 255 255 255;
+  --line-ch: 228 218 203;
+  --ink-heading-ch: 63 52 40;
+  --ink-body-ch: 107 93 79;
+  --ink-muted-ch: 138 122 104;
+  --surface-canvas: var(--color-canvas);
+  --surface-card: var(--color-surface);
+  --surface-raised: var(--color-surface);
+  --text-primary: var(--color-text-primary);
+  --text-secondary: var(--color-text-secondary);
+  --text-muted: var(--color-text-muted);
+  --border-default: var(--color-border);
+}
+
+html[data-padev-theme='obsidian-gold'] {
+  --primary-50: 252 250 242;
+  --primary-100: 250 244 230;
+  --primary-200: 245 234 204;
+  --primary-300: 238 220 171;
+  --primary-400: 228 200 124;
+  --primary-500: 219 181 78;
+  --primary-700: 182 144 38;
+  --primary-800: 153 120 32;
+  --primary-900: 123 97 26;
+  --primary-950: 93 73 19;
+  --primary-600: 212 167 44;
+  --color-primary: #D4A72C;
+  --color-primary-hover: #B69026;
+  --color-primary-active: #9D7C21;
+  --color-primary-soft: color-mix(in srgb, #D4A72C 12%, white);
+  --color-primary-border: color-mix(in srgb, #D4A72C 40%, white);
+  --color-primary-ring: rgb(212 167 44 / .45);
+  --color-primary-foreground: #FFFFFF;
+  --theme-sidebar-start: #101014;
+  --preset-sidebar-ink-primary: #F8FAFC;
+  --sidebar-pill-ink: rgb(var(--primary-900));
+  /* langkah 700 terlalu terang di atas permukaan aktif; pakai 900 */
+  --nav-active-ink: rgb(var(--primary-900));
+  --preset-sidebar-ink-secondary: #CBD5E1;
+  --preset-sidebar-ink-muted: #94A3B8;
+  --preset-sidebar-hover: rgb(255 255 255 / .10);
+  --preset-sidebar-open: rgb(255 255 255 / .12);
+  --preset-sidebar-divider: rgb(255 255 255 / .15);
+  --preset-sidebar-shadow: inset 0 1px 0 rgb(255 255 255 / .045), inset 1px 0 0 rgb(255 255 255 / .035);
+  --theme-sidebar-mid-1: #16161C;
+  --theme-sidebar-mid-2: #1D1D25;
+  --theme-sidebar-end: #24242E;
+  --surface-sidebar-gradient: linear-gradient(180deg, #101014 0%, #16161C 30%, #1D1D25 65%, #24242E 100%);
+  --canvas-ch: 248 250 252;
+  --surface-ch: 255 255 255;
+  --line-ch: 226 232 240;
+  --ink-heading-ch: 15 23 42;
+  --ink-body-ch: 71 85 105;
+  --ink-muted-ch: 148 163 184;
+  --surface-canvas: var(--color-canvas);
+  --surface-card: var(--color-surface);
+  --surface-raised: var(--color-surface);
+  --text-primary: var(--color-text-primary);
+  --text-secondary: var(--color-text-secondary);
+  --text-muted: var(--color-text-muted);
+  --border-default: var(--color-border);
+}
+
+html[data-padev-theme='lavender-frost'] {
+  --primary-50: 247 243 254;
+  --primary-100: 239 231 253;
+  --primary-200: 224 208 251;
+  --primary-300: 203 176 248;
+  --primary-400: 174 133 244;
+  --primary-500: 145 90 240;
+  --primary-700: 107 50 204;
+  --primary-800: 89 42 171;
+  --primary-900: 72 34 137;
+  --primary-950: 55 26 104;
+  --primary-600: 124 58 237;
+  --color-primary: #7C3AED;
+  --color-primary-hover: #6B32CC;
+  --color-primary-active: #5C2BAF;
+  --color-primary-soft: color-mix(in srgb, #7C3AED 12%, white);
+  --color-primary-border: color-mix(in srgb, #7C3AED 40%, white);
+  --color-primary-ring: rgb(124 58 237 / .45);
+  --color-primary-foreground: #FFFFFF;
+  --theme-sidebar-start: #F6F4FB;
+  --theme-sidebar-mid-1: #EEEAF7;
+  --theme-sidebar-mid-2: #E5E0F2;
+  --theme-sidebar-end: #DCD5EC;
+  --surface-sidebar-gradient: linear-gradient(180deg, #F6F4FB 0%, #EEEAF7 30%, #E5E0F2 65%, #DCD5EC 100%);
+  --color-canvas: #F8F6FC;
+  --color-surface: #FFFFFF;
+  --color-border: #E0DAEE;
+  --color-text-primary: #2B2640;
+  --color-text-secondary: #544E6B;
+  --color-text-muted: #75708C;
+  --canvas-ch: 248 246 252;
+  --surface-ch: 255 255 255;
+  --line-ch: 224 218 238;
+  --ink-heading-ch: 43 38 64;
+  --ink-body-ch: 84 78 107;
+  --ink-muted-ch: 117 112 140;
+  --surface-canvas: var(--color-canvas);
+  --surface-card: var(--color-surface);
+  --surface-raised: var(--color-surface);
+  --text-primary: var(--color-text-primary);
+  --text-secondary: var(--color-text-secondary);
+  --text-muted: var(--color-text-muted);
+  --border-default: var(--color-border);
+}
+
+html[data-padev-theme='forest-paper'] {
+  --primary-50: 243 247 244;
+  --primary-100: 230 239 234;
+  --primary-200: 205 224 213;
+  --primary-300: 172 203 185;
+  --primary-400: 126 174 146;
+  --primary-500: 80 146 107;
+  --primary-700: 40 108 68;
+  --primary-800: 34 90 57;
+  --primary-900: 27 73 46;
+  --primary-950: 21 55 35;
+  --primary-600: 47 125 79;
+  --color-primary: #2F7D4F;
+  --color-primary-hover: #286C44;
+  --color-primary-active: #235C3A;
+  --color-primary-soft: color-mix(in srgb, #2F7D4F 12%, white);
+  --color-primary-border: color-mix(in srgb, #2F7D4F 40%, white);
+  --color-primary-ring: rgb(47 125 79 / .45);
+  --color-primary-foreground: #FFFFFF;
+  --theme-sidebar-start: #F4F6F0;
+  --theme-sidebar-mid-1: #ECF0E4;
+  --theme-sidebar-mid-2: #E3E9D8;
+  --theme-sidebar-end: #D9E1CB;
+  --surface-sidebar-gradient: linear-gradient(180deg, #F4F6F0 0%, #ECF0E4 30%, #E3E9D8 65%, #D9E1CB 100%);
+  --color-canvas: #F7F9F4;
+  --color-surface: #FFFFFF;
+  --color-border: #DDE5D4;
+  --color-text-primary: #24312A;
+  --color-text-secondary: #4A5A50;
+  --color-text-muted: #6C7A70;
+  --canvas-ch: 247 249 244;
+  --surface-ch: 255 255 255;
+  --line-ch: 221 229 212;
+  --ink-heading-ch: 36 49 42;
+  --ink-body-ch: 74 90 80;
+  --ink-muted-ch: 108 122 112;
+  --surface-canvas: var(--color-canvas);
+  --surface-card: var(--color-surface);
+  --surface-raised: var(--color-surface);
+  --text-primary: var(--color-text-primary);
+  --text-secondary: var(--color-text-secondary);
+  --text-muted: var(--color-text-muted);
+  --border-default: var(--color-border);
+}
+
+html[data-padev-theme='graphite'] {
+  --primary-50: 254 249 240;
+  --primary-100: 254 243 226;
+  --primary-200: 253 232 196;
+  --primary-300: 251 216 157;
+  --primary-400: 249 195 104;
+  --primary-500: 247 174 50;
+  --primary-700: 211 136 9;
+  --primary-800: 176 114 8;
+  --primary-900: 142 92 6;
+  --primary-950: 108 70 5;
+  --primary-600: 245 158 11;
+  --color-primary: #F59E0B;
+  --color-primary-hover: #D38809;
+  --color-primary-active: #B57508;
+  --color-primary-soft: color-mix(in srgb, #F59E0B 12%, white);
+  --color-primary-border: color-mix(in srgb, #F59E0B 40%, white);
+  --color-primary-ring: rgb(245 158 11 / .45);
+  --color-primary-foreground: #FFFFFF;
+  --theme-sidebar-start: #262B36;
+  --preset-sidebar-ink-primary: #F8FAFC;
+  --sidebar-pill-ink: rgb(var(--primary-900));
+  /* langkah 700 terlalu terang di atas permukaan aktif; pakai 900 */
+  --nav-active-ink: rgb(var(--primary-900));
+  --preset-sidebar-ink-secondary: #CBD5E1;
+  --preset-sidebar-ink-muted: #94A3B8;
+  --preset-sidebar-hover: rgb(255 255 255 / .10);
+  --preset-sidebar-open: rgb(255 255 255 / .12);
+  --preset-sidebar-divider: rgb(255 255 255 / .15);
+  --preset-sidebar-shadow: inset 0 1px 0 rgb(255 255 255 / .045), inset 1px 0 0 rgb(255 255 255 / .035);
+  --theme-sidebar-mid-1: #2C3340;
+  --theme-sidebar-mid-2: #323A48;
+  --theme-sidebar-end: #394253;
+  --surface-sidebar-gradient: linear-gradient(180deg, #262B36 0%, #2C3340 30%, #323A48 65%, #394253 100%);
+  --canvas-ch: 248 250 252;
+  --surface-ch: 255 255 255;
+  --line-ch: 226 232 240;
+  --ink-heading-ch: 15 23 42;
+  --ink-body-ch: 71 85 105;
+  --ink-muted-ch: 148 163 184;
+  --surface-canvas: var(--color-canvas);
+  --surface-card: var(--color-surface);
+  --surface-raised: var(--color-surface);
+  --text-primary: var(--color-text-primary);
+  --text-secondary: var(--color-text-secondary);
+  --text-muted: var(--color-text-muted);
+  --border-default: var(--color-border);
+}
+
+html[data-padev-theme='sapphire'] {
+  --primary-50: 243 248 254;
+  --primary-100: 231 240 254;
+  --primary-200: 208 225 253;
+  --primary-300: 177 205 251;
+  --primary-400: 133 178 249;
+  --primary-500: 90 150 247;
+  --primary-700: 51 112 212;
+  --primary-800: 42 94 177;
+  --primary-900: 34 75 143;
+  --primary-950: 26 57 108;
+  --primary-600: 59 130 246;
+  --color-primary: #3B82F6;
+  --color-primary-hover: #3370D4;
+  --color-primary-active: #2C60B6;
+  --color-primary-soft: color-mix(in srgb, #3B82F6 12%, white);
+  --color-primary-border: color-mix(in srgb, #3B82F6 40%, white);
+  --color-primary-ring: rgb(59 130 246 / .45);
+  --color-primary-foreground: #FFFFFF;
+  --theme-sidebar-start: #1E3A8A;
+  --preset-sidebar-ink-primary: #F8FAFC;
+  /* 700 hanya menyentuh 4.45 di atas permukaan aktif; naikkan satu langkah */
+  --nav-active-ink: rgb(var(--primary-800));
+  --preset-sidebar-ink-secondary: #CBD5E1;
+  --preset-sidebar-ink-muted: #94A3B8;
+  --preset-sidebar-hover: rgb(255 255 255 / .10);
+  --preset-sidebar-open: rgb(255 255 255 / .12);
+  --preset-sidebar-divider: rgb(255 255 255 / .15);
+  --preset-sidebar-shadow: inset 0 1px 0 rgb(255 255 255 / .045), inset 1px 0 0 rgb(255 255 255 / .035);
+  --theme-sidebar-mid-1: #2346A0;
+  --theme-sidebar-mid-2: #2952B5;
+  --theme-sidebar-end: #3160C8;
+  --surface-sidebar-gradient: linear-gradient(180deg, #1E3A8A 0%, #2346A0 30%, #2952B5 65%, #3160C8 100%);
+  --canvas-ch: 248 250 252;
+  --surface-ch: 255 255 255;
+  --line-ch: 226 232 240;
+  --ink-heading-ch: 15 23 42;
+  --ink-body-ch: 71 85 105;
+  --ink-muted-ch: 148 163 184;
+  --surface-canvas: var(--color-canvas);
+  --surface-card: var(--color-surface);
+  --surface-raised: var(--color-surface);
+  --text-primary: var(--color-text-primary);
+  --text-secondary: var(--color-text-secondary);
+  --text-muted: var(--color-text-muted);
+  --border-default: var(--color-border);
+}
+
+html[data-padev-theme='emerald'] {
+  --primary-50: 241 251 247;
+  --primary-100: 226 247 240;
+  --primary-200: 198 238 225;
+  --primary-300: 159 227 205;
+  --primary-400: 107 212 177;
+  --primary-500: 54 196 149;
+  --primary-700: 14 159 111;
+  --primary-800: 12 133 93;
+  --primary-900: 9 107 75;
+  --primary-950: 7 81 57;
+  --primary-600: 16 185 129;
+  --color-primary: #10B981;
+  --color-primary-hover: #0E9F6F;
+  --color-primary-active: #0C895F;
+  --color-primary-soft: color-mix(in srgb, #10B981 12%, white);
+  --color-primary-border: color-mix(in srgb, #10B981 40%, white);
+  --color-primary-ring: rgb(16 185 129 / .45);
+  --color-primary-foreground: #FFFFFF;
+  --theme-sidebar-start: #163A2D;
+  --preset-sidebar-ink-primary: #F8FAFC;
+  --sidebar-pill-ink: rgb(var(--primary-900));
+  /* langkah 700 terlalu terang di atas permukaan aktif; pakai 900 */
+  --nav-active-ink: rgb(var(--primary-900));
+  --preset-sidebar-ink-secondary: #CBD5E1;
+  --preset-sidebar-ink-muted: #94A3B8;
+  --preset-sidebar-hover: rgb(255 255 255 / .10);
+  --preset-sidebar-open: rgb(255 255 255 / .12);
+  --preset-sidebar-divider: rgb(255 255 255 / .15);
+  --preset-sidebar-shadow: inset 0 1px 0 rgb(255 255 255 / .045), inset 1px 0 0 rgb(255 255 255 / .035);
+  --theme-sidebar-mid-1: #1D4D3D;
+  --theme-sidebar-mid-2: #23604D;
+  --theme-sidebar-end: #2C7865;
+  --surface-sidebar-gradient: linear-gradient(180deg, #163A2D 0%, #1D4D3D 30%, #23604D 65%, #2C7865 100%);
+  --canvas-ch: 248 250 252;
+  --surface-ch: 255 255 255;
+  --line-ch: 226 232 240;
+  --ink-heading-ch: 15 23 42;
+  --ink-body-ch: 71 85 105;
+  --ink-muted-ch: 148 163 184;
+  --surface-canvas: var(--color-canvas);
+  --surface-card: var(--color-surface);
+  --surface-raised: var(--color-surface);
+  --text-primary: var(--color-text-primary);
+  --text-secondary: var(--color-text-secondary);
+  --text-muted: var(--color-text-muted);
+  --border-default: var(--color-border);
+}
+
+html[data-padev-theme='royal'] {
+  --primary-50: 248 245 254;
+  --primary-100: 241 235 254;
+  --primary-200: 227 216 253;
+  --primary-300: 209 190 251;
+  --primary-400: 183 154 249;
+  --primary-500: 158 118 247;
+  --primary-700: 120 79 212;
+  --primary-800: 100 66 177;
+  --primary-900: 81 53 143;
+  --primary-950: 61 40 108;
+  --primary-600: 139 92 246;
+  --color-primary: #8B5CF6;
+  --color-primary-hover: #784FD4;
+  --color-primary-active: #6744B6;
+  --color-primary-soft: color-mix(in srgb, #8B5CF6 12%, white);
+  --color-primary-border: color-mix(in srgb, #8B5CF6 40%, white);
+  --color-primary-ring: rgb(139 92 246 / .45);
+  --color-primary-foreground: #FFFFFF;
+  --theme-sidebar-start: #312E81;
+  --preset-sidebar-ink-primary: #F8FAFC;
+  --preset-sidebar-ink-secondary: #CBD5E1;
+  --preset-sidebar-ink-muted: #94A3B8;
+  --preset-sidebar-hover: rgb(255 255 255 / .10);
+  --preset-sidebar-open: rgb(255 255 255 / .12);
+  --preset-sidebar-divider: rgb(255 255 255 / .15);
+  --preset-sidebar-shadow: inset 0 1px 0 rgb(255 255 255 / .045), inset 1px 0 0 rgb(255 255 255 / .035);
+  --theme-sidebar-mid-1: #3B3598;
+  --theme-sidebar-mid-2: #4741B3;
+  --theme-sidebar-end: #564FC7;
+  --surface-sidebar-gradient: linear-gradient(180deg, #312E81 0%, #3B3598 30%, #4741B3 65%, #564FC7 100%);
+  --canvas-ch: 248 250 252;
+  --surface-ch: 255 255 255;
+  --line-ch: 226 232 240;
+  --ink-heading-ch: 15 23 42;
+  --ink-body-ch: 71 85 105;
+  --ink-muted-ch: 148 163 184;
+  --surface-canvas: var(--color-canvas);
+  --surface-card: var(--color-surface);
+  --surface-raised: var(--color-surface);
+  --text-primary: var(--color-text-primary);
+  --text-secondary: var(--color-text-secondary);
+  --text-muted: var(--color-text-muted);
+  --border-default: var(--color-border);
+}
+
+html[data-padev-theme='crimson'] {
+  --primary-50: 253 241 244;
+  --primary-100: 251 228 233;
+  --primary-200: 248 201 211;
+  --primary-300: 243 165 182;
+  --primary-400: 236 115 142;
+  --primary-500: 230 65 101;
+  --primary-700: 194 25 62;
+  --primary-800: 162 21 52;
+  --primary-900: 131 17 42;
+  --primary-950: 99 13 32;
+  --primary-600: 225 29 72;
+  --color-primary: #E11D48;
+  --color-primary-hover: #C2193E;
+  --color-primary-active: #A61535;
+  --color-primary-soft: color-mix(in srgb, #E11D48 12%, white);
+  --color-primary-border: color-mix(in srgb, #E11D48 40%, white);
+  --color-primary-ring: rgb(225 29 72 / .45);
+  --color-primary-foreground: #FFFFFF;
+  --theme-sidebar-start: #4A1F2D;
+  --preset-sidebar-ink-primary: #F8FAFC;
+  --preset-sidebar-ink-secondary: #CBD5E1;
+  --preset-sidebar-ink-muted: #94A3B8;
+  --preset-sidebar-hover: rgb(255 255 255 / .10);
+  --preset-sidebar-open: rgb(255 255 255 / .12);
+  --preset-sidebar-divider: rgb(255 255 255 / .15);
+  --preset-sidebar-shadow: inset 0 1px 0 rgb(255 255 255 / .045), inset 1px 0 0 rgb(255 255 255 / .035);
+  --theme-sidebar-mid-1: #5C2636;
+  --theme-sidebar-mid-2: #6B3043;
+  --theme-sidebar-end: #7C3E54;
+  --surface-sidebar-gradient: linear-gradient(180deg, #4A1F2D 0%, #5C2636 30%, #6B3043 65%, #7C3E54 100%);
+  --canvas-ch: 248 250 252;
+  --surface-ch: 255 255 255;
+  --line-ch: 226 232 240;
+  --ink-heading-ch: 15 23 42;
+  --ink-body-ch: 71 85 105;
+  --ink-muted-ch: 148 163 184;
+  --surface-canvas: var(--color-canvas);
+  --surface-card: var(--color-surface);
+  --surface-raised: var(--color-surface);
+  --text-primary: var(--color-text-primary);
+  --text-secondary: var(--color-text-secondary);
+  --text-muted: var(--color-text-muted);
+  --border-default: var(--color-border);
+}
+
+html[data-padev-theme='carbon'] {
+  --primary-50: 241 250 254;
+  --primary-100: 226 244 252;
+  --primary-200: 197 233 250;
+  --primary-300: 159 219 246;
+  --primary-400: 106 199 241;
+  --primary-500: 53 179 237;
+  --primary-700: 12 142 200;
+  --primary-800: 10 119 168;
+  --primary-900: 8 96 135;
+  --primary-950: 6 73 103;
+  --primary-600: 14 165 233;
+  --color-primary: #0EA5E9;
+  --color-primary-hover: #0C8EC8;
+  --color-primary-active: #0A7AAC;
+  --color-primary-soft: color-mix(in srgb, #0EA5E9 12%, white);
+  --color-primary-border: color-mix(in srgb, #0EA5E9 40%, white);
+  --color-primary-ring: rgb(14 165 233 / .45);
+  --color-primary-foreground: #FFFFFF;
+  --theme-sidebar-start: #1B1D22;
+  --preset-sidebar-ink-primary: #F8FAFC;
+  --sidebar-pill-ink: rgb(var(--primary-900));
+  /* langkah 700 terlalu terang di atas permukaan aktif; pakai 900 */
+  --nav-active-ink: rgb(var(--primary-900));
+  --preset-sidebar-ink-secondary: #CBD5E1;
+  --preset-sidebar-ink-muted: #94A3B8;
+  --preset-sidebar-hover: rgb(255 255 255 / .10);
+  --preset-sidebar-open: rgb(255 255 255 / .12);
+  --preset-sidebar-divider: rgb(255 255 255 / .15);
+  --preset-sidebar-shadow: inset 0 1px 0 rgb(255 255 255 / .045), inset 1px 0 0 rgb(255 255 255 / .035);
+  --theme-sidebar-mid-1: #21252C;
+  --theme-sidebar-mid-2: #272D36;
+  --theme-sidebar-end: #313946;
+  --surface-sidebar-gradient: linear-gradient(180deg, #1B1D22 0%, #21252C 30%, #272D36 65%, #313946 100%);
+  --canvas-ch: 248 250 252;
+  --surface-ch: 255 255 255;
+  --line-ch: 226 232 240;
+  --ink-heading-ch: 15 23 42;
+  --ink-body-ch: 71 85 105;
+  --ink-muted-ch: 148 163 184;
+  --surface-canvas: var(--color-canvas);
+  --surface-card: var(--color-surface);
+  --surface-raised: var(--color-surface);
+  --text-primary: var(--color-text-primary);
+  --text-secondary: var(--color-text-secondary);
+  --text-muted: var(--color-text-muted);
+  --border-default: var(--color-border);
+}
+
+html[data-pa-theme='dark'] {
+  /* Skala primary dipakai dua peran: langkah 50/100 sebagai PERMUKAAN lembut
+   * dan 700/800 sebagai TINTA pekat. Keduanya dikalibrasi untuk latar terang,
+   * jadi pada dark mode bg-primary-50 menjadi bidang nyaris putih dan
+   * text-primary-700 menjadi tinta gelap di atas permukaan gelap.
+   *
+   * Alih-alih menambal 61 selector satu per satu, kedua peran itu ditukar ke
+   * langkah yang setara pada latar gelap. Karena nilainya alias ke langkah lain
+   * di preset yang sama, seluruh 12 tema ikut benar tanpa nilai baru.
+   * Langkah 500/600 (aksi utama) sengaja tidak diubah. */
+  --primary-50: var(--primary-950);
+  --primary-100: var(--primary-900);
+  --primary-700: var(--primary-300);
+  --primary-800: var(--primary-200);
+
+  /* --color-primary-soft dan --color-primary-border di setiap preset di-mix
+   * dengan `white` yang di-hardcode, dan tidak pernah di-override untuk dark.
+   * Akibatnya seluruh state terpilih yang memakainya tampil sebagai bidang
+   * nyaris putih di atas permukaan gelap — dan karena tinta di atasnya juga
+   * terang, tulisannya hilang (mis. tombol Dark / Boxed Layout di customizer).
+   * Versi dark memakai tint transparan dari skala primary preset. */
+  --color-primary-soft: color-mix(in srgb, rgb(var(--primary-500)) 22%, transparent);
+  --color-primary-border: color-mix(in srgb, rgb(var(--primary-400)) 45%, transparent);
+  --color-canvas: #0B1220;
+  --color-surface: #111C2F;
+  --color-border: #26354B;
+  --color-text-primary: #F8FAFC;
+  --color-text-secondary: #CBD5E1;
+  --color-text-muted: #94A3B8;
+  --canvas-ch: 11 18 32;
+  --surface-ch: 17 28 47;
+  --line-ch: 38 53 75;
+  --ink-heading-ch: 248 250 252;
+  --ink-body-ch: 203 213 225;
+  --ink-muted-ch: 148 163 184;
+}
+
+:root {
+  --nav-active-surface: rgb(var(--primary-50));
+  --nav-active-ink: rgb(var(--primary-700));
+  --nav-active-accent: rgb(var(--primary-600));
+}
+
+html[data-pa-theme='dark'] {
+  --nav-active-surface: color-mix(in srgb, rgb(var(--primary-500)) 20%, transparent);
+  --nav-active-ink: rgb(var(--primary-200));
+  --nav-active-accent: rgb(var(--primary-400));
+}
+
+:root {
+  --nav-active-ring: color-mix(in srgb, var(--nav-active-accent) 38%, transparent);
+  --nav-active-sheen: color-mix(in srgb, var(--nav-active-accent) 10%, transparent);
+}
+
+html[data-pa-theme='dark'] {
+  --nav-active-ring: color-mix(in srgb, var(--nav-active-accent) 46%, transparent);
+  --nav-active-sheen: color-mix(in srgb, var(--nav-active-accent) 16%, transparent);
+}
+
+/* ======================= [KHUSUS PUBLIK] ====================== */
+
+@layer components {
+.app-navbar input,
+  .app-navbar .dropdown-panel,
+  .app-navbar .dropdown-item {
+    @apply font-ui;
+  }
+
+
+.navbar-icon-btn {
+    @apply relative inline-flex h-10 w-10 items-center justify-center rounded-full text-ink-body
+      transition-[color,background-color,transform] duration-motion-fast ease-standard
+      hover:-translate-y-px hover:bg-canvas hover:text-ink-heading active:translate-y-0;
+  }
+
+
+.navbar-icon-btn > svg {
+    @apply h-5 w-5;
+  }
+
+
+.dropdown-panel {
+    @apply pointer-events-none invisible absolute right-0 top-full z-50 mt-2 w-64 max-w-[calc(100vw-2rem)]
+      origin-top-right translate-y-2 scale-[0.98] rounded-xl bg-surface p-2 font-ui opacity-0
+      shadow-elevation-lg ring-1 ring-line;
+    transition:
+      opacity var(--duration-fast) var(--ease-entrance),
+      transform var(--duration-base) var(--ease-entrance),
+      visibility 0s linear var(--duration-base);
+  }
+
+
+.dropdown-panel[data-open='true'] {
+    @apply pointer-events-auto visible translate-y-0 scale-100 opacity-100;
+    transition-delay: 0s;
+  }
+
+
+.dropdown-item {
+    @apply flex min-h-10 w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-ink-body
+      transition-colors duration-motion-fast ease-standard hover:bg-canvas hover:text-ink-heading;
+  }
+
+
+.dropdown-item > svg {
+    @apply h-[1.125rem] w-[1.125rem] shrink-0;
+  }
+
+
+.dropdown-item[aria-checked='true'] {
+    @apply font-semibold;
+    /* Memakai token state terpilih, bukan langkah palet langsung: langkah 700
+     * kurang kontras pada preset ber-aksen terang, dan langkah 50 menjadi
+     * bidang terang di dark. */
+    background: var(--nav-active-surface);
+    color: var(--nav-active-ink);
+  }
+
+
+.dropdown-item[role='menuitemradio']::after {
+    /* escape unicode, bukan glyph literal, agar tidak bergantung encoding file */
+    content: '\2713';
+    @apply ml-auto text-sm font-semibold text-primary-600 opacity-0;
+  }
+
+
+.dropdown-item[aria-checked='true']::after {
+    @apply opacity-100;
+  }
+
+
+.dropdown-heading {
+    @apply flex min-h-10 items-center justify-between gap-3 border-b border-line px-3 py-2;
+  }
+
+
+.dropdown-heading-label {
+    @apply font-ui text-xs font-semibold uppercase tracking-wide text-ink-muted;
+  }
+
+
+.notification-list .dropdown-item > span:first-child {
+    @apply flex h-9 w-9 shrink-0 items-center justify-center rounded-full;
+  }
+
+
+.notification-list .dropdown-item > span:first-child > svg {
+    @apply h-4 w-4;
+  }
+
+
+.dropdown-footnote {
+    @apply border-t border-line px-3 pb-1 pt-2 text-center font-ui text-xs text-ink-muted;
+  }
+
+
+.ui-button {
+    @apply relative inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-pa-md border border-transparent font-ui font-semibold outline-none transition-[color,background-color,border-color,box-shadow,transform] duration-motion-fast ease-standard;
+    /* Ukuran default setara --md. Tanpa ini tombol yang tidak membawa modifier
+     * ukuran tampil tanpa tinggi maupun padding sehingga gepeng seperti chip.
+     * Modifier --xs/--sm/--lg/--xl didefinisikan setelah blok ini sehingga
+     * tetap menang saat dipakai. */
+    @apply min-h-10 px-4 text-sm;
+  }
+
+
+.ui-button-content {
+    @apply inline-flex items-center justify-center gap-2;
+  }
+
+
+.ui-button-icon {
+    @apply h-4 w-4 shrink-0;
+  }
+
+
+.ui-button--xs { @apply min-h-7 px-2.5 text-xs; }
+
+
+.ui-button--sm { @apply min-h-9 px-3 text-small; }
+
+
+.ui-button--md { @apply min-h-10 px-4 text-sm; }
+
+
+.ui-button--lg { @apply min-h-11 px-5 text-sm; }
+
+
+.ui-button--xl { @apply min-h-12 px-6 text-base; }
+
+
+.ui-button--primary { @apply bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800; }
+
+
+.ui-button--secondary { @apply bg-ink-heading text-white hover:bg-ink-body active:bg-ink-heading; }
+
+
+.ui-button--success { @apply bg-success text-ink-heading hover:brightness-105 active:brightness-110; }
+
+
+.ui-button--warning { @apply bg-warning text-ink-heading hover:brightness-95 active:brightness-90; }
+
+
+.ui-button--danger { @apply bg-danger text-ink-heading hover:brightness-105 active:brightness-110; }
+
+
+.ui-button--info { @apply bg-info text-ink-heading hover:brightness-95 active:brightness-90; }
+
+
+.ui-button--soft { @apply bg-primary-50 text-primary-700 hover:bg-primary-100 active:bg-primary-200; }
+
+
+.ui-button--outline { @apply border-primary-300 bg-surface text-primary-700 hover:border-primary-400 hover:bg-primary-50 active:bg-primary-100; }
+
+
+.ui-button--ghost { @apply text-ink-body hover:bg-canvas hover:text-ink-heading active:bg-primary-50; }
+
+
+.ui-button--text { @apply min-h-10 px-1 text-primary-700 hover:text-primary-800 hover:underline active:text-primary-900; }
+
+
+.ui-button:hover:not(:disabled):not([aria-disabled='true']) { transform: translateY(-1px); }
+
+
+.ui-button:active:not(:disabled):not([aria-disabled='true']),
+  .ui-button.is-active-preview {
+    transform: translateY(0);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-text-primary) 16%, transparent);
+  }
+
+
+.ui-button.is-hover-preview { @apply border-primary-400 bg-primary-700 text-white; transform: translateY(-1px); }
+
+
+.ui-button.is-focus-preview { @apply ring-2 ring-primary-500/50 ring-offset-2; }
+
+
+.ui-button:disabled,
+  .ui-button[aria-disabled='true'] {
+    @apply cursor-not-allowed border-state-disabled bg-canvas text-ink-muted shadow-none;
+    transform: none;
+  }
+
+
+.ui-button--icon-only {
+    @apply h-10 min-h-10 w-10 min-w-10 p-0;
+  }
+
+
+.ui-button--icon-only.ui-button--xs,
+  .ui-button--icon-only.ui-button--sm { @apply h-10 min-h-10 w-10 min-w-10; }
+
+
+.ui-button--icon-only.ui-button--lg { @apply h-11 min-h-11 w-11 min-w-11; }
+
+
+.ui-button--icon-only.ui-button--xl { @apply h-12 min-h-12 w-12 min-w-12; }
+
+
+.ui-button--circle { @apply rounded-pa-full; }
+
+
+.ui-button--full { @apply w-full; }
+
+
+.ui-button--confirm { @apply ring-1 ring-danger/20; }
+
+
+.ui-button-spinner {
+    @apply absolute h-4 w-4 rounded-full border-2 border-current border-r-transparent;
+    animation: ui-spin 0.7s linear infinite;
+  }
+
+
+.ui-button-group {
+    @apply inline-flex flex-wrap;
+  }
+
+
+.ui-button-group .ui-button { @apply rounded-none; }
+
+
+.ui-button-group .ui-button:first-child { @apply rounded-l-pa-md; }
+
+
+.ui-button-group .ui-button:last-child { @apply rounded-r-pa-md; }
+
+
+.ui-button-group .ui-button + .ui-button { @apply -ml-px; }
+
+
+.ui-form-field {
+    @apply min-w-0 font-ui text-body text-ink-body;
+  }
+
+
+.ui-form-label {
+    @apply mb-2 flex min-w-0 flex-col gap-0.5 font-ui text-small font-semibold text-ink-heading;
+  }
+
+
+.ui-form-label--floating {
+    @apply relative z-10 ml-3 -mb-2 w-fit rounded-pa-sm bg-surface px-1 text-xs text-primary-700;
+  }
+
+
+.ui-form-required {
+    color: color-mix(in srgb, var(--color-danger) 76%, var(--color-text-primary));
+  }
+
+
+.ui-form-optional,
+  .ui-form-label-description {
+    @apply font-normal text-ink-muted;
+  }
+
+
+.ui-form-optional {
+    @apply ml-1 text-xs;
+  }
+
+
+.ui-form-label-description {
+    @apply text-helper;
+  }
+
+
+.ui-form-control {
+    @apply flex min-w-0 items-center overflow-hidden rounded-pa-md border font-ui text-ink-body outline-none transition-[border-color,background-color,box-shadow] duration-motion-fast ease-standard;
+  }
+
+
+.ui-form-control--default { @apply border-line bg-surface; }
+
+
+.ui-form-control--filled { @apply border-transparent bg-canvas; }
+
+
+.ui-form-control--outline { @apply border-primary-300 bg-surface; }
+
+
+.ui-form-control--soft { @apply border-primary-100 bg-primary-50/70; }
+
+
+.ui-form-control:hover:not(.ui-form-control--state-disabled) { @apply border-primary-300; }
+
+
+.ui-form-control:focus-within { @apply border-primary-500 ring-2 ring-primary-500/20; }
+
+
+.ui-form-control--state-hover { @apply border-primary-300; }
+
+
+.ui-form-control--state-focus { @apply border-primary-500 ring-2 ring-primary-500/20; }
+
+
+.ui-form-control--state-disabled { @apply cursor-not-allowed border-state-disabled bg-canvas text-ink-muted; }
+
+
+.ui-form-control--state-readonly { @apply border-line bg-canvas/80; }
+
+
+.ui-form-control--state-loading { @apply border-line bg-canvas/60; }
+
+
+.ui-form-control--state-error { border-color: var(--color-danger); box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-danger) 16%, transparent); }
+
+
+.ui-form-control--state-warning { border-color: var(--color-warning); box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-warning) 18%, transparent); }
+
+
+.ui-form-control--state-success { border-color: var(--color-success); box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-success) 14%, transparent); }
+
+
+.ui-form-control--xs { @apply min-h-8 text-xs; }
+
+
+.ui-form-control--sm { @apply min-h-9 text-small; }
+
+
+.ui-form-control--md { @apply min-h-10 text-sm; }
+
+
+.ui-form-control--lg { @apply min-h-11 text-sm; }
+
+
+.ui-form-control--xl { @apply min-h-12 text-base; }
+
+
+.ui-form-input,
+  .ui-form-textarea {
+    @apply min-w-0 flex-1 border-0 bg-transparent font-ui text-inherit text-ink-heading outline-none placeholder:text-ink-muted disabled:cursor-not-allowed disabled:text-ink-muted;
+    box-shadow: none;
+  }
+
+
+.ui-form-control > :where(input, textarea, select),
+  .ui-input-group > :where(input, textarea, select),
+  .ui-input-group-control {
+    border: 0;
+    outline: none;
+    box-shadow: none;
+    background-color: transparent;
+  }
+
+
+.ui-form-control > :where(input, textarea, select):focus,
+  .ui-form-control > :where(input, textarea, select):focus-visible,
+  .ui-input-group > :where(input, textarea, select):focus,
+  .ui-input-group > :where(input, textarea, select):focus-visible,
+  .ui-input-group-control:focus,
+  .ui-input-group-control:focus-visible {
+    border: 0;
+    outline: none;
+    box-shadow: none;
+    background-color: transparent;
+  }
+
+
+.ui-form-control > :where(input, textarea, select)::-moz-focus-inner,
+  .ui-input-group-control::-moz-focus-inner {
+    border: 0;
+    outline: none;
+  }
+
+
+.ui-form-input { @apply h-full px-3; }
+
+
+.ui-form-control:has(.ui-form-icon:first-child) .ui-form-input,
+  .ui-form-control:has(.ui-form-addon:first-child) .ui-form-input { @apply pl-1; }
+
+
+.ui-form-input[type='search']::-webkit-search-cancel-button { display: none; }
+
+
+.ui-form-input[type='search']::-webkit-search-decoration { display: none; }
+
+
+.ui-form-control--textarea {
+    @apply min-h-28 items-start;
+  }
+
+
+.ui-form-textarea {
+    @apply min-h-28 px-3 py-2.5;
+  }
+
+
+.ui-form-textarea--resizable { @apply resize-y; }
+
+
+.ui-form-textarea--fixed { @apply resize-none; }
+
+
+.ui-form-icon {
+    @apply ml-3 flex h-5 w-5 shrink-0 items-center justify-center text-ink-muted;
+  }
+
+
+.ui-form-icon + .ui-form-addon { @apply ml-1; }
+
+
+.ui-form-addon {
+    @apply inline-flex h-full shrink-0 items-center px-3 text-small font-medium text-ink-muted;
+  }
+
+
+.ui-form-addon--prefix { @apply border-r border-line; }
+
+
+.ui-form-addon--suffix { @apply border-l border-line; }
+
+
+.ui-form-action {
+    @apply inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-pa-sm text-ink-muted transition-colors duration-motion-fast hover:bg-primary-50 hover:text-primary-700 disabled:cursor-not-allowed disabled:text-ink-muted;
+  }
+
+
+.ui-form-action--text {
+    @apply w-auto min-w-20 px-3 text-xs font-semibold text-primary-700;
+  }
+
+
+.ui-form-spinner {
+    @apply mr-3 h-4 w-4 shrink-0 rounded-pa-full border-2 border-primary-600 border-r-transparent;
+    animation: ui-spin 0.7s linear infinite;
+  }
+
+
+.ui-form-helper,
+  .ui-form-validation {
+    @apply mt-2 flex min-w-0 items-start gap-1.5 font-ui text-helper;
+  }
+
+
+.ui-form-helper--description,
+  .ui-form-helper--hint,
+  .ui-form-helper--counter,
+  .ui-form-validation--default { @apply text-ink-muted; }
+
+
+.ui-form-helper--counter { @apply justify-end text-right tabular-nums; }
+
+
+.ui-form-helper--error,
+  .ui-form-validation--danger { color: color-mix(in srgb, var(--color-danger) 74%, var(--color-text-primary)); }
+
+
+.ui-form-helper--success,
+  .ui-form-validation--success { color: color-mix(in srgb, var(--color-success) 72%, var(--color-text-primary)); }
+
+
+.ui-form-validation--warning { color: color-mix(in srgb, var(--color-warning) 68%, var(--color-text-primary)); }
+
+
+.ui-form-helper-icon,
+  .ui-form-validation-icon {
+    @apply mt-px h-4 w-4 shrink-0;
+  }
+
+
+.ui-form-validation--inline {
+    @apply mt-0 inline-flex rounded-pa-full bg-surface px-2.5 py-1 shadow-elevation-xs;
+  }
+
+
+.ui-form-layout-grid { @apply grid min-w-0 gap-5 xl:grid-cols-3; }
+
+
+.ui-form-layout-card { @apply min-w-0 rounded-pa-lg border border-line bg-surface p-4 shadow-elevation-xs md:p-5; }
+
+
+.ui-form-layout-card > header { @apply mb-5; }
+
+
+.ui-form-layout-card > header h3 { @apply font-display text-card-title font-semibold text-ink-heading; }
+
+
+.ui-form-layout-card > header p { @apply mt-1 font-ui text-helper text-ink-muted; }
+
+
+.ui-form-layout-fields { @apply grid min-w-0 gap-4; }
+
+
+.ui-form-layout-row { @apply grid min-w-0 gap-2 sm:grid-cols-[minmax(7rem,.55fr)_minmax(0,1fr)] sm:items-center; }
+
+
+.ui-form-layout-row .ui-form-label { @apply mb-0; }
+
+
+.ui-form-layout-actions { @apply mt-5 flex flex-wrap justify-end gap-2 border-t border-line pt-4; }
+
+
+.ui-form-layout-inline { @apply flex min-w-0 flex-wrap items-end gap-2; }
+
+
+.ui-form-layout-inline .ui-form-field { @apply min-w-0 flex-1 sm:min-w-48; }
+
+
+.ui-form-layout-inline .ui-form-label { @apply mb-1.5; }
+
+
+.ui-select-actions .ui-form-spinner { @apply ml-2; }
+
+
+.ui-custom-select.is-open .ui-form-control { @apply border-primary-500 ring-2 ring-primary-500/20; }
+
+
+.ui-searchable-select-control .ui-form-input { @apply pr-0; }
+
+
+.ui-form-field--disabled .ui-multi-select-summary { @apply text-ink-muted; }
+
+
+.ui-date-picker.is-open .ui-form-control {
+    @apply border-primary-500 ring-2 ring-primary-500/20;
+  }
+
+
+.ui-page-state-card > .ui-button { @apply mt-4; }
+}
+
+
+
+@media (prefers-reduced-motion: reduce) {
+.app-content,
+  .navbar-icon-btn,
+  .navbar-search-input,
+  .profile-trigger,
+  .profile-chevron,
+  .dropdown-panel,
+  .dropdown-item,
+  .card-interactive,
+  .foundation-motion-target,
+  .ui-button,
+  .ui-card--interactive,
+  .ui-tooltip-panel,
+  .ui-form-control,
+  .ui-form-action,
+  .ui-input-group,
+  .ui-select-option,
+  .ui-select-chevron,
+  .ui-multi-select-chip button,
+  .ui-multi-select-clear,
+  .ui-choice-input,
+  .ui-choice-card,
+  .ui-switch-track,
+  .ui-switch-thumb,
+  .ui-selectable-card,
+  .ui-date-trigger,
+  .ui-date-nav,
+  .ui-date-day {
+    transition-duration: 0.01ms;
+  }
+
+
+.ui-button-spinner,
+  .ui-form-spinner,
+  .ui-switch-loader { animation-duration: 1.4s; }
+}
+
+
+
+@layer components {
+.advanced-state-heading .ui-form-spinner {
+    @apply mr-0 h-3.5 w-3.5;
+  }
+}
+
+
+
+@layer components {
+.advanced-combobox .ui-form-spinner {
+    @apply mr-0 h-3.5 w-3.5;
+  }
+}
+
+
+
+@layer components {
+.advanced-dual-range > .ui-form-label {
+    @apply absolute left-0 top-0;
+  }
+}
+
+
+
+@layer components {
+.ui-button--outline .loading-spinner.is-button { @apply border-primary-100 border-t-primary-600; }
+
+
+.loading-state.is-retrying .ui-button { @apply cursor-wait; }
+}
+
+
+
+@layer components {
+.layout-compact-form > .ui-button { @apply w-full; }
+}
+
+
+
+@layer components {
+.comm-mail-sidebar > .ui-button { @apply w-full; }
+}
+
+
+
+@layer components {
+html[data-pa-theme='dark'] .navbar-search-input,
+  html[data-pa-theme='dark'] .dropdown-panel { border-color:var(--color-border); background:var(--color-surface); color:var(--color-text-secondary); }
+
+
+html[dir='rtl'] .dropdown-panel { left:0; right:auto; transform-origin:top left; }
+}
+
+
+/* ============================================================================
+ * LANDING PAGE — mengikuti referensi di source/refrences/landing_page_1..5.png
+ *
+ * Kontrak motion diambil langsung dari referensi, bukan dikira-kira:
+ *   easing   cubic-bezier(0.22, 1, 0.36, 1)   (ease-out, tidak agresif)
+ *   durasi   300–700ms
+ *   stagger  60–120ms antar elemen
+ *   trigger  15% dari viewport
+ *
+ * Microinteraction (referensi #3): hover lift 4px + bayangan naik, ikon rotate
+ * 5–10°, underline nav melebar, border kartu jadi biru muda, ring fokus input,
+ * ikon sosial memantul kecil.
+ *
+ * Warna WAJIB lewat token supaya 12 preset x light/dark ikut bekerja.
+ * ========================================================================= */
+
+@layer components {
+/* --- Dasar & token motion ---------------------------------------------- */
+  .landing-page {
+    @apply min-h-screen bg-canvas font-ui text-ink-body antialiased;
+    --lp-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --lp-fast: 300ms;
+    --lp-base: 500ms;
+    --lp-slow: 700ms;
+    --lp-lift: -4px;
+  }
+
+
+  .landing-container { @apply mx-auto w-full max-w-[1200px] px-4 sm:px-6 lg:px-8; }
+
+  .landing-section { @apply w-full py-16 sm:py-20 lg:py-24; }
+
+  .landing-section--tint { background-color: color-mix(in srgb, var(--color-primary) 4%, var(--color-canvas)); }
+
+  /* Pembatas tipis antar bagian (referensi #2: "divider fade-in"). */
+  .landing-divider { @apply h-px w-full; background: linear-gradient(90deg, transparent, var(--color-border), transparent); }
+
+
+  /* ======================= 1. NAVBAR ======================= */
+  .landing-topbar {
+    @apply sticky top-0 z-50 w-full border-b;
+    border-color: transparent;
+    background-color: color-mix(in srgb, var(--color-canvas) 82%, transparent);
+    backdrop-filter: saturate(160%) blur(14px);
+    -webkit-backdrop-filter: saturate(160%) blur(14px);
+    transition: box-shadow var(--lp-fast) var(--lp-ease), border-color var(--lp-fast) var(--lp-ease),
+                background-color var(--lp-fast) var(--lp-ease);
+  }
+
+  /* Referensi #3 "Navbar saat scroll": muncul shadow lembut untuk depth. */
+  .landing-topbar.is-stuck {
+    border-color: var(--color-border);
+    background-color: color-mix(in srgb, var(--color-surface) 92%, transparent);
+    box-shadow: 0 6px 24px -12px rgb(15 23 42 / .18);
+  }
+
+  .landing-topbar-inner { @apply mx-auto flex h-16 w-full max-w-[1200px] items-center gap-8 px-4 sm:px-6 lg:h-[4.5rem] lg:px-8; }
+
+
+  .landing-brand { @apply inline-flex shrink-0 items-center gap-2.5 font-display text-lg font-semibold tracking-wide text-ink-heading; }
+
+  .landing-brand img { @apply h-9 w-auto object-contain; }
+
+
+  .landing-nav { @apply hidden items-center gap-1 lg:flex; }
+
+  .landing-nav a {
+    @apply relative rounded-pa-md px-3 py-2 font-ui text-sm font-medium text-ink-body;
+    transition: color var(--lp-fast) var(--lp-ease);
+  }
+
+  /* Underline nav expand: garis melebar dari tengah, bukan muncul mendadak. */
+  .landing-nav a::after {
+    content: '';
+    @apply pointer-events-none absolute bottom-1 left-1/2 h-0.5 w-0 -translate-x-1/2 rounded-pa-full;
+    background-color: rgb(var(--primary-600));
+    transition: width var(--lp-fast) var(--lp-ease);
+  }
+
+  .landing-nav a:hover { color: rgb(var(--primary-700)); }
+
+  .landing-nav a:hover::after { @apply w-[calc(100%-1.5rem)]; }
+
+  .landing-nav a.is-current { color: rgb(var(--primary-700)); @apply font-semibold; }
+
+  .landing-nav a.is-current::after { @apply w-[calc(100%-1.5rem)]; }
+
+
+  .landing-topbar-actions { @apply ml-auto flex items-center gap-2; }
+
+  .landing-icon-btn {
+    @apply inline-flex h-10 w-10 items-center justify-center rounded-pa-md text-ink-body;
+    transition: background-color var(--lp-fast) var(--lp-ease), color var(--lp-fast) var(--lp-ease),
+                transform var(--lp-fast) var(--lp-ease);
+  }
+
+  .landing-icon-btn:hover { background-color: var(--color-hover); color: rgb(var(--primary-700)); }
+
+  /* Ikon berputar ringan saat hover (referensi #3: "icon rotate ringan 5–10°"). */
+  .landing-icon-btn:hover svg { transform: rotate(8deg); }
+
+  .landing-icon-btn svg { @apply h-5 w-5; transition: transform var(--lp-fast) var(--lp-ease); }
+
+
+  .landing-link-quiet {
+    @apply hidden rounded-pa-md px-3 py-2 font-ui text-sm font-semibold text-ink-body sm:inline-flex;
+    transition: color var(--lp-fast) var(--lp-ease);
+  }
+
+  .landing-link-quiet:hover { color: rgb(var(--primary-700)); }
+
+
+  .landing-burger { @apply inline-flex h-10 w-10 items-center justify-center rounded-pa-md text-ink-body lg:hidden; }
+
+  .landing-burger:hover { background-color: var(--color-hover); }
+
+
+  /* Panel mobile: tinggi dianimasikan lewat grid-rows agar JS tidak perlu
+   * mengukur tinggi konten. */
+  .landing-mobile-panel {
+    @apply grid overflow-hidden lg:hidden;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--lp-fast) var(--lp-ease);
+  }
+
+  .landing-mobile-panel.is-open { grid-template-rows: 1fr; }
+
+  .landing-mobile-panel > div { @apply min-h-0; }
+
+  .landing-mobile-nav {
+    @apply flex flex-col gap-1 border-t px-4 py-4 sm:px-6;
+    border-color: var(--color-border);
+    background-color: var(--color-surface);
+  }
+
+  .landing-mobile-nav a { @apply rounded-pa-md px-3 py-2.5 font-ui text-sm font-medium text-ink-body; }
+
+  .landing-mobile-nav a:hover { background-color: var(--color-hover); color: rgb(var(--primary-700)); }
+
+  .landing-mobile-nav .ui-button { @apply mt-2 w-full; }
+
+
+  /* ======================= 2. TOMBOL ======================= */
+  /* Referensi #3: hover lift 4px + shadow naik, active pressed 1px + lebih
+   * gelap, disabled opacity 40%. Tidak ada glow biru pada keadaan terpilih —
+   * konsisten dengan keputusan template. */
+  .landing-btn {
+    @apply relative inline-flex min-h-11 items-center justify-center gap-2 overflow-hidden rounded-pa-md px-5 font-ui text-sm font-semibold;
+    transition: transform var(--lp-fast) var(--lp-ease), box-shadow var(--lp-fast) var(--lp-ease),
+                background-color var(--lp-fast) var(--lp-ease), border-color var(--lp-fast) var(--lp-ease);
+  }
+
+  .landing-btn--lg { @apply min-h-[3.25rem] px-7 text-base; }
+
+  .landing-btn:hover { transform: translateY(var(--lp-lift)); }
+
+  .landing-btn:active { transform: translateY(1px); }
+
+  .landing-btn:disabled, .landing-btn[aria-disabled='true'] { @apply pointer-events-none opacity-40; }
+
+  .landing-btn svg { @apply h-4 w-4 shrink-0; transition: transform var(--lp-fast) var(--lp-ease); }
+
+  .landing-btn:hover svg { transform: translateX(3px); }
+
+
+  .landing-btn--primary {
+    background-color: rgb(var(--primary-600));
+    color: var(--color-primary-foreground, #fff);
+    box-shadow: 0 8px 20px -10px rgb(var(--primary-600) / .8);
+  }
+
+  .landing-btn--primary:hover { background-color: rgb(var(--primary-700)); box-shadow: 0 14px 28px -12px rgb(var(--primary-600) / .9); }
+
+  .landing-btn--primary:active { background-color: rgb(var(--primary-800)); }
+
+  /* "Button shine": kilau bergerak kiri→kanan, hanya pada CTA utama. */
+  .landing-btn--primary::before {
+    content: '';
+    @apply pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 -skew-x-12;
+    background: linear-gradient(90deg, transparent, rgb(255 255 255 / .28), transparent);
+    transition: transform var(--lp-slow) var(--lp-ease);
+    transform: translateX(0);
+  }
+
+  .landing-btn--primary:hover::before { transform: translateX(420%); }
+
+
+  .landing-btn--ghost {
+    border: 1px solid var(--color-border);
+    background-color: var(--color-surface);
+    color: var(--color-text-primary);
+  }
+
+  .landing-btn--ghost:hover { border-color: rgb(var(--primary-400)); color: rgb(var(--primary-700)); box-shadow: 0 12px 24px -14px rgb(15 23 42 / .35); }
+
+  .landing-btn--onDark {
+    border: 1px solid rgb(255 255 255 / .38);
+    background-color: transparent;
+    color: #fff;
+  }
+
+  .landing-btn--onDark:hover { background-color: rgb(255 255 255 / .12); border-color: rgb(255 255 255 / .6); }
+
+  .landing-btn--full { @apply w-full; }
+
+
+  /* ======================= 3. HERO ======================= */
+  .landing-hero { @apply relative overflow-hidden pb-16 pt-12 sm:pb-20 sm:pt-16 lg:pb-28 lg:pt-20; }
+
+  .landing-hero::before {
+    content: '';
+    @apply pointer-events-none absolute inset-x-0 top-0 -z-10 h-[42rem];
+    background: radial-gradient(58% 52% at 50% 0%, color-mix(in srgb, var(--color-primary) 15%, transparent) 0%, transparent 74%);
+  }
+
+  .landing-hero-grid { @apply grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.08fr)] lg:gap-14; }
+
+  .landing-hero-copy { @apply max-w-2xl; }
+
+
+  .landing-badge {
+    @apply mb-5 inline-flex items-center gap-2 rounded-pa-full px-3.5 py-1.5 font-ui text-xs font-semibold;
+    background-color: color-mix(in srgb, var(--color-primary) 12%, transparent);
+    /* Bukan --primary-700 langsung: pada preset dengan primary muda (cyan,
+     * emas) warnanya nyaris menyatu dengan latar tint. Dicampur ke arah warna
+     * teks halaman supaya selalu terbaca sambil rona brand tetap terjaga. */
+    color: color-mix(in srgb, var(--color-primary) 45%, var(--color-text-primary));
+    border: 1px solid color-mix(in srgb, var(--color-primary) 22%, transparent);
+  }
+
+  .landing-badge svg { @apply h-3.5 w-3.5; }
+
+
+  .landing-hero-title { @apply font-display text-4xl font-semibold leading-[1.1] text-ink-heading sm:text-5xl lg:text-[3.4rem]; }
+
+  /* Kata yang ditonjolkan pada judul (referensi: "Cepat", "Aman"). */
+  .landing-hero-title em { @apply not-italic; color: rgb(var(--primary-600)); }
+
+  .landing-hero-lead { @apply mt-5 max-w-xl text-base leading-8 text-ink-body sm:text-lg; }
+
+  /* Sebagian bahasa tidak memerlukan kata sambung sebelum kata bertekanan
+   * (Inggris: "Faster", Indonesia: "Lebih Cepat"). Kuncinya dikosongkan pada
+   * bahasa itu, dan span kosongnya disembunyikan agar tidak menyisakan spasi. */
+  .landing-hero-title span:empty { @apply hidden; }
+
+  .landing-hero-actions { @apply mt-8 flex flex-wrap items-center gap-3; }
+
+
+  /* Trust badges: 4 kartu kecil di bawah CTA. */
+  /* Dua kolom, bukan empat: kolom hero selebar ~640px, dipaksa 4 kolom
+   * membuat setiap kartu ~130px dan labelnya pecah jadi tiga baris. */
+  .landing-trust { @apply mt-10 grid gap-3 sm:grid-cols-2; }
+
+  .landing-trust-item {
+    @apply flex items-start gap-3 rounded-pa-lg border p-3.5;
+    border-color: var(--color-border);
+    background-color: var(--color-surface);
+    transition: transform var(--lp-fast) var(--lp-ease), border-color var(--lp-fast) var(--lp-ease),
+                box-shadow var(--lp-fast) var(--lp-ease);
+  }
+
+  .landing-trust-item:hover { transform: translateY(var(--lp-lift)); border-color: rgb(var(--primary-300)); box-shadow: 0 14px 28px -18px rgb(15 23 42 / .4); }
+
+  .landing-trust-icon {
+    @apply flex h-9 w-9 shrink-0 items-center justify-center rounded-pa-md;
+    background-color: color-mix(in srgb, var(--color-primary) 12%, transparent);
+    color: rgb(var(--primary-700));
+  }
+
+  .landing-trust-icon svg { @apply h-4 w-4; }
+
+  .landing-trust-item strong { @apply block font-display text-base font-semibold leading-tight text-ink-heading; }
+
+  /* Harus span DI DALAM span: `.landing-trust-item span` juga menangkap
+   * .landing-trust-icon (yang juga <span> dan anak langsung), lalu menimpa
+   * warnanya jadi abu — ikonnya praktis tak terlihat. */
+  .landing-trust-item span span { @apply mt-0.5 block font-ui text-xs leading-5 text-ink-body; }
+
+
+  /* Baris bukti sosial: avatar bertumpuk + rating. */
+  .landing-proof { @apply mt-7 flex flex-wrap items-center gap-x-4 gap-y-2; }
+
+  .landing-proof-avatars { @apply flex items-center; }
+
+  .landing-proof-avatars img,
+  .landing-proof-avatars span {
+    @apply -ml-2 inline-flex h-9 w-9 items-center justify-center rounded-pa-full border-2 object-cover font-ui text-xs font-semibold first:ml-0;
+    border-color: var(--color-surface);
+    background-color: color-mix(in srgb, var(--color-primary) 16%, var(--color-surface));
+    color: rgb(var(--primary-700));
+  }
+
+  .landing-proof-text { @apply font-ui text-sm text-ink-body; }
+
+  .landing-proof-stars { @apply inline-flex items-center gap-1 font-ui text-sm font-semibold text-ink-heading; }
+
+  .landing-proof-stars svg { @apply h-4 w-4; color: #F5A623; }
+
+
+  /* --- Mockup dashboard + bentuk mengambang ------------------------------- */
+  .landing-hero-visual { @apply relative; }
+
+  .landing-mockup {
+    @apply relative overflow-hidden rounded-pa-2xl border;
+    border-color: var(--color-border);
+    background-color: var(--color-surface);
+    box-shadow: 0 40px 80px -40px rgb(15 23 42 / .45), 0 12px 28px -18px rgb(15 23 42 / .25);
+  }
+
+  .landing-mockup img { @apply block h-auto w-full; }
+
+  /* Dua berkas gambar: terang & gelap. Yang tampil mengikuti appearance aktif
+   * supaya mockup tidak pernah kontras terbalik dengan halamannya. */
+  .landing-mockup [data-appearance='dark'] { @apply hidden; }
+
+  html[data-pa-theme='dark'] .landing-mockup [data-appearance='dark'] { @apply block; }
+
+  html[data-pa-theme='dark'] .landing-mockup [data-appearance='light'] { @apply hidden; }
+
+
+  /* --- Kemiringan 3D mockup hero (referensi #1 & #4) ---------------------
+   *
+   * Dipisah TIGA lapisan karena ketiganya menulis transform dan akan saling
+   * menimpa kalau digabung:
+   *   .landing-hero-visual  -> reveal (transform dianimasikan, lalu 'none')
+   *   .landing-mockup-stage -> parallax (transform inline dari landing.js)
+   *   .landing-mockup--tilt -> kemiringan di sini
+   * Transform yang bersarang saling berkomposisi, jadi ketiganya hidup.
+   *
+   * SELURUH aturan kemiringan dikurung dalam satu @media min-width. Sebelumnya
+   * kemiringan ditulis sebagai bawaan lalu dilepas lewat max-width, tapi aturan
+   * reveal di bawah lebih spesifik dan media query tidak menambah spesifisitas
+   * — akibatnya mobile tetap miring. Mengurung dari sisi min-width membuat
+   * mobile tidak pernah menerima aturannya sama sekali.
+   *
+   * Sudutnya diturunkan dari referensi: tepi atas naik ~2° ke kanan, sisi kiri
+   * condong keluar akibat perspektif. */
+  .landing-mockup-stage {
+@apply relative;
+}
+
+
+  @media (min-width: 1024px) {
+/* Mockup lebih besar dan melewati tepi kanan seperti di referensi;
+     * `.landing-hero` sudah overflow-hidden sehingga limpahannya rapi. */
+    .landing-mockup-stage { width: 118%; perspective: 1800px; }
+
+
+    .landing-mockup--tilt {
+      transform: rotateY(-13deg) rotateX(5deg) rotate(-1.5deg) scale(1.02);
+      transform-origin: 62% 50%;
+      transition: transform var(--lp-slow) var(--lp-ease);
+    }
+
+    /* Menegak sedikit saat disentuh — kesan objek nyata, bukan gambar. */
+    .landing-mockup-stage:hover .landing-mockup--tilt {
+      transform: rotateY(-6deg) rotateX(2deg) rotate(-.5deg) scale(1.03);
+    }
+
+    /* Masuk dari kemiringan lebih dalam lalu mendarat di sudut akhirnya. */
+    [data-landing-anim] .landing-hero-visual.landing-reveal .landing-mockup--tilt {
+      transform: rotateY(-26deg) rotateX(10deg) rotate(-3deg) scale(.94);
+    }
+
+    [data-landing-anim] .landing-hero-visual.landing-reveal.is-visible .landing-mockup--tilt {
+      transform: rotateY(-13deg) rotateX(5deg) rotate(-1.5deg) scale(1.02);
+    }
+}
+
+
+  .landing-float {
+    @apply pointer-events-none absolute inline-flex items-center justify-center rounded-pa-xl;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    box-shadow: 0 18px 36px -20px rgb(15 23 42 / .4);
+    color: rgb(var(--primary-600));
+  }
+
+  .landing-float svg { @apply h-5 w-5; }
+
+  .landing-float--a { @apply -left-4 top-1/4 h-12 w-12; animation: landing-float-loop 3s ease-in-out infinite; }
+
+  .landing-float--b { @apply -right-3 bottom-16 h-14 w-14; animation: landing-float-loop 3s ease-in-out infinite .9s; }
+
+  .landing-float--c { @apply left-10 -bottom-5 h-11 w-11; animation: landing-float-loop 3s ease-in-out infinite 1.7s; }
+
+
+  /* Loop mengambang: translateY -6px ke 6px, persis angka di referensi #1. */
+  @keyframes landing-float-loop {
+    0%, 100% { transform: translateY(-6px); }
+    50%      { transform: translateY(6px); }
+  }
+
+
+  /* ======================= 4. STATS STRIP ======================= */
+  .landing-stats {
+    @apply grid gap-px overflow-hidden rounded-pa-2xl border sm:grid-cols-2 lg:grid-cols-4;
+    border-color: var(--color-border);
+    background-color: var(--color-border);
+  }
+
+  .landing-stat {
+    @apply flex items-start gap-4 p-6;
+    background-color: var(--color-surface);
+    transition: background-color var(--lp-fast) var(--lp-ease);
+  }
+
+  .landing-stat:hover { background-color: color-mix(in srgb, var(--color-primary) 4%, var(--color-surface)); }
+
+  .landing-stat-icon { @apply flex h-11 w-11 shrink-0 items-center justify-center rounded-pa-lg; }
+
+  .landing-stat-icon svg { @apply h-5 w-5; }
+
+  .landing-stat-value { @apply font-display text-2xl font-semibold leading-none text-ink-heading sm:text-3xl; }
+
+  .landing-stat-label { @apply mt-1.5 block font-ui text-sm font-semibold text-ink-heading; }
+
+  .landing-stat-note { @apply mt-1 block font-ui text-xs leading-5 text-ink-body; }
+
+  /* Empat rona ikon berbeda seperti referensi, semuanya diturunkan dari token
+   * semantik supaya ikut berubah di setiap preset. */
+  .landing-stat--a .landing-stat-icon { background-color: color-mix(in srgb, var(--color-primary) 12%, transparent); color: rgb(var(--primary-700)); }
+
+  .landing-stat--b .landing-stat-icon { background-color: color-mix(in srgb, var(--color-success) 14%, transparent); color: var(--color-success); }
+
+  .landing-stat--c .landing-stat-icon { background-color: color-mix(in srgb, var(--color-warning) 16%, transparent); color: var(--color-warning); }
+
+  .landing-stat--d .landing-stat-icon { background-color: color-mix(in srgb, var(--color-danger) 14%, transparent); color: var(--color-danger); }
+
+
+  /* ======================= 5. KEPALA BAGIAN ======================= */
+  .landing-head { @apply mx-auto mb-12 max-w-2xl text-center; }
+
+  .landing-head--start { @apply mx-0 mb-8 text-left; }
+
+  .landing-eyebrow {
+    @apply mb-3 inline-flex items-center gap-2 rounded-pa-full px-3 py-1.5 font-ui text-xs font-semibold uppercase tracking-[0.14em];
+    background-color: color-mix(in srgb, var(--color-primary) 12%, transparent);
+    color: color-mix(in srgb, var(--color-primary) 45%, var(--color-text-primary));
+  }
+
+  .landing-title { @apply font-display text-3xl font-semibold leading-tight text-ink-heading sm:text-4xl; }
+
+  .landing-subtitle { @apply mt-4 text-base leading-7 text-ink-body; }
+
+
+  /* ======================= 6. FEATURE CARDS ======================= */
+  .landing-grid { @apply grid gap-5 sm:grid-cols-2 lg:grid-cols-3; }
+
+  .landing-card {
+    @apply flex h-full flex-col rounded-pa-xl border p-6;
+    border-color: var(--color-border);
+    background-color: var(--color-surface);
+    transition: transform var(--lp-fast) var(--lp-ease), border-color var(--lp-fast) var(--lp-ease),
+                box-shadow var(--lp-fast) var(--lp-ease);
+  }
+
+  /* hover lift 4px + border jadi biru muda + bayangan naik. */
+  .landing-card:hover {
+    transform: translateY(var(--lp-lift));
+    border-color: rgb(var(--primary-300));
+    box-shadow: 0 22px 44px -26px rgb(15 23 42 / .45);
+  }
+
+  .landing-card-icon {
+    @apply mb-4 inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-pa-lg;
+    background-color: color-mix(in srgb, var(--color-primary) 12%, transparent);
+    color: rgb(var(--primary-700));
+    transition: transform var(--lp-fast) var(--lp-ease);
+  }
+
+  .landing-card:hover .landing-card-icon { transform: rotate(8deg); }
+
+  .landing-card-icon svg { @apply h-5 w-5; }
+
+  .landing-card h3 { @apply font-display text-lg font-semibold text-ink-heading; }
+
+  .landing-card p { @apply mt-2 text-sm leading-6 text-ink-body; }
+
+  .landing-card-foot { @apply mt-auto pt-5; }
+
+
+  /* ======================= 7. DASHBOARD PREVIEW ======================= */
+  .landing-preview { @apply grid items-center gap-10 lg:grid-cols-2 lg:gap-14; }
+
+  .landing-preview-list { @apply mt-7 grid gap-3.5; }
+
+  .landing-preview-list li { @apply flex items-start gap-3 font-ui text-sm text-ink-body; }
+
+  .landing-preview-check {
+    @apply mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-pa-sm;
+    background-color: color-mix(in srgb, var(--color-primary) 14%, transparent);
+    color: rgb(var(--primary-700));
+  }
+
+  .landing-preview-check svg { @apply h-3 w-3; }
+
+
+  /* ======================= 8. WORKFLOW ======================= */
+  .landing-workflow { @apply grid gap-5 sm:grid-cols-2 lg:grid-cols-4; }
+
+  .landing-step {
+    @apply relative flex h-full flex-col rounded-pa-xl border p-6;
+    border-color: var(--color-border);
+    background-color: var(--color-surface);
+    transition: transform var(--lp-fast) var(--lp-ease), border-color var(--lp-fast) var(--lp-ease),
+                box-shadow var(--lp-fast) var(--lp-ease);
+  }
+
+  .landing-step:hover { transform: translateY(var(--lp-lift)); border-color: rgb(var(--primary-300)); box-shadow: 0 22px 44px -26px rgb(15 23 42 / .45); }
+
+  .landing-step-no {
+    @apply mb-4 inline-flex h-9 w-9 items-center justify-center rounded-pa-full font-ui text-xs font-bold;
+    /* --primary-600 terlalu muda pada sebagian preset (cyan, emas, abu) untuk
+     * menopang teks putih. --primary-900 tidak ikut ditukar perannya saat dark
+     * mode sehingga tetap gelap di kedua mode — pola yang sama dipakai CTA. */
+    background-color: rgb(var(--primary-900));
+    color: #fff;
+  }
+
+  .landing-step-icon { @apply mb-3 inline-flex h-10 w-10 items-center justify-center rounded-pa-lg;
+    background-color: color-mix(in srgb, var(--color-primary) 10%, transparent);
+    color: rgb(var(--primary-700)); }
+
+  .landing-step-icon svg { @apply h-5 w-5; }
+
+  .landing-step h3 { @apply font-display text-base font-semibold text-ink-heading; }
+
+  .landing-step p { @apply mt-2 text-sm leading-6 text-ink-body; }
+
+  /* Garis penghubung antar langkah, hanya pada layar lebar. */
+  .landing-step:not(:last-child)::after {
+    content: '';
+    @apply pointer-events-none absolute right-0 top-11 hidden h-px w-5 translate-x-full lg:block;
+    background: repeating-linear-gradient(90deg, var(--color-border) 0 4px, transparent 4px 8px);
+  }
+
+
+  /* ======================= 9. PARTNER STRIP ======================= */
+  .landing-partners { @apply relative overflow-hidden; }
+
+  /* Masker tepi supaya logo tidak terpotong mendadak saat keluar-masuk. */
+  .landing-partners::before,
+  .landing-partners::after {
+    content: '';
+    @apply pointer-events-none absolute inset-y-0 z-10 w-16;
+  }
+
+  .landing-partners::before { @apply left-0; background: linear-gradient(90deg, var(--color-canvas), transparent); }
+
+  .landing-partners::after { @apply right-0; background: linear-gradient(270deg, var(--color-canvas), transparent); }
+
+  .landing-partners-track { @apply flex w-max items-center gap-12; animation: landing-marquee 34s linear infinite; }
+
+  .landing-partners:hover .landing-partners-track { animation-play-state: paused; }
+
+  .landing-partner {
+    @apply inline-flex shrink-0 items-center gap-2.5 font-display text-lg font-semibold tracking-tight;
+    /* Logo memang dibuat meredup agar tidak bersaing dengan konten, tapi
+     * jangan sampai turun di bawah AA — teks tetap harus terbaca. */
+    color: var(--color-text-secondary);
+    transition: color var(--lp-fast) var(--lp-ease), opacity var(--lp-fast) var(--lp-ease);
+    opacity: .9;
+  }
+
+  .landing-partner:hover { color: rgb(var(--primary-700)); opacity: 1; }
+
+  .landing-partner svg { @apply h-6 w-6; }
+
+  /* Jalur berisi DUA salinan daftar; bergeser -50% menghasilkan loop tanpa jeda. */
+  @keyframes landing-marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+
+  /* ======================= 10. CTA BANNER ======================= */
+  .landing-cta {
+    @apply relative isolate overflow-hidden rounded-pa-2xl px-6 py-14 text-center sm:px-12;
+    background-color: rgb(var(--primary-900));
+    color: #fff;
+  }
+
+  .landing-cta::before {
+    content: '';
+    @apply pointer-events-none absolute -right-20 -top-28 -z-10 h-80 w-80 rounded-pa-full;
+    background-color: rgb(255 255 255 / .07);
+  }
+
+  .landing-cta::after {
+    content: '';
+    @apply pointer-events-none absolute -bottom-32 -left-16 -z-10 h-80 w-80 rounded-pa-full;
+    background-color: rgb(var(--primary-500) / .28);
+  }
+
+  /* Warna ditulis eksplisit: aturan global memberi h2 warna text-ink-heading
+   * dan itu menang atas warna yang diwariskan induknya. */
+  .landing-cta h2 { @apply font-display text-3xl font-semibold leading-tight sm:text-4xl; color: #fff; }
+
+  .landing-cta p { @apply mx-auto mt-4 max-w-xl text-base leading-7; color: rgb(255 255 255 / .84); }
+
+  .landing-cta-actions { @apply mt-8 flex flex-wrap items-center justify-center gap-3; }
+
+  /* Glow pulse halus berulang (referensi #2: 3s, subtle). */
+  .landing-cta-glow { animation: landing-pulse 4s var(--lp-ease) infinite; }
+
+  @keyframes landing-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgb(255 255 255 / .22); }
+    50%      { box-shadow: 0 0 0 12px rgb(255 255 255 / 0); }
+  }
+
+
+  /* ======================= 11. FOOTER ======================= */
+  .landing-footer { @apply border-t pt-14; border-color: var(--color-border); background-color: var(--color-surface); }
+
+  .landing-footer-grid { @apply grid gap-10 pb-12 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.5fr)_repeat(3,minmax(0,1fr))_minmax(0,1.4fr)]; }
+
+  .landing-footer-about p { @apply mt-4 max-w-xs text-sm leading-6 text-ink-body; }
+
+  .landing-footer-col h4 { @apply font-ui text-xs font-semibold uppercase tracking-[0.14em] text-ink-muted; }
+
+  .landing-footer-col ul { @apply mt-4 grid gap-2.5; }
+
+  .landing-footer-col a {
+    @apply font-ui text-sm text-ink-body;
+    transition: color var(--lp-fast) var(--lp-ease), padding-left var(--lp-fast) var(--lp-ease);
+  }
+
+  .landing-footer-col a:hover { color: rgb(var(--primary-700)); @apply pl-1; }
+
+
+  /* Newsletter */
+  .landing-newsletter { @apply mt-4 flex gap-2; }
+
+  .landing-newsletter input {
+    @apply min-h-11 w-full rounded-pa-md border px-3.5 font-ui text-sm text-ink-body;
+    border-color: var(--color-border);
+    background-color: var(--color-canvas);
+    transition: border-color var(--lp-fast) var(--lp-ease), box-shadow var(--lp-fast) var(--lp-ease);
+  }
+
+  .landing-newsletter input::placeholder { color: var(--color-text-muted); }
+
+  /* Ring fokus biru (referensi #3: "input focus ring"). */
+  .landing-newsletter input:focus {
+    @apply outline-none;
+    border-color: rgb(var(--primary-500));
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 22%, transparent);
+  }
+
+  .landing-newsletter button { @apply shrink-0; }
+
+  .landing-newsletter-note { @apply mt-2 font-ui text-xs leading-5 text-ink-body; }
+
+
+  .landing-footer-bottom {
+    @apply flex flex-col items-center justify-between gap-4 border-t py-6 font-ui text-xs text-ink-muted sm:flex-row;
+    border-color: var(--color-border);
+  }
+
+  .landing-footer-legal { @apply flex flex-wrap items-center gap-x-5 gap-y-2; }
+
+  .landing-footer-legal a:hover { color: rgb(var(--primary-700)); }
+
+  .landing-social { @apply flex items-center gap-1.5; }
+
+  .landing-social a {
+    @apply inline-flex h-9 w-9 items-center justify-center rounded-pa-md text-ink-muted;
+    transition: transform var(--lp-fast) var(--lp-ease), background-color var(--lp-fast) var(--lp-ease),
+                color var(--lp-fast) var(--lp-ease);
+  }
+
+  /* Memantul kecil saat hover (referensi #3: "footer icon bounce kecil"). */
+  .landing-social a:hover { transform: translateY(-3px); background-color: var(--color-hover); color: rgb(var(--primary-700)); }
+
+  .landing-social svg { @apply h-4 w-4; }
+
+
+  /* ======================= 12. REVEAL SAAT DIGULIR =======================
+   *
+   * PENTING: keadaan tersembunyi TIDAK boleh jadi bawaan. Kalau elemen langsung
+   * opacity-0, maka begitu JS gagal dimuat atau observer tidak sempat mengirim
+   * notifikasi, seluruh konten hilang permanen — kegagalan terburuk untuk
+   * halaman publik. Jadi bawaannya TERLIHAT, dan keadaan tersembunyi baru
+   * berlaku setelah landing.js memasang data-landing-anim pada <body>. */
+  [data-landing-anim] .landing-reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity var(--lp-base) var(--lp-ease), transform var(--lp-base) var(--lp-ease);
+    will-change: opacity, transform;
+  }
+
+  [data-landing-anim] .landing-reveal.is-visible { opacity: 1; transform: none; will-change: auto; }
+
+  /* Arah masuk lain, dipakai bagian preview (referensi #2). */
+  [data-landing-anim] .landing-reveal--left  { transform: translateX(-28px); }
+
+  [data-landing-anim] .landing-reveal--right { transform: translateX(28px); }
+
+  [data-landing-anim] .landing-reveal--scale { transform: scale(.95); }
+
+  [data-landing-anim] .landing-reveal--down  { transform: translateY(-20px); }
+}
+
+
+/* --- Aturan tak berlapis: perlu menang atas utilitas ------------------- */
+
+/* Parallax hanya di desktop (referensi #4: tablet & mobile disederhanakan). */
+@media (max-width: 1199px) {
+.landing-float { animation: none; }
+}
+
+
+/* Hormati permintaan pengguna: kalau animasi diminta dikurangi, matikan
+ * seluruh gerak — bukan sekadar dipercepat — dan pastikan tidak ada konten
+ * yang tertinggal tersembunyi. */
+@media (prefers-reduced-motion: reduce) {
+.landing-page *,
+  .landing-page *::before,
+  .landing-page *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  [data-landing-anim] .landing-reveal { opacity: 1 !important; transform: none !important; }
+}
+
+
+/* ============================================================================
+ * AUTH PAGES — mengikuti source/refrences/auth_page_1..5.png
+ *
+ * Halaman auth di referensi adalah HALAMAN PUBLIK: memakai navbar, strip fitur,
+ * dan footer yang sama dengan landing. Karena itu kelas .landing-* di atas
+ * dipakai ulang apa adanya; blok ini hanya menambah yang khas auth.
+ *
+ * Kontrak motion diambil dari catatan di referensi, bukan dikira-kira:
+ *   durasi   250–350ms
+ *   easing   ease-out-cubic  -> cubic-bezier(0.33, 1, 0.68, 1)
+ *   stagger  80ms antar field
+ *   loop     ornamen 6s yoyo infinite
+ *   shake    3x, amplitudo 6px
+ *   tick     checkbox scale 0.8 -> 1.2 lalu mendarat di 1
+ *   press    tombol scale 0.97
+ *
+ * Warna WAJIB lewat token supaya 12 preset x light/dark ikut bekerja.
+ * ========================================================================= */
+
+@layer components {
+
+  .auth-page {
+    @apply min-h-screen bg-canvas font-ui text-ink-body antialiased;
+    --au-ease: cubic-bezier(0.33, 1, 0.68, 1);
+    --au-fast: 250ms;
+    --au-base: 350ms;
+  }
+
+  /* --- Tata letak dua kolom: naratif kiri, panel form kanan --------------- */
+  .auth-hero { @apply relative overflow-hidden py-12 sm:py-16 lg:py-20; }
+  .auth-hero::before {
+    content: '';
+    @apply pointer-events-none absolute inset-x-0 top-0 -z-10 h-[36rem];
+    background: radial-gradient(58% 50% at 50% 0%, color-mix(in srgb, var(--color-primary) 14%, transparent) 0%, transparent 74%);
+  }
+  .auth-grid { @apply grid items-start gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,26rem)] lg:gap-14; }
+  .auth-grid--wide { @apply lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]; }
+
+  .auth-narrative-title { @apply font-display text-3xl font-semibold leading-tight text-ink-heading sm:text-4xl lg:text-[2.6rem]; }
+  .auth-narrative-title em { @apply not-italic; color: rgb(var(--primary-600)); }
+  .auth-narrative-lead { @apply mt-4 max-w-lg text-base leading-7 text-ink-body; }
+
+  /* Daftar manfaat bercentang di kolom kiri. */
+  .auth-benefits { @apply mt-7 grid gap-4; }
+  .auth-benefits li { @apply flex items-start gap-3; }
+  .auth-benefit-check {
+    @apply mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-pa-full;
+    background-color: rgb(var(--primary-600));
+    color: #fff;
+  }
+  .auth-benefit-check svg { @apply h-3 w-3; }
+  .auth-benefits strong { @apply block font-ui text-sm font-semibold text-ink-heading; }
+  /* Harus span DI DALAM span. `.auth-benefits span` juga menangkap .auth-benefit-check
+   * (sama-sama <span> anak langsung) lalu menimpa warnanya. */
+  .auth-benefits span span { @apply mt-0.5 block font-ui text-sm leading-6 text-ink-body; }
+
+  /* --- Panel form --------------------------------------------------------- */
+  .auth-panel {
+    @apply relative rounded-pa-2xl border p-6 sm:p-8;
+    border-color: var(--color-border);
+    background-color: var(--color-surface);
+    box-shadow: 0 30px 60px -34px rgb(15 23 42 / .35);
+  }
+  /* Menampung logo PA DEV, bukan ikon monokrom — jadi latarnya lembut supaya
+   * warna biru & jingga logo tetap terbaca di mode terang maupun gelap. */
+  .auth-panel-badge {
+    @apply mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-pa-xl border;
+    border-color: var(--color-border);
+    background-color: color-mix(in srgb, var(--color-primary) 8%, var(--color-surface));
+    color: rgb(var(--primary-700));
+  }
+  .auth-panel-badge svg { @apply h-5 w-5; }
+  .auth-panel-badge img { @apply h-8 w-auto object-contain; }
+  /* Lambang merek pihak ketiga: ukuran tetap, warna aslinya tidak diubah token. */
+  .auth-social-btn svg[viewBox='0 0 24 24'] { @apply h-[1.15rem] w-[1.15rem]; }
+  .auth-panel-title { @apply text-center font-display text-xl font-semibold text-ink-heading sm:text-2xl; }
+  .auth-panel-lead { @apply mt-2 text-center font-ui text-sm leading-6 text-ink-body; }
+  .auth-form { @apply mt-6 grid gap-4; }
+
+  /* --- Field ------------------------------------------------------------- */
+  .auth-field { @apply grid gap-1.5; }
+  .auth-label { @apply font-ui text-sm font-semibold text-ink-heading; }
+  .auth-control { @apply relative flex items-center; }
+  .auth-control > svg {
+    @apply pointer-events-none absolute left-3.5 h-4 w-4;
+    color: var(--color-text-muted);
+  }
+  .auth-input {
+    @apply min-h-11 w-full rounded-pa-md border pl-10 pr-3.5 font-ui text-sm text-ink-body;
+    border-color: var(--color-border);
+    background-color: var(--color-canvas);
+    transition: border-color var(--au-fast) var(--au-ease), box-shadow var(--au-fast) var(--au-ease);
+  }
+  .auth-input::placeholder { color: var(--color-text-secondary); }
+  /* Ring fokus biru (referensi #1 nomor 7 & catatan aksesibilitas). */
+  .auth-input:focus {
+    @apply outline-none;
+    border-color: rgb(var(--primary-500));
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 22%, transparent);
+  }
+  .auth-input[aria-invalid='true'] { border-color: var(--color-danger); }
+  .auth-input[aria-invalid='true']:focus { box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-danger) 24%, transparent); }
+  /* Tombol mata ada di dalam field, jadi teks perlu ruang di kanan. */
+  .auth-control:has(.auth-eye) .auth-input { @apply pr-11; }
+  .auth-eye {
+    @apply absolute right-2 inline-flex h-8 w-8 items-center justify-center rounded-pa-sm;
+    color: var(--color-text-muted);
+    transition: color var(--au-fast) var(--au-ease), background-color var(--au-fast) var(--au-ease);
+  }
+  .auth-eye:hover { color: rgb(var(--primary-700)); background-color: var(--color-hover); }
+  .auth-eye svg { @apply h-4 w-4; }
+  .auth-error { @apply font-ui text-xs leading-5; color: var(--color-danger); }
+  .auth-error:empty { @apply hidden; }
+
+  /* Getar horizontal saat validasi gagal — 3x, amplitudo 6px (referensi #1). */
+  .auth-shake { animation: auth-shake 420ms var(--au-ease); }
+  @keyframes auth-shake {
+    0%, 100% { transform: translateX(0); }
+    15%, 48%, 81% { transform: translateX(-6px); }
+    31%, 65%, 92% { transform: translateX(6px); }
+  }
+
+  /* --- Checkbox ----------------------------------------------------------- */
+  .auth-check { @apply flex cursor-pointer items-start gap-2.5 font-ui text-sm text-ink-body; }
+  .auth-check input { @apply sr-only; }
+  .auth-check-box {
+    @apply mt-0.5 flex h-[1.15rem] w-[1.15rem] shrink-0 items-center justify-center rounded-pa-sm border;
+    border-color: var(--color-border);
+    background-color: var(--color-canvas);
+    transition: background-color var(--au-fast) var(--au-ease), border-color var(--au-fast) var(--au-ease);
+  }
+  .auth-check-box svg { @apply h-3 w-3 opacity-0; color: #fff; transition: opacity var(--au-fast) var(--au-ease); }
+  .auth-check input:checked + .auth-check-box {
+    background-color: rgb(var(--primary-600));
+    border-color: rgb(var(--primary-600));
+    /* Tick memantul: 0.8 -> 1.2 -> 1 (referensi #1 nomor 8). */
+    animation: auth-tick 320ms var(--au-ease);
+  }
+  .auth-check input:checked + .auth-check-box svg { @apply opacity-100; }
+  .auth-check input:focus-visible + .auth-check-box {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 24%, transparent);
+  }
+  @keyframes auth-tick {
+    0%   { transform: scale(.8); }
+    55%  { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+
+  .auth-row { @apply flex flex-wrap items-center justify-between gap-3; }
+  /* Bukan --primary-700 langsung: pada preset dengan primary muda (cyan,
+   * emas, abu) warnanya turun di bawah AA saat di atas surface terang.
+   * Dicampur ke arah warna teks halaman — tetap berona brand, tetap terbaca. */
+  .auth-link { @apply font-ui text-sm font-semibold; color: color-mix(in srgb, var(--color-primary) 52%, var(--color-text-primary)); }
+  .auth-link:hover { @apply underline; }
+
+  /* --- Banner peringatan / error ------------------------------------------ */
+  .auth-banner {
+    @apply flex items-start gap-3 rounded-pa-md border p-3.5 font-ui text-sm;
+    /* Muncul dari atas: translateY -8px + fade (referensi #1 nomor 6). */
+    animation: auth-slide-down var(--au-base) var(--au-ease);
+  }
+  .auth-banner svg { @apply mt-0.5 h-4 w-4 shrink-0; }
+  .auth-banner-close { @apply ml-auto shrink-0 rounded-pa-sm p-0.5; }
+  .auth-banner-close:hover { background-color: rgb(0 0 0 / .06); }
+  .auth-banner--error {
+    border-color: color-mix(in srgb, var(--color-danger) 40%, transparent);
+    background-color: color-mix(in srgb, var(--color-danger) 10%, var(--color-surface));
+    color: color-mix(in srgb, var(--color-danger) 62%, var(--color-text-primary));
+  }
+  .auth-banner--info {
+    border-color: color-mix(in srgb, var(--color-info, var(--color-primary)) 34%, transparent);
+    background-color: color-mix(in srgb, var(--color-info, var(--color-primary)) 8%, var(--color-surface));
+    color: color-mix(in srgb, var(--color-info, var(--color-primary)) 58%, var(--color-text-primary));
+  }
+  .auth-banner--success {
+    border-color: color-mix(in srgb, var(--color-success) 38%, transparent);
+    background-color: color-mix(in srgb, var(--color-success) 10%, var(--color-surface));
+    color: color-mix(in srgb, var(--color-success) 55%, var(--color-text-primary));
+  }
+  @keyframes auth-slide-down {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* --- Pemisah "atau lanjutkan dengan" ------------------------------------ */
+  .auth-divider { @apply my-1 flex items-center gap-3 font-ui text-xs text-ink-body; }
+  .auth-divider::before,
+  .auth-divider::after { content: ''; @apply h-px flex-1; background-color: var(--color-border); }
+
+  /* --- Tombol sosial ------------------------------------------------------ */
+  .auth-social { @apply grid gap-3 sm:grid-cols-2; }
+  .auth-social-btn {
+    @apply inline-flex min-h-11 items-center justify-center gap-2.5 rounded-pa-md border px-4 font-ui text-sm font-semibold;
+    border-color: var(--color-border);
+    background-color: var(--color-surface);
+    color: var(--color-text-primary);
+    transition: transform var(--au-fast) var(--au-ease), border-color var(--au-fast) var(--au-ease),
+                box-shadow var(--au-fast) var(--au-ease);
+  }
+  .auth-social-btn:hover {
+    transform: translateY(-2px);
+    border-color: rgb(var(--primary-400));
+    box-shadow: 0 12px 24px -16px rgb(15 23 42 / .4);
+  }
+  .auth-social-btn:active { transform: translateY(1px); }
+  .auth-social-btn svg { @apply h-4 w-4 shrink-0; }
+
+  /* --- Catatan privasi di kaki panel -------------------------------------- */
+  .auth-note {
+    @apply flex items-start gap-3 rounded-pa-md border p-3.5 font-ui text-xs leading-5;
+    border-color: var(--color-border);
+    background-color: color-mix(in srgb, var(--color-primary) 4%, var(--color-canvas));
+    color: var(--color-text-secondary);
+  }
+  .auth-note svg { @apply mt-px h-4 w-4 shrink-0; color: rgb(var(--primary-700)); }
+  .auth-foot { @apply mt-5 text-center font-ui text-sm text-ink-body; }
+
+  /* --- Meter kekuatan kata sandi (referensi #2) ---------------------------- */
+  .auth-strength { @apply mt-2 grid gap-1.5; }
+  .auth-strength-bars { @apply grid grid-cols-4 gap-1.5; }
+  .auth-strength-bars span {
+    @apply h-1.5 rounded-pa-full;
+    background-color: var(--color-border);
+    /* Bar terisi dari kiri ke kanan, bukan muncul mendadak. */
+    transition: background-color var(--au-base) var(--au-ease);
+  }
+  .auth-strength[data-level='1'] .auth-strength-bars span:nth-child(-n+1),
+  .auth-strength[data-level='2'] .auth-strength-bars span:nth-child(-n+2),
+  .auth-strength[data-level='3'] .auth-strength-bars span:nth-child(-n+3),
+  .auth-strength[data-level='4'] .auth-strength-bars span:nth-child(-n+4) { background-color: var(--auth-strength-color, var(--color-success)); }
+  .auth-strength[data-level='1'] { --auth-strength-color: var(--color-danger); }
+  .auth-strength[data-level='2'] { --auth-strength-color: var(--color-warning); }
+  .auth-strength[data-level='3'] { --auth-strength-color: color-mix(in srgb, var(--color-success) 70%, var(--color-warning)); }
+  .auth-strength[data-level='4'] { --auth-strength-color: var(--color-success); }
+  .auth-strength-label { @apply font-ui text-xs text-ink-body; }
+  .auth-strength-label strong { color: var(--auth-strength-color, var(--color-text-primary)); }
+  /* Syarat kata sandi, tercentang saat terpenuhi. */
+  .auth-rules { @apply mt-2 grid gap-1.5; }
+  .auth-rules li { @apply flex items-center gap-2 font-ui text-xs text-ink-body; }
+  .auth-rules li svg { @apply h-3.5 w-3.5 shrink-0; color: var(--color-text-muted); transition: color var(--au-fast) var(--au-ease); }
+  .auth-rules li.is-met svg { color: var(--color-success); }
+
+  /* --- Kartu alur (referensi #3) ------------------------------------------ */
+  .auth-steps { @apply grid gap-4 sm:grid-cols-2 xl:grid-cols-4; }
+  .auth-step-card {
+    @apply flex h-full flex-col rounded-pa-xl border p-5;
+    border-color: var(--color-border);
+    background-color: var(--color-surface);
+    transition: transform var(--au-fast) var(--au-ease), box-shadow var(--au-fast) var(--au-ease);
+  }
+  .auth-step-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -26px rgb(15 23 42 / .42); }
+  .auth-step-head { @apply mb-4 flex items-center gap-2.5; }
+  .auth-step-no {
+    @apply flex h-7 w-7 items-center justify-center rounded-pa-full font-ui text-xs font-bold;
+    background-color: rgb(var(--primary-900));
+    color: #fff;
+  }
+  /* Harus span DI DALAM span. `.auth-step-head span` juga menangkap .auth-step-no
+   * (sama-sama <span> anak langsung) lalu menimpa warnanya. */
+  .auth-step-head > span:not(.auth-step-no) { @apply font-ui text-sm font-semibold text-ink-heading; }
+
+  /* Rangkaian langkah mendatar di atas kartu. */
+  .auth-flow { @apply mb-8 flex flex-wrap items-center gap-x-3 gap-y-3; }
+  .auth-flow-item { @apply flex items-center gap-2.5; }
+  .auth-flow-no {
+    @apply flex h-8 w-8 items-center justify-center rounded-pa-full font-ui text-xs font-bold;
+    background-color: var(--color-canvas);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+  }
+  .auth-flow-item.is-active .auth-flow-no { background-color: rgb(var(--primary-900)); border-color: transparent; color: #fff; }
+  .auth-flow-item strong { @apply block font-ui text-sm font-semibold text-ink-heading; }
+  /* Harus span DI DALAM span. `.auth-flow-item span` juga menangkap .auth-flow-no
+   * (sama-sama <span> anak langsung) lalu menimpa warnanya. */
+  .auth-flow-item span span { @apply block font-ui text-xs text-ink-body; }
+  .auth-flow-sep { @apply hidden h-px w-8 sm:block; background: repeating-linear-gradient(90deg, var(--color-border) 0 4px, transparent 4px 8px); }
+
+  /* --- Ilustrasi & ornamen mengambang ------------------------------------- */
+  .auth-illus { @apply relative mx-auto flex max-w-md items-center justify-center py-6; }
+  .auth-illus-shape {
+    @apply flex items-center justify-center rounded-pa-2xl border;
+    border-color: var(--color-border);
+    background-color: var(--color-surface);
+    box-shadow: 0 28px 56px -32px rgb(15 23 42 / .4);
+  }
+  .auth-illus-code { @apply font-display font-bold leading-none; color: rgb(var(--primary-600)); }
+  .auth-ornament {
+    @apply pointer-events-none absolute inline-flex items-center justify-center rounded-pa-xl border;
+    border-color: var(--color-border);
+    background-color: var(--color-surface);
+    box-shadow: 0 16px 32px -20px rgb(15 23 42 / .4);
+    color: rgb(var(--primary-600));
+    /* Loop 6s yoyo, translateY -6px <-> +6px (catatan referensi). */
+    animation: auth-float 6s ease-in-out infinite;
+  }
+  .auth-ornament svg { @apply h-5 w-5; }
+  .auth-ornament--a { @apply -left-2 top-6 h-12 w-12; }
+  .auth-ornament--b { @apply -right-1 top-1/3 h-14 w-14; animation-delay: 2s; }
+  .auth-ornament--c { @apply bottom-4 left-8 h-11 w-11; animation-delay: 4s; }
+  @keyframes auth-float {
+    0%, 100% { transform: translateY(-6px); }
+    50%      { transform: translateY(6px); }
+  }
+
+
+  /* --- Pengalih produk PA DEV Suite --------------------------------------- */
+  .landing-switcher .dropdown-panel { @apply right-0 left-auto top-full mt-1; }
+  .landing-switcher-head {
+    @apply block px-3 pb-1.5 pt-1 font-ui text-[0.65rem] font-semibold uppercase tracking-[0.14em];
+    color: var(--color-text-muted);
+  }
+  .landing-switcher .dropdown-item[aria-current='page'] {
+    background-color: color-mix(in srgb, var(--color-primary) 10%, transparent);
+    color: color-mix(in srgb, var(--color-primary) 55%, var(--color-text-primary));
+    @apply font-semibold;
+  }
+
+  /* --- Navigasi bertingkat & chip halaman demo ---------------------------- */
+  /* Tautan nav yang punya submenu. Memakai .dropdown-panel yang SUDAH ADA di
+   * template (dipakai pemilih bahasa), bukan panel baru. */
+  .landing-nav-group { @apply relative inline-flex; }
+  .landing-nav-group > a { @apply inline-flex items-center gap-1; }
+  .landing-nav-group > a svg { @apply h-3.5 w-3.5 transition-transform duration-200; }
+  .landing-nav-group > a[aria-expanded='true'] svg { @apply rotate-180; }
+  .landing-nav-group .dropdown-panel { @apply left-0 top-full mt-1; }
+  .landing-mobile-sub { @apply pl-7 text-ink-body/90; }
+
+  /* Strip halaman demo: chip, bukan deretan teks polos yang menyatu jadi satu
+   * baris panjang dan sulit dipindai. */
+  .auth-page-chips { @apply flex flex-wrap items-center justify-center gap-2; }
+  .auth-page-chip {
+    @apply inline-flex items-center rounded-pa-full border px-3.5 py-1.5 font-ui text-xs font-medium;
+    border-color: var(--color-border);
+    background-color: var(--color-surface);
+    color: var(--color-text-secondary);
+    transition: transform var(--au-fast, 250ms) var(--au-ease, ease),
+                border-color var(--au-fast, 250ms) var(--au-ease, ease),
+                color var(--au-fast, 250ms) var(--au-ease, ease),
+                box-shadow var(--au-fast, 250ms) var(--au-ease, ease);
+  }
+  .auth-page-chip:hover {
+    transform: translateY(-2px);
+    border-color: rgb(var(--primary-400));
+    color: color-mix(in srgb, var(--color-primary) 52%, var(--color-text-primary));
+    box-shadow: 0 10px 20px -14px rgb(15 23 42 / .45);
+  }
+  /* Halaman yang sedang dibuka ditandai, supaya strip ini berfungsi sebagai
+   * penunjuk posisi, bukan sekadar daftar. */
+  .auth-page-chip[aria-current='page'] {
+    border-color: rgb(var(--primary-500));
+    background-color: color-mix(in srgb, var(--color-primary) 10%, var(--color-surface));
+    color: color-mix(in srgb, var(--color-primary) 55%, var(--color-text-primary));
+    @apply font-semibold;
+  }
+
+  /* --- Ilustrasi "layar" untuk halaman status -----------------------------
+   *
+   * Dibangun dari elemen & token yang sudah ada, BUKAN gambar dari internet.
+   * Alasannya penting untuk template yang dijual: aset pihak ketiga membawa
+   * lisensinya sendiri, tidak ikut berubah saat preset tema diganti, dan
+   * menambah berat unduhan. Bingkai ini mengikuti bahasa visual template dan
+   * ikut 12 preset x terang/gelap tanpa kerja tambahan. */
+  .auth-illus-screen {
+    @apply relative flex h-44 w-64 flex-col overflow-hidden rounded-pa-2xl border sm:h-52 sm:w-80;
+    border-color: var(--color-border);
+    background-color: var(--color-surface);
+    box-shadow: 0 30px 60px -34px rgb(15 23 42 / .42);
+  }
+  /* Bilah judul bertitik tiga — metafora jendela aplikasi. */
+  .auth-illus-bar {
+    @apply flex h-8 shrink-0 items-center gap-1.5 border-b px-3.5;
+    border-color: var(--color-border);
+    background-color: color-mix(in srgb, var(--color-primary) 5%, var(--color-canvas));
+  }
+  .auth-illus-bar i { @apply h-2 w-2 rounded-pa-full; background-color: var(--color-border); }
+  .auth-illus-bar i:first-child { background-color: color-mix(in srgb, var(--color-danger) 55%, transparent); }
+  .auth-illus-bar i:nth-child(2) { background-color: color-mix(in srgb, var(--color-warning) 60%, transparent); }
+  .auth-illus-bar i:nth-child(3) { background-color: color-mix(in srgb, var(--color-success) 55%, transparent); }
+  .auth-illus-body { @apply flex flex-1 flex-col items-center justify-center gap-2 px-4; }
+  /* Kode error tampil DI DALAM layar, seperti pada referensi. */
+  .auth-illus-body .auth-illus-code { @apply font-display text-5xl font-bold leading-none sm:text-6xl; color: rgb(var(--primary-600)); }
+  .auth-illus-body svg { @apply h-14 w-14 sm:h-16 sm:w-16; color: rgb(var(--primary-600)); }
+  /* Dua baris "konten" samar agar layar tidak terasa kosong. */
+  .auth-illus-lines { @apply mt-1 flex w-full max-w-[9rem] flex-col items-center gap-1.5; }
+  .auth-illus-lines span { @apply h-1.5 w-full rounded-pa-full; background-color: var(--color-border); }
+  .auth-illus-lines span:last-child { @apply w-2/3; }
+
+  /* --- Halaman status penuh (referensi #4 & #5) --------------------------- */
+  .auth-state { @apply mx-auto max-w-2xl py-10 text-center sm:py-16; }
+  .auth-state-code { @apply font-display text-6xl font-bold leading-none sm:text-7xl; color: rgb(var(--primary-600)); }
+  .auth-state-title { @apply mt-6 font-display text-2xl font-semibold text-ink-heading sm:text-3xl; }
+  .auth-state-title em { @apply not-italic; color: rgb(var(--primary-600)); }
+  .auth-state-lead { @apply mx-auto mt-3 max-w-lg font-ui text-sm leading-6 text-ink-body sm:text-base; }
+  .auth-state-actions { @apply mt-8 flex flex-wrap items-center justify-center gap-3; }
+  .auth-state-chip {
+    @apply mb-4 inline-flex items-center gap-2 rounded-pa-full px-3.5 py-1.5 font-ui text-xs font-semibold uppercase tracking-[0.12em];
+    background-color: color-mix(in srgb, var(--color-primary) 12%, transparent);
+    color: color-mix(in srgb, var(--color-primary) 45%, var(--color-text-primary));
+  }
+  .auth-state-chip--warning {
+    background-color: color-mix(in srgb, var(--color-warning) 16%, transparent);
+    color: color-mix(in srgb, var(--color-warning) 55%, var(--color-text-primary));
+  }
+  .auth-state-note { @apply mt-6 inline-flex items-center gap-2 font-ui text-xs text-ink-body; }
+  .auth-state-note svg { @apply h-3.5 w-3.5; color: var(--color-text-muted); }
+
+  /* Baris bantuan di kaki halaman status. */
+  .auth-help {
+    @apply mt-10 flex flex-col items-center justify-between gap-3 rounded-pa-xl border px-5 py-4 font-ui text-sm sm:flex-row;
+    border-color: var(--color-border);
+    background-color: var(--color-surface);
+  }
+  .auth-help-title { @apply flex items-center gap-2.5 font-semibold text-ink-heading; }
+  .auth-help-title svg { @apply h-4 w-4; color: rgb(var(--primary-700)); }
+  .auth-help-links { @apply flex flex-wrap items-center gap-x-5 gap-y-2 text-ink-body; }
+  .auth-help-links a { @apply inline-flex items-center gap-2; }
+  .auth-help-links a:hover { color: rgb(var(--primary-700)); }
+  .auth-help-links svg { @apply h-3.5 w-3.5; }
+
+  /* --- Countdown (Coming Soon) -------------------------------------------- */
+  .auth-countdown { @apply mx-auto mt-8 grid max-w-md grid-cols-4 gap-3; }
+  .auth-countdown div {
+    @apply rounded-pa-lg border py-3;
+    border-color: var(--color-border);
+    background-color: var(--color-surface);
+  }
+  .auth-countdown strong { @apply block font-display text-2xl font-semibold leading-none text-ink-heading; }
+  .auth-countdown span { @apply mt-1 block font-ui text-xs text-ink-body; }
+  /* Angka berganti dengan balik vertikal singkat. */
+  .auth-countdown strong.is-flip { animation: auth-flip 600ms cubic-bezier(.4,0,.2,1); }
+  @keyframes auth-flip {
+    0%   { transform: rotateX(0); }
+    50%  { transform: rotateX(-90deg); opacity: .35; }
+    100% { transform: rotateX(0); }
+  }
+
+  /* --- Progress (Maintenance) --------------------------------------------- */
+  .auth-progress { @apply mx-auto mt-6 max-w-md; }
+  .auth-progress-track { @apply h-2.5 w-full overflow-hidden rounded-pa-full; background-color: var(--color-border); }
+  .auth-progress-bar {
+    @apply relative h-full rounded-pa-full;
+    background-color: rgb(var(--primary-600));
+    transition: width var(--au-base) var(--au-ease);
+  }
+  /* Kilau berjalan menandakan proses masih berlangsung. */
+  .auth-progress-bar::after {
+    content: '';
+    @apply absolute inset-0;
+    background: linear-gradient(90deg, transparent, rgb(255 255 255 / .38), transparent);
+    animation: auth-shimmer 2s linear infinite;
+  }
+  @keyframes auth-shimmer {
+    from { transform: translateX(-100%); }
+    to   { transform: translateX(100%); }
+  }
+
+  /* --- Pulse untuk ikon sukses -------------------------------------------- */
+  .auth-pulse { animation: auth-pulse 1.6s var(--au-ease) 2; }
+  @keyframes auth-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-success) 45%, transparent); }
+    50%      { box-shadow: 0 0 0 14px color-mix(in srgb, var(--color-success) 0%, transparent); }
+  }
+
+  /* --- Spinner tombol ------------------------------------------------------ */
+  .auth-spinner {
+    @apply inline-block h-4 w-4 shrink-0 rounded-pa-full border-2;
+    border-color: rgb(255 255 255 / .35);
+    border-top-color: #fff;
+    animation: auth-spin 700ms linear infinite;
+  }
+  @keyframes auth-spin { to { transform: rotate(360deg); } }
+
+  /* --- Reveal khas auth ---------------------------------------------------
+   *
+   * Sama seperti landing: keadaan tersembunyi TIDAK boleh jadi bawaan, supaya
+   * halaman tetap utuh terbaca kalau JS gagal dimuat. Disembunyikan hanya
+   * setelah auth.js memasang data-auth-anim. */
+  [data-auth-anim] .auth-reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity var(--au-base) var(--au-ease), transform var(--au-base) var(--au-ease);
+  }
+  [data-auth-anim] .auth-reveal.is-visible { opacity: 1; transform: none; }
+  [data-auth-anim] .auth-reveal--scale { transform: scale(.96); }
+  [data-auth-anim] .auth-reveal--down  { transform: translateY(-12px); }
+}
+
+/* Hormati permintaan pengguna: matikan seluruh gerak, dan pastikan tidak ada
+ * konten yang tertinggal tersembunyi. */
+@media (prefers-reduced-motion: reduce) {
+  .auth-page *,
+  .auth-page *::before,
+  .auth-page *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+  [data-auth-anim] .auth-reveal { opacity: 1 !important; transform: none !important; }
+}

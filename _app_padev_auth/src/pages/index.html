@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="PA DEV Auth — Login">
+  <title>Login — PA DEV Auth</title>
+  <link rel="icon" href="./assets/images/brand/pa-dev-logo.png" type="image/png">
+  <link rel="stylesheet" href="./assets/css/app.css">
+  <script src="./assets/js/theme-init.js"></script>
+</head>
+<!--
+  DIHASILKAN dari scripts pembangun halaman auth. Shell (navbar, strip fitur,
+  footer) berasal dari satu sumber supaya 15 halaman tidak saling melenceng.
+
+  CATATAN TAUTAN LINTAS PRODUK
+  ./admin/ menunjuk PA DEV Admin, ../ menunjuk PA DEV Frontpage. Asumsinya
+  ketiganya disajikan dari root yang sama. Kalau berbeda, cukup cari-ganti
+  prefiksnya di berkas pembangun.
+-->
+<body class="auth-page landing-page" data-auth>
+
+
+<main>
+  <section class="auth-hero">
+    <div class="landing-container">
+      <div class="auth-grid">
+
+        <div>
+          <!-- Header halaman ini dilepas atas permintaan pemilik, sehingga tidak
+               ada lagi jalan kembali ke situs. Tautan ini menggantikannya.
+
+               Dibungkus <div> tersendiri, bukan dibiarkan bersebelahan dengan
+               badge: badge memakai inline-flex, sehingga tautan yang juga
+               inline akan naik ke barisnya di layar sempit. Pembungkus blok
+               menjamin tautan selalu punya barisnya sendiri. -->
+          <div class="mb-5 auth-reveal" data-auth-reveal data-auth-delay="40">
+            <a class="auth-link inline-flex items-center gap-2 whitespace-nowrap" href="/">
+              <svg class="shrink-0" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+              <span data-i18n="auth.backHome">Kembali ke beranda</span>
+            </a>
+          </div>
+          <p class="landing-badge auth-reveal" data-auth-reveal data-auth-delay="80"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.2 8.2-8 9-4.8-.8-8-4.5-8-9V6l8-3Z"/><path d="m9 12 2 2 4-4"/></svg><span data-i18n="auth.login.badge">Backend Modern &amp; Terpercaya</span></p>
+          <h1 class="auth-narrative-title auth-reveal" data-auth-reveal data-auth-delay="160">
+            <span data-i18n="auth.login.title1">Selamat Datang Kembali!</span><br>
+            <span data-i18n="auth.login.title2">Kelola</span> <em data-i18n="auth.login.em1">Backend</em> <span data-i18n="auth.login.title3">Anda Lebih</span> <em data-i18n="auth.login.em2">Cepat</em>
+          </h1>
+          <p class="auth-narrative-lead auth-reveal" data-auth-reveal data-auth-delay="240" data-i18n="auth.login.lead">Masuk ke akun Anda untuk mengelola API, data, autentikasi, dan infrastruktur backend dalam satu platform modern.</p>
+        <ul class="auth-benefits auth-reveal" data-auth-reveal data-auth-delay="320">
+          <li><span class="auth-benefit-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg></span>
+            <span><strong data-i18n="auth.ben.readyTitle">API siap pakai & mudah diintegrasi</strong><span data-i18n="auth.ben.readyBody">Dokumentasi lengkap dan SDK untuk bahasa populer.</span></span></li>
+          <li><span class="auth-benefit-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg></span>
+            <span><strong data-i18n="auth.ben.secTitle">Autentikasi aman & terstandar</strong><span data-i18n="auth.ben.secBody">Role-based access, audit log, dan enkripsi menyeluruh.</span></span></li>
+          <li><span class="auth-benefit-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg></span>
+            <span><strong data-i18n="auth.ben.monTitle">Monitoring realtime & analytics</strong><span data-i18n="auth.ben.monBody">Pantau performa dan anomali tanpa alat tambahan.</span></span></li>
+          <li><span class="auth-benefit-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg></span>
+            <span><strong data-i18n="auth.ben.scaTitle">Skalabel & siap production</strong><span data-i18n="auth.ben.scaBody">Tumbuh dari purwarupa sampai beban produksi nyata.</span></span></li>
+        </ul>
+      <div class="landing-trust lg:grid-cols-3 auth-reveal" data-auth-reveal data-auth-delay="400">
+        <div class="landing-trust-item">
+          <span class="landing-trust-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20v-2a4 4 0 0 0-8 0v2M12 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/></svg></span>
+          <span><strong>25K+</strong><span data-i18n="auth.trust.dev">Developer Aktif</span></span>
+        </div>
+        <div class="landing-trust-item">
+          <span class="landing-trust-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg></span>
+          <span><strong>99.9%</strong><span data-i18n="auth.trust.sla">SLA Uptime Terjamin</span></span>
+        </div>
+        <div class="landing-trust-item">
+          <span class="landing-trust-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.2 8.2-8 9-4.8-.8-8-4.5-8-9V6l8-3Z"/></svg></span>
+          <span><strong>ISO 27001</strong><span data-i18n="auth.trust.iso">Sertifikasi Keamanan</span></span>
+        </div>
+        <div class="landing-trust-item">
+          <span class="landing-trust-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span>
+          <span><strong>E2E</strong><span data-i18n="auth.trust.enc">Enkripsi Data Aman</span></span>
+        </div>
+        <div class="landing-trust-item">
+          <span class="landing-trust-icon"><svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l3 6.3 6.9 1-5 4.9 1.2 6.9L12 17.8 5.9 21l1.2-6.9-5-4.9 6.9-1L12 2Z"/></svg></span>
+          <span><strong>4.9/5</strong><span data-i18n="auth.trust.rating">Rating Pengguna</span></span>
+        </div>
+      </div>
+          <p class="mt-4 text-center font-ui text-sm text-ink-body auth-reveal" data-auth-reveal data-auth-delay="480">
+            <span data-i18n="auth.trustedBy">Dipercaya 25.000+ developer di Indonesia</span>
+            <span class="landing-proof-stars ml-2"><svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l3 6.3 6.9 1-5 4.9 1.2 6.9L12 17.8 5.9 21l1.2-6.9-5-4.9 6.9-1L12 2Z"/></svg>4.9/5</span>
+          </p>
+        </div>
+
+        <div class="auth-panel auth-reveal auth-reveal--scale" data-auth-reveal data-auth-delay="240">
+          <span class="auth-panel-badge"><img src="./assets/images/brand/pa-dev-logo.png" alt="Logo PA DEV" width="47" height="36"></span>
+          <h2 class="auth-panel-title" data-i18n="auth.login.panelTitle">Masuk ke Akun Anda</h2>
+          <p class="auth-panel-lead" data-i18n="auth.login.panelLead">Silakan masuk untuk melanjutkan ke dashboard Anda.</p>
+
+          <form class="auth-form" data-auth-form novalidate>
+            <div class="auth-banner auth-banner--error hidden" data-auth-banner role="alert">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><span data-i18n="auth.login.error">Email atau password salah. Silakan coba lagi.</span>
+              <button type="button" class="auth-banner-close" data-auth-banner-close aria-label="Tutup" data-i18n-aria-label="auth.close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+            </div>
+            <div class="auth-banner auth-banner--success hidden" data-auth-success role="status" tabindex="-1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg><span data-i18n="auth.login.success">Demo login berhasil divalidasi. Tidak ada request backend yang dikirim.</span>
+            </div>
+
+        <div class="auth-field auth-reveal" data-auth-reveal data-auth-seq="0">
+          <label class="auth-label" for="login-email" data-i18n="auth.field.email">Email</label>
+          <div class="auth-control"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+            <input class="auth-input" id="login-email" name="login-email" type="email" placeholder="nama@domain.com" data-i18n-placeholder="auth.ph.email" autocomplete="email" aria-invalid="false" required>
+            
+          </div>
+          <p class="auth-error" data-auth-error role="alert"></p>
+        </div>
+        <div class="auth-field auth-reveal" data-auth-reveal data-auth-seq="1">
+          <label class="auth-label" for="login-password" data-i18n="auth.field.password">Password</label>
+          <div class="auth-control" data-auth-password><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+            <input class="auth-input" id="login-password" name="login-password" type="password" placeholder="••••••••••••" data-i18n-placeholder="auth.ph.password" autocomplete="current-password" aria-invalid="false" required>
+            <button type="button" class="auth-eye" aria-pressed="false" aria-label="Tampilkan kata sandi" data-i18n-aria-label="auth.showPassword"><svg data-eye='open' viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.5"/></svg><svg data-eye='shut' class='hidden' viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 3 18 18M10.6 6.2A11 11 0 0 1 12 6c6.5 0 10 6 10 6a17 17 0 0 1-3 3.8M6.6 6.6C3.6 8.5 2 12 2 12s3.5 6 10 6a10 10 0 0 0 3-.4"/></svg></button>
+          </div>
+          <p class="auth-error" data-auth-error role="alert"></p>
+        </div>
+
+            <div class="auth-row auth-reveal" data-auth-reveal data-auth-seq="2">
+              <label class="auth-check">
+                <input type="checkbox" name="remember" checked>
+                <span class="auth-check-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg></span>
+                <span data-i18n="auth.rememberMe">Ingat saya</span>
+              </label>
+              <a class="auth-link" href="./forgot-password.html" data-i18n="auth.forgot">Lupa password?</a>
+            </div>
+
+            <button type="submit" class="landing-btn landing-btn--primary landing-btn--full auth-reveal" data-auth-reveal data-auth-seq="3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg><span data-i18n="auth.action.login">Masuk</span></button>
+
+        <p class="auth-divider"><span data-i18n="auth.orContinue">atau lanjutkan dengan</span></p>
+        <div class="auth-social">
+          <a class="auth-social-btn" href="#" data-auth-oauth="Google" role="button"><svg viewBox="0 0 24 24" aria-hidden="true" class="shrink-0"><path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.44c-.28 1.48-1.12 2.73-2.38 3.58v2.97h3.86c2.26-2.09 3.57-5.17 3.57-8.79Z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-2.97c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96H1.29v3.09C3.26 21.3 7.31 24 12 24Z"/><path fill="#FBBC05" d="M5.27 14.32a7.2 7.2 0 0 1 0-4.64V6.59H1.29a12 12 0 0 0 0 10.82l3.98-3.09Z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.59l3.98 3.09C6.22 6.83 8.87 4.75 12 4.75Z"/></svg><span>Google</span></a>
+          <a class="auth-social-btn" href="#" data-auth-oauth="GitHub" role="button"><svg viewBox="0 0 24 24" aria-hidden="true" class="shrink-0"><path fill="currentColor" d="M12 .5C5.37.5 0 5.87 0 12.5c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58 0-.29-.01-1.05-.02-2.06-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.21.09 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5.99.11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.11-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6.01 0c2.29-1.55 3.3-1.23 3.3-1.23.65 1.66.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.8 5.62-5.48 5.92.43.37.81 1.1.81 2.22 0 1.6-.01 2.89-.01 3.29 0 .32.21.7.82.58A12 12 0 0 0 24 12.5C24 5.87 18.63.5 12 .5Z"/></svg><span>GitHub</span></a>
+        </div>
+        <p class="auth-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.2 8.2-8 9-4.8-.8-8-4.5-8-9V6l8-3Z"/><path d="m9 12 2 2 4-4"/></svg><span data-i18n="auth.privacyNote">Kami tidak akan pernah membagikan data Anda ke pihak ketiga. Seluruh data dienkripsi dan aman bersama kami.</span></p>
+          </form>
+
+          <p class="auth-foot"><span data-i18n="auth.noAccount">Belum punya akun?</span> <a class="auth-link" href="./register.html" data-i18n="auth.registerNow">Daftar sekarang</a></p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+</main>
+
+
+<script src="./assets/js/auth.js" defer></script>
+<script src="./assets/js/i18n.js" defer></script>
+<script src="./assets/js/pages-auth-i18n.js" defer></script>
+<script src="./assets/js/app.js" defer></script>
+</body>
+</html>

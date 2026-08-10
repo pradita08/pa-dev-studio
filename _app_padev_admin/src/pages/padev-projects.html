@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="id">
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Portfolio — PA DEV Studio</title>
+    <link rel="stylesheet" href="./assets/css/app.css">
+    <script src="./assets/js/theme-init.js"></script>
+    <link rel="icon" href="./assets/images/brand/pa-dev-logo.png" type="image/png">
+</head>
+<body>
+<div class="app-shell" data-drawer="closed" data-collapsed="false">
+
+    <a href="#konten-utama"
+       class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-surface focus:px-4 focus:py-2 focus:text-primary-700 focus:shadow-float" data-i18n="navbar.skipToContent">
+        Lewati ke konten utama
+    </a>
+
+    
+<aside id="sidebar-utama" class="app-sidebar" data-sidebar aria-label="Navigasi utama">
+
+    <div class="sidebar-brand flex h-navbar shrink-0 items-center gap-3 px-5">
+        <img src="./assets/images/brand/pa-dev-logo.png"
+             alt="Logo PA&#x20;DEV"
+             class="h-9 w-auto shrink-0 object-contain" width="47" height="36">
+        <span class="sidebar-brand-text truncate text-white">PA DEV</span>
+        <button type="button"
+                class="sidebar-collapse-btn ml-auto hidden h-9 w-9 shrink-0 items-center justify-center rounded-lg
+                       text-primary-200 transition-colors duration-200 hover:bg-white/10 hover:text-white lg:inline-flex"
+                data-collapse-toggle
+                aria-label="Ciutkan atau lebarkan sidebar" data-i18n-aria-label="sidebar.collapseToggle"
+                aria-pressed="false">
+            <svg class="h-5 w-5 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 7l-5 5 5 5M18 7l-5 5 5 5"/></svg>        </button>
+        <button type="button"
+                class="ml-auto inline-flex h-9 w-9 items-center justify-center rounded-lg text-primary-200 transition-colors hover:bg-white/10 hover:text-white lg:hidden"
+                data-drawer-close aria-label="Tutup menu navigasi" data-i18n-aria-label="sidebar.closeMenu">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>        </button>
+    </div>
+
+    <div class="sidebar-brand-divider" aria-hidden="true"></div>
+
+    <nav class="sidebar-nav" aria-label="Theme demo navigation" data-sidebar-canonical="runtime"></nav>
+
+    
+<div class="sidebar-info-wrap">
+    <section class="sidebar-info-card" aria-labelledby="sidebar-info-title">
+        <div class="sidebar-info-heading">
+            <img src="./assets/images/brand/pa-dev-logo.png"
+                 alt=""
+                 class="sidebar-info-logo"
+                 width="68" height="52"
+                 aria-hidden="true">
+            <div class="min-w-0 text-left">
+                <h2 id="sidebar-info-title" class="sidebar-info-title">PA DEV</h2>
+                <p class="sidebar-info-subtitle">Admin Theme</p>
+            </div>
+        </div>
+
+        <div class="sidebar-info-divider" aria-hidden="true"></div>
+
+        <p class="sidebar-info-description" data-i18n="auto.reusable-admin-theme-dengan-shel.568842">
+            Reusable admin theme dengan shell dan komponen PA DEV.
+        </p>
+        <button type="button"
+                class="sidebar-info-action"
+                data-placeholder
+                aria-label="Tentang PA DEV Admin Theme">
+            Tentang Theme
+            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5M12 8v.5"/></svg>        </button>
+    </section>
+</div>
+
+</aside>
+
+    <div class="fixed inset-0 z-30 hidden bg-ink-heading/50 lg:!hidden" data-sidebar-overlay aria-hidden="true"></div>
+
+    <div class="app-content">
+        
+<header class="app-navbar sticky top-0 z-20 border-b border-line bg-canvas/90 backdrop-blur">
+    <div class="mx-auto flex h-navbar w-full max-w-container items-center gap-3 px-4 md:px-6 xl:px-8">
+
+        <button type="button" class="navbar-icon-btn lg:hidden" data-drawer-open
+                aria-label="Buka menu navigasi" data-i18n-aria-label="navbar.openMenu" aria-expanded="false" aria-controls="sidebar-utama">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>        </button>
+
+        
+    <nav aria-label="Breadcrumb" class="hidden min-w-0 lg:block">
+        <ol class="flex items-center gap-2 text-sm">
+                                        <li class="flex min-w-0 items-center gap-2">
+                                                                <a href="./dashboard.html"
+                           class="truncate text-ink-muted transition-colors hover:text-primary-600" data-i18n="breadcrumb.home">Theme Demo</a>
+                                    </li>
+                            <li class="flex min-w-0 items-center gap-2">
+                                            <span class="text-ink-muted" aria-hidden="true">/</span>
+                                                                <span class="truncate font-medium text-ink-heading" aria-current="page">Portfolio</span>
+                                    </li>
+                    </ol>
+    </nav>
+
+        <div class="ml-auto flex items-center gap-1 md:gap-2">
+
+            <label class="navbar-search">
+                <span class="sr-only" data-i18n="common.search">Cari</span>
+                <span class="navbar-search-icon">
+                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>                </span>
+                <input type="search" placeholder="Cari di sini…" data-i18n-placeholder="navbar.search" disabled
+                       title="Pencarian tersedia pada fase berikutnya"
+                       class="navbar-search-input">
+            </label>
+
+            <button type="button" class="navbar-icon-btn md:hidden" aria-label="Cari (segera hadir)" data-placeholder>
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>            </button>
+
+            <div class="relative" data-dropdown>
+                <button type="button" class="navbar-icon-btn" data-dropdown-toggle aria-expanded="false" aria-haspopup="true" aria-label="Ganti bahasa" data-i18n-aria-label="navbar.language">
+                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 3.5 5.5 3.5 9s-1 6.5-3.5 9c-2.5-2.5-3.5-5.5-3.5-9s1-6.5 3.5-9Z"/></svg>
+                </button>
+                <div class="dropdown-panel w-52" data-dropdown-panel role="menu" aria-label="Pilih bahasa" data-i18n-aria-label="navbar.languageMenu">
+                    <button type="button" class="dropdown-item" role="menuitemradio" aria-checked="false" data-locale-choice="en" data-i18n="auto.english.78463a">English</button>
+                    <button type="button" class="dropdown-item" role="menuitemradio" aria-checked="false" data-locale-choice="id" data-i18n="auto.bahasa-indonesia.9a80b4">Bahasa Indonesia</button>
+                    <button type="button" class="dropdown-item" role="menuitemradio" aria-checked="false" data-locale-choice="ms" data-i18n="auto.bahasa-melayu.0339d3">Bahasa Melayu</button>
+                </div>
+            </div>
+
+            <button type="button" class="navbar-icon-btn" aria-label="Ganti tema" data-i18n-aria-label="navbar.theme" data-theme-toggle>
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>            </button>
+
+            <div class="relative" data-dropdown>
+                <button type="button" class="navbar-icon-btn" data-dropdown-toggle
+                        aria-label="Notifikasi, 3 belum dibaca" data-i18n-aria-label="navbar.notifications" aria-expanded="false" aria-haspopup="true">
+                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 4 1.5 5.5 2 6H4c.5-.5 2-2 2-6M10 19a2 2 0 0 0 4 0"/></svg>                    <span class="absolute right-1.5 top-1.5 flex h-2.5 w-2.5 rounded-full bg-danger ring-2 ring-canvas" aria-hidden="true"></span>
+                </button>
+                <div class="dropdown-panel w-72" data-dropdown-panel data-notification-panel role="menu" aria-label="Notifikasi" data-i18n-aria-label="navbar.notifications">
+                    <div class="dropdown-heading">
+                        <p class="dropdown-heading-label" data-i18n="notif.title">Notifikasi</p>
+                        <span class="text-xs font-medium text-ink-muted" data-i18n="notif.newCount">3 baru</span>
+                    </div>
+                    <div class="notification-list" data-notification-state="ready">
+                    <a href="#" class="dropdown-item" role="menuitem" data-placeholder>
+                        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-info/10 text-info"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.25"/><path d="M3.5 19c.9-3 3-4.5 5.5-4.5s4.6 1.5 5.5 4.5M15.5 5.4a3 3 0 1 1 1.6 5.7M16.4 14.7c2.2.4 3.5 1.8 4.1 4.3"/></svg></span>
+                        <span class="min-w-0">
+                            <span class="block truncate font-medium text-ink-heading" data-i18n="demo.notif.order">New order received</span>
+                            <span class="block text-xs text-ink-muted" data-i18n="demo.time.m2">2 menit lalu</span>
+                        </span>
+                    </a>
+                    <a href="#" class="dropdown-item" role="menuitem" data-placeholder>
+                        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-success/10 text-success"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg></span>
+                        <span class="min-w-0">
+                            <span class="block truncate font-medium text-ink-heading" data-i18n="demo.notif.payment">Payment confirmed</span>
+                            <span class="block text-xs text-ink-muted" data-i18n="demo.time.m15">15 menit lalu</span>
+                        </span>
+                    </a>
+                    <a href="#" class="dropdown-item" role="menuitem" data-placeholder>
+                        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-warning/10 text-warning"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5M12 8v.5"/></svg></span>
+                        <span class="min-w-0">
+                            <span class="block truncate font-medium text-ink-heading" data-i18n="demo.notif.campaign">Campaign updated</span>
+                            <span class="block text-xs text-ink-muted" data-i18n="demo.time.h1">1 jam lalu</span>
+                        </span>
+                    </a>
+                    </div>
+                    <div class="notification-skeleton" data-notification-state="loading" role="status" aria-label="Memuat notifikasi" hidden>
+                        <div class="notification-skeleton-row"><span class="shell-skeleton h-9 w-9 shrink-0 rounded-full"></span><span class="min-w-0 flex-1 space-y-2"><span class="shell-skeleton block h-3 w-4/5"></span><span class="shell-skeleton block h-2.5 w-2/5"></span></span></div>
+                        <div class="notification-skeleton-row"><span class="shell-skeleton h-9 w-9 shrink-0 rounded-full"></span><span class="min-w-0 flex-1 space-y-2"><span class="shell-skeleton block h-3 w-3/4"></span><span class="shell-skeleton block h-2.5 w-1/3"></span></span></div>
+                    </div>
+                    <div class="shell-empty-state" data-notification-state="empty" hidden>
+                        <span class="shell-empty-state-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 4 1.5 5.5 2 6H4c.5-.5 2-2 2-6M10 19a2 2 0 0 0 4 0"/></svg></span>
+                        <p class="shell-empty-state-title" data-i18n="notif.empty">Belum ada notifikasi</p>
+                        <p class="shell-empty-state-description" data-i18n="notif.emptyDesc">Pembaruan terbaru akan muncul di sini.</p>
+                    </div>
+                    <p class="dropdown-footnote" data-i18n="notif.footnote">Placeholder — data nyata pada fase berikutnya</p>
+                </div>
+            </div>
+
+            <div class="relative" data-dropdown>
+                <button type="button"
+                        class="profile-trigger"
+                        data-dropdown-toggle aria-expanded="false" aria-haspopup="true" aria-label="Menu profil" data-i18n-aria-label="navbar.profileMenu">
+                    <span class="flex h-9 w-9 items-center justify-center rounded-full bg-primary-600 text-sm font-semibold text-white relative overflow-hidden"><img src="./assets/images/avatars/avatar-01.webp" alt="Alfi Pradita" width="36" height="36" loading="lazy" class="absolute inset-0 h-full w-full object-cover">A</span>
+                    <span class="hidden text-left md:block">
+                        <span class="block text-sm font-semibold text-ink-heading" data-i18n="navbar.previewMode">Preview Mode</span>
+                        <span class="block text-xs text-ink-muted" data-i18n="breadcrumb.home">Theme Demo</span>
+                    </span>
+                    <svg class="profile-chevron hidden h-4 w-4 text-ink-muted md:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>                </button>
+                <div class="dropdown-panel" data-dropdown-panel role="menu" aria-label="Menu profil" data-i18n-aria-label="navbar.profileMenu">
+                    <div class="profile-menu-summary">
+                        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-600 text-sm font-semibold text-white relative overflow-hidden"><img src="./assets/images/avatars/avatar-01.webp" alt="Alfi Pradita" width="36" height="36" loading="lazy" class="absolute inset-0 h-full w-full object-cover">A</span>
+                        <span class="min-w-0"><span class="block truncate text-sm font-semibold text-ink-heading" data-i18n="navbar.previewMode">Preview Mode</span><span class="block truncate text-xs text-ink-muted" data-i18n="breadcrumb.home">Theme Demo</span></span>
+                    </div>
+                    <a href="./profile.html" class="dropdown-item" role="menuitem" >
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M5 20c1-3.5 3.8-5 7-5s6 1.5 7 5"/></svg> <span data-i18n="profile.myProfile">Profil Saya</span>
+                    </a>
+                    <a href="./preferences.html" class="dropdown-item" role="menuitem" >
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h9m4 0h3M4 12h3m4 0h9M4 18h9m4 0h3"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="15" cy="18" r="2"/></svg> <span data-i18n="profile.settings">Theme Settings</span>
+                    </a>
+                    <div class="my-1 border-t border-line" role="separator"></div>
+                    <a href="./login.html" class="dropdown-item text-danger hover:text-danger" role="menuitem" >
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v16h-6M3 12h12M11 8l4 4-4 4"/></svg> <span data-i18n="profile.logout">Keluar</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+        <main id="konten-utama" class="mx-auto w-full max-w-container flex-1 p-4 md:p-6 xl:p-8"
+              data-padev-module="projects">
+
+            <section class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+                <div class="min-w-0">
+                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-primary-600">Real projects</p>
+                    <h1 class="page-title mt-1">Portfolio</h1>
+                    <p class="mt-2 text-sm text-ink-muted">Karya yang tampil pada bagian Projects di landing.</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2" data-padev-actions></div>
+            </section>
+
+            <section class="mt-6 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-center">
+                <label class="relative block">
+                    <span class="sr-only">Cari</span>
+                    <input type="search" class="ui-form-input" placeholder="Cari…" data-padev-search>
+                </label>
+                <select class="ui-form-input" data-padev-filter aria-label="Saring status"></select>
+                <p class="text-sm text-ink-muted" data-padev-summary aria-live="polite"></p>
+            </section>
+
+            <section class="mt-4 rounded-xl border border-line bg-surface shadow-elevation-xs">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm" data-padev-table>
+                        <thead class="border-b border-line bg-canvas text-xs uppercase tracking-wide text-ink-muted">
+                            <tr data-padev-head></tr>
+                        </thead>
+                        <tbody class="divide-y divide-line" data-padev-body></tbody>
+                    </table>
+                </div>
+                <p class="hidden p-8 text-center text-sm text-ink-muted" data-padev-empty>Belum ada data.</p>
+            </section>
+
+        </main>
+
+        
+<footer class="mt-auto border-t border-line">
+    <div class="mx-auto flex w-full max-w-container flex-wrap items-center justify-between gap-2 px-4 py-4 text-xs text-ink-muted md:px-6 xl:px-8">
+        <p data-i18n="footer.copyright">&copy; 2026 PA DEV. Hak cipta dilindungi.</p>
+        <p data-i18n="auto.v1-0-0-middot-pa-dev-framework.c15edb">v1.0.0 &middot; PA DEV Framework</p>
+    </div>
+</footer>
+
+    </div>
+</div>
+
+<script src="./assets/js/sidebar.js" defer></script>
+<script src="./assets/js/app.js" defer></script>
+<script src="./assets/js/navbar-search.js" defer></script>
+<script src="./assets/js/i18n.js" defer></script>
+<script src="./assets/js/auto-i18n.js" defer></script>
+<script src="./assets/js/nav-item-i18n.js" defer></script>
+<script src="./assets/js/dashboard-i18n.js" defer></script>
+<script src="./assets/js/theme-customizer.js" defer></script>
+<script src="./assets/js/padev-admin-crud.js" defer></script>
+</body>
+</html>

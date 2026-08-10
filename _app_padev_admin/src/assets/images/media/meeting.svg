@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" role="img" aria-labelledby="title desc">
+  <title id="title">PA DEV team meeting</title><desc id="desc">Abstract blue illustration of a team collaborating around a shared board.</desc>
+  <rect width="800" height="520" fill="#eff6ff"/>
+  <rect x="120" y="56" width="560" height="270" rx="24" fill="#fff" stroke="#dbeafe" stroke-width="4"/>
+  <rect x="156" y="96" width="200" height="14" rx="7" fill="#1e3a8a"/>
+  <rect x="156" y="128" width="140" height="10" rx="5" fill="#93c5fd"/>
+  <rect x="156" y="168" width="228" height="120" rx="16" fill="#eff6ff"/>
+  <path d="M180 262c34-48 64-22 92-58 18 25 32 30 50 10" fill="none" stroke="#2563eb" stroke-width="8" stroke-linecap="round"/>
+  <g><rect x="416" y="168" width="228" height="34" rx="10" fill="#3b82f6"/><rect x="416" y="212" width="228" height="34" rx="10" fill="#dbeafe"/><rect x="416" y="256" width="164" height="34" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="3"/></g>
+  <rect x="88" y="360" width="624" height="26" rx="13" fill="#dbeafe"/>
+  <g><circle cx="200" cy="428" r="38" fill="#1e3a8a"/><circle cx="200" cy="414" r="14" fill="#93c5fd"/><path d="M172 452c6-16 15-23 28-23s22 7 28 23" fill="#93c5fd"/></g>
+  <g><circle cx="400" cy="428" r="38" fill="#3b82f6"/><circle cx="400" cy="414" r="14" fill="#dbeafe"/><path d="M372 452c6-16 15-23 28-23s22 7 28 23" fill="#dbeafe"/></g>
+  <g><circle cx="600" cy="428" r="38" fill="#93c5fd"/><circle cx="600" cy="414" r="14" fill="#1e3a8a"/><path d="M572 452c6-16 15-23 28-23s22 7 28 23" fill="#1e3a8a"/></g>
+</svg>

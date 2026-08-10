@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" role="img" aria-labelledby="title desc">
+  <title id="title">Dashboard after refinement</title><desc id="desc">Bright refined blue dashboard layout used as the after state of a comparison; same composition as the before state.</desc>
+  <rect width="800" height="520" fill="#eff6ff"/>
+  <rect x="48" y="42" width="704" height="436" rx="28" fill="#fff" stroke="#dbeafe" stroke-width="4"/>
+  <rect x="48" y="42" width="168" height="436" rx="28" fill="#1e3a8a"/>
+  <circle cx="92" cy="90" r="18" fill="#93c5fd"/><rect x="124" y="79" width="58" height="10" rx="5" fill="#dbeafe"/><rect x="124" y="97" width="40" height="8" rx="4" fill="#93c5fd"/>
+  <g fill="#93c5fd"><rect x="82" y="150" width="90" height="9" rx="4"/><rect x="82" y="183" width="104" height="9" rx="4"/><rect x="82" y="216" width="70" height="9" rx="4"/></g>
+  <rect x="252" y="82" width="210" height="116" rx="18" fill="#eff6ff"/>
+  <rect x="486" y="90" width="222" height="108" rx="18" fill="#f8fafc" stroke="#e2e8f0"/>
+  <path d="M278 176c30-24 52-40 84-30 24 8 42-30 79-16" fill="none" stroke="#2563eb" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="532" cy="140" r="32" fill="none" stroke="#3b82f6" stroke-width="12"/><circle cx="532" cy="140" r="32" fill="none" stroke="#93c5fd" stroke-width="12" stroke-dasharray="70 132"/>
+  <g><rect x="252" y="228" width="140" height="70" rx="14" fill="#3b82f6"/><rect x="404" y="236" width="140" height="62" rx="14" fill="#dbeafe"/><rect x="556" y="224" width="152" height="74" rx="14" fill="#1e3a8a"/></g>
+  <g fill="#eff6ff"><rect x="252" y="326" width="456" height="30" rx="10"/><rect x="252" y="366" width="456" height="30" rx="10"/><rect x="252" y="406" width="330" height="30" rx="10"/></g>
+  <g fill="#93c5fd"><rect x="268" y="336" width="120" height="10" rx="5"/><rect x="268" y="376" width="96" height="10" rx="5"/><rect x="268" y="416" width="140" height="10" rx="5"/></g>
+</svg>

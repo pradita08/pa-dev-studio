@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="id">
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard — PA DEV</title>
+    <link rel="stylesheet" href="./assets/css/app.css">
+    <script src="./assets/js/theme-init.js"></script>
+    <link rel="icon" href="./assets/images/brand/pa-dev-logo.png" type="image/png">
+</head>
+<body>
+<div class="app-shell" data-drawer="closed" data-collapsed="false">
+
+    <a href="#konten-utama"
+       class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-surface focus:px-4 focus:py-2 focus:text-primary-700 focus:shadow-float" data-i18n="navbar.skipToContent">
+        Lewati ke konten utama
+    </a>
+
+    
+<aside id="sidebar-utama" class="app-sidebar" data-sidebar aria-label="Navigasi utama">
+
+    <div class="sidebar-brand flex h-navbar shrink-0 items-center gap-3 px-5">
+        <img src="./assets/images/brand/pa-dev-logo.png"
+             alt="Logo PA&#x20;DEV"
+             class="h-9 w-auto shrink-0 object-contain" width="47" height="36">
+        <span class="sidebar-brand-text truncate text-white">PA DEV</span>
+        <button type="button"
+                class="sidebar-collapse-btn ml-auto hidden h-9 w-9 shrink-0 items-center justify-center rounded-lg
+                       text-primary-200 transition-colors duration-200 hover:bg-white/10 hover:text-white lg:inline-flex"
+                data-collapse-toggle
+                aria-label="Ciutkan atau lebarkan sidebar" data-i18n-aria-label="sidebar.collapseToggle"
+                aria-pressed="false">
+            <svg class="h-5 w-5 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 7l-5 5 5 5M18 7l-5 5 5 5"/></svg>        </button>
+        <button type="button"
+                class="ml-auto inline-flex h-9 w-9 items-center justify-center rounded-lg text-primary-200 transition-colors hover:bg-white/10 hover:text-white lg:hidden"
+                data-drawer-close aria-label="Tutup menu navigasi" data-i18n-aria-label="sidebar.closeMenu">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>        </button>
+    </div>
+
+    <div class="sidebar-brand-divider" aria-hidden="true"></div>
+
+    <nav class="sidebar-nav" aria-label="Theme demo navigation" data-sidebar-canonical="runtime"></nav>
+
+    
+<div class="sidebar-info-wrap">
+    <section class="sidebar-info-card" aria-labelledby="sidebar-info-title">
+        <div class="sidebar-info-heading">
+            <img src="./assets/images/brand/pa-dev-logo.png"
+                 alt=""
+                 class="sidebar-info-logo"
+                 width="68" height="52"
+                 aria-hidden="true">
+            <div class="min-w-0 text-left">
+                <h2 id="sidebar-info-title" class="sidebar-info-title">PA DEV</h2>
+                <p class="sidebar-info-subtitle">Admin Theme</p>
+            </div>
+        </div>
+
+        <div class="sidebar-info-divider" aria-hidden="true"></div>
+
+        <p class="sidebar-info-description" data-i18n="auto.reusable-admin-theme-dengan-shel.568842">
+            Reusable admin theme dengan shell dan komponen PA DEV.
+        </p>
+        <button type="button"
+                class="sidebar-info-action"
+                data-placeholder
+                aria-label="Tentang PA DEV Admin Theme">
+            Tentang Theme
+            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5M12 8v.5"/></svg>        </button>
+    </section>
+</div>
+
+</aside>
+
+    <div class="fixed inset-0 z-30 hidden bg-ink-heading/50 lg:!hidden" data-sidebar-overlay aria-hidden="true"></div>
+
+    <div class="app-content">
+        
+<header class="app-navbar sticky top-0 z-20 border-b border-line bg-canvas/90 backdrop-blur">
+    <div class="mx-auto flex h-navbar w-full max-w-container items-center gap-3 px-4 md:px-6 xl:px-8">
+
+        <button type="button" class="navbar-icon-btn lg:hidden" data-drawer-open
+                aria-label="Buka menu navigasi" data-i18n-aria-label="navbar.openMenu" aria-expanded="false" aria-controls="sidebar-utama">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>        </button>
+
+        
+    <nav aria-label="Breadcrumb" class="hidden min-w-0 lg:block">
+        <ol class="flex items-center gap-2 text-sm">
+                                        <li class="flex min-w-0 items-center gap-2">
+                                                                <a href="./dashboard.html"
+                           class="truncate text-ink-muted transition-colors hover:text-primary-600" data-i18n="breadcrumb.home">Theme Demo</a>
+                                    </li>
+                            <li class="flex min-w-0 items-center gap-2">
+                                            <span class="text-ink-muted" aria-hidden="true">/</span>
+                                                                <span class="truncate font-medium text-ink-heading" aria-current="page" data-i18n="nav.dashboard">Dashboard</span>
+                                    </li>
+                    </ol>
+    </nav>
+
+        <div class="ml-auto flex items-center gap-1 md:gap-2">
+
+            <label class="navbar-search">
+                <span class="sr-only" data-i18n="common.search">Cari</span>
+                <span class="navbar-search-icon">
+                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>                </span>
+                <input type="search" placeholder="Cari di sini…" data-i18n-placeholder="navbar.search" disabled
+                       title="Pencarian tersedia pada fase berikutnya"
+                       class="navbar-search-input">
+            </label>
+
+            <button type="button" class="navbar-icon-btn md:hidden" aria-label="Cari (segera hadir)" data-placeholder>
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>            </button>
+
+            <div class="relative" data-dropdown>
+                <button type="button" class="navbar-icon-btn" data-dropdown-toggle aria-expanded="false" aria-haspopup="true" aria-label="Ganti bahasa" data-i18n-aria-label="navbar.language">
+                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 3.5 5.5 3.5 9s-1 6.5-3.5 9c-2.5-2.5-3.5-5.5-3.5-9s1-6.5 3.5-9Z"/></svg>
+                </button>
+                <div class="dropdown-panel w-52" data-dropdown-panel role="menu" aria-label="Pilih bahasa" data-i18n-aria-label="navbar.languageMenu">
+                    <button type="button" class="dropdown-item" role="menuitemradio" aria-checked="false" data-locale-choice="en" data-i18n="auto.english.78463a">English</button>
+                    <button type="button" class="dropdown-item" role="menuitemradio" aria-checked="false" data-locale-choice="id" data-i18n="auto.bahasa-indonesia.9a80b4">Bahasa Indonesia</button>
+                    <button type="button" class="dropdown-item" role="menuitemradio" aria-checked="false" data-locale-choice="ms" data-i18n="auto.bahasa-melayu.0339d3">Bahasa Melayu</button>
+                </div>
+            </div>
+
+            <button type="button" class="navbar-icon-btn" aria-label="Ganti tema" data-i18n-aria-label="navbar.theme" data-theme-toggle>
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>            </button>
+
+            <div class="relative" data-dropdown>
+                <button type="button" class="navbar-icon-btn" data-dropdown-toggle
+                        aria-label="Notifikasi, 3 belum dibaca" data-i18n-aria-label="navbar.notifications" aria-expanded="false" aria-haspopup="true">
+                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 4 1.5 5.5 2 6H4c.5-.5 2-2 2-6M10 19a2 2 0 0 0 4 0"/></svg>                    <span class="absolute right-1.5 top-1.5 flex h-2.5 w-2.5 rounded-full bg-danger ring-2 ring-canvas" aria-hidden="true"></span>
+                </button>
+                <div class="dropdown-panel w-72" data-dropdown-panel data-notification-panel role="menu" aria-label="Notifikasi" data-i18n-aria-label="navbar.notifications">
+                    <div class="dropdown-heading">
+                        <p class="dropdown-heading-label" data-i18n="notif.title">Notifikasi</p>
+                        <span class="text-xs font-medium text-ink-muted" data-i18n="notif.newCount">3 baru</span>
+                    </div>
+                    <div class="notification-list" data-notification-state="ready">
+                    <a href="#" class="dropdown-item" role="menuitem" data-placeholder>
+                        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-info/10 text-info"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.25"/><path d="M3.5 19c.9-3 3-4.5 5.5-4.5s4.6 1.5 5.5 4.5M15.5 5.4a3 3 0 1 1 1.6 5.7M16.4 14.7c2.2.4 3.5 1.8 4.1 4.3"/></svg></span>
+                        <span class="min-w-0">
+                            <span class="block truncate font-medium text-ink-heading" data-i18n="demo.notif.order">New order received</span>
+                            <span class="block text-xs text-ink-muted" data-i18n="demo.time.m2">2 menit lalu</span>
+                        </span>
+                    </a>
+                    <a href="#" class="dropdown-item" role="menuitem" data-placeholder>
+                        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-success/10 text-success"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg></span>
+                        <span class="min-w-0">
+                            <span class="block truncate font-medium text-ink-heading" data-i18n="demo.notif.payment">Payment confirmed</span>
+                            <span class="block text-xs text-ink-muted" data-i18n="demo.time.m15">15 menit lalu</span>
+                        </span>
+                    </a>
+                    <a href="#" class="dropdown-item" role="menuitem" data-placeholder>
+                        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-warning/10 text-warning"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5M12 8v.5"/></svg></span>
+                        <span class="min-w-0">
+                            <span class="block truncate font-medium text-ink-heading" data-i18n="demo.notif.campaign">Campaign updated</span>
+                            <span class="block text-xs text-ink-muted" data-i18n="demo.time.h1">1 jam lalu</span>
+                        </span>
+                    </a>
+                    </div>
+                    <div class="notification-skeleton" data-notification-state="loading" role="status" aria-label="Memuat notifikasi" hidden>
+                        <div class="notification-skeleton-row"><span class="shell-skeleton h-9 w-9 shrink-0 rounded-full"></span><span class="min-w-0 flex-1 space-y-2"><span class="shell-skeleton block h-3 w-4/5"></span><span class="shell-skeleton block h-2.5 w-2/5"></span></span></div>
+                        <div class="notification-skeleton-row"><span class="shell-skeleton h-9 w-9 shrink-0 rounded-full"></span><span class="min-w-0 flex-1 space-y-2"><span class="shell-skeleton block h-3 w-3/4"></span><span class="shell-skeleton block h-2.5 w-1/3"></span></span></div>
+                    </div>
+                    <div class="shell-empty-state" data-notification-state="empty" hidden>
+                        <span class="shell-empty-state-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 4 1.5 5.5 2 6H4c.5-.5 2-2 2-6M10 19a2 2 0 0 0 4 0"/></svg></span>
+                        <p class="shell-empty-state-title" data-i18n="notif.empty">Belum ada notifikasi</p>
+                        <p class="shell-empty-state-description" data-i18n="notif.emptyDesc">Pembaruan terbaru akan muncul di sini.</p>
+                    </div>
+                    <p class="dropdown-footnote" data-i18n="notif.footnote">Placeholder — data nyata pada fase berikutnya</p>
+                </div>
+            </div>
+
+            <div class="relative" data-dropdown>
+                <button type="button"
+                        class="profile-trigger"
+                        data-dropdown-toggle aria-expanded="false" aria-haspopup="true" aria-label="Menu profil" data-i18n-aria-label="navbar.profileMenu">
+                    <span class="flex h-9 w-9 items-center justify-center rounded-full bg-primary-600 text-sm font-semibold text-white relative overflow-hidden"><img src="./assets/images/avatars/avatar-01.webp" alt="Alfi Pradita" width="36" height="36" loading="lazy" class="absolute inset-0 h-full w-full object-cover">A</span>
+                    <span class="hidden text-left md:block">
+                        <span class="block text-sm font-semibold text-ink-heading" data-i18n="navbar.previewMode">Preview Mode</span>
+                        <span class="block text-xs text-ink-muted" data-i18n="breadcrumb.home">Theme Demo</span>
+                    </span>
+                    <svg class="profile-chevron hidden h-4 w-4 text-ink-muted md:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>                </button>
+                <div class="dropdown-panel" data-dropdown-panel role="menu" aria-label="Menu profil" data-i18n-aria-label="navbar.profileMenu">
+                    <div class="profile-menu-summary">
+                        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-600 text-sm font-semibold text-white relative overflow-hidden"><img src="./assets/images/avatars/avatar-01.webp" alt="Alfi Pradita" width="36" height="36" loading="lazy" class="absolute inset-0 h-full w-full object-cover">A</span>
+                        <span class="min-w-0"><span class="block truncate text-sm font-semibold text-ink-heading" data-i18n="navbar.previewMode">Preview Mode</span><span class="block truncate text-xs text-ink-muted" data-i18n="breadcrumb.home">Theme Demo</span></span>
+                    </div>
+                    <a href="./profile.html" class="dropdown-item" role="menuitem" >
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M5 20c1-3.5 3.8-5 7-5s6 1.5 7 5"/></svg> <span data-i18n="profile.myProfile">Profil Saya</span>
+                    </a>
+                    <a href="./preferences.html" class="dropdown-item" role="menuitem" >
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h9m4 0h3M4 12h3m4 0h9M4 18h9m4 0h3"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="15" cy="18" r="2"/></svg> <span data-i18n="profile.settings">Theme Settings</span>
+                    </a>
+                    <div class="my-1 border-t border-line" role="separator"></div>
+                    <a href="./login.html" class="dropdown-item text-danger hover:text-danger" role="menuitem" >
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v16h-6M3 12h12M11 8l4 4-4 4"/></svg> <span data-i18n="profile.logout">Keluar</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+        <main id="konten-utama" class="mx-auto w-full max-w-container flex-1 p-4 md:p-6 xl:p-8">
+
+            <!-- Section 1: dashboard header and actions -->
+            <section aria-labelledby="dashboard-title" class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.72fr)] lg:items-end">
+                <div class="min-w-0">
+                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-primary-600" data-i18n="auto.performance-center.cf7bac">Performance center</p>
+                    <h1 id="dashboard-title" class="page-title mt-1" data-i18n="nav.dashboard">Dashboard</h1>
+                    <p class="mt-1 max-w-2xl text-sm text-ink-muted" data-i18n="auto.ringkasan-performa-bisnis-tren-u.acfa1e">Ringkasan performa bisnis, tren utama, dan aktivitas operasional hari ini.</p>
+                </div>
+                <div class="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center lg:justify-end">
+                    <label class="relative min-w-0 flex-1 sm:max-w-xs">
+                        <span class="sr-only" data-i18n="auto.cari-data-dashboard.9c4ad8">Cari data dashboard</span>
+                        <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted">
+                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+                        </span>
+                        <input type="search" placeholder="Cari data dashboard..."
+                               class="h-10 w-full rounded-lg border border-line bg-surface py-2 pl-9 pr-3 font-ui text-sm text-ink-heading outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-ink-muted focus:border-primary-300 focus:ring-2 focus:ring-primary-500/15">
+                    </label>
+                    <div class="flex shrink-0 gap-2">
+                        <button type="button" data-placeholder class="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-line bg-surface px-3.5 font-ui text-sm font-semibold text-ink-body shadow-elevation-xs transition-colors hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700">
+                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16l-6.2 7v5l-3.6 2v-7z"/></svg>
+                            Filter
+                        </button>
+                        <button type="button" data-placeholder class="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary-600 px-3.5 font-ui text-sm font-semibold text-white shadow-elevation-xs transition-colors hover:bg-primary-700">
+                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 20h14"/></svg>
+                            Export
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 2: KPI cards -->
+            <section aria-label="Key performance indicators" class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                <article class="card card-interactive min-h-[148px] rounded-[18px] border-line/70 p-5 shadow-elevation-md">
+                    <div class="flex items-start gap-3">
+                        <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] bg-primary-50 text-primary-600 ring-1 ring-inset ring-primary-200/60">
+                            <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19V9m6 10V5m6 14v-7m4 7H2"/></svg>
+                        </span>
+                        <div class="min-w-0 flex-1">
+                            <p class="truncate text-xs font-medium text-ink-muted" data-i18n="auto.total-revenue.5d450f">Total Revenue</p>
+                            <div class="mt-1 flex flex-wrap items-center gap-2">
+                                <p class="text-2xl font-bold tabular-nums text-ink-heading">$48.2K</p>
+                                <span class="badge-soft-success">+12.4%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-2.5 flex items-end justify-between gap-3">
+                        <p class="min-w-0 text-xs text-ink-muted" data-i18n="auto.vs-42-8k-bulan-lalu.fce05b">vs. $42.8K bulan lalu</p>
+                        <svg class="h-6 w-[72px] shrink-0 text-primary-600" viewBox="0 0 80 28" fill="none" aria-label="Revenue meningkat"><path d="M2 23 14 18l11 2 12-11 12 5 13-9 16 3" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 27V23l12-5 11 2 12-11 12 5 13-9 16 3v19Z" fill="currentColor" opacity=".08"/></svg>
+                    </div>
+                </article>
+
+                <article class="card card-interactive min-h-[148px] rounded-[18px] border-line/70 p-5 shadow-elevation-md">
+                    <div class="flex items-start gap-3">
+                        <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] bg-success/10 text-success ring-1 ring-inset ring-success/15">
+                            <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></svg>
+                        </span>
+                        <div class="min-w-0 flex-1">
+                            <p class="truncate text-xs font-medium text-ink-muted" data-i18n="auto.completed-orders.9bba32">Completed Orders</p>
+                            <div class="mt-1 flex flex-wrap items-center gap-2">
+                                <p class="text-2xl font-bold tabular-nums text-ink-heading">1,284</p>
+                                <span class="badge-soft-success">+8.2%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-2.5 flex items-end justify-between gap-3">
+                        <p class="min-w-0 text-xs text-ink-muted" data-i18n="auto.97-6-selesai-tepat-waktu.199a55">97.6% selesai tepat waktu</p>
+                        <svg class="h-6 w-[72px] shrink-0 text-success" viewBox="0 0 80 28" fill="none" aria-label="Orders meningkat"><path d="M2 21 13 22l12-7 12 3 12-10 13 3 16-8" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 27v-6l11 1 12-7 12 3 12-10 13 3 16-8v24Z" fill="currentColor" opacity=".08"/></svg>
+                    </div>
+                </article>
+
+                <article class="card card-interactive min-h-[148px] rounded-[18px] border-line/70 p-5 shadow-elevation-md">
+                    <div class="flex items-start gap-3">
+                        <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] bg-warning/10 text-warning ring-1 ring-inset ring-warning/20">
+                            <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h16M6 20v-6m5 6V6m5 14v-9"/></svg>
+                        </span>
+                        <div class="min-w-0 flex-1">
+                            <p class="truncate text-xs font-medium text-ink-muted" data-i18n="auto.unique-visitors.945f17">Unique Visitors</p>
+                            <div class="mt-1 flex flex-wrap items-center gap-2">
+                                <p class="text-2xl font-bold tabular-nums text-ink-heading">24.8K</p>
+                                <span class="badge-soft-success">+16.0%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-2.5 flex items-end justify-between gap-3">
+                        <p class="min-w-0 text-xs text-ink-muted" data-i18n="auto.18-2k-pengguna-kembali.4a11b9">18.2K pengguna kembali</p>
+                        <svg class="h-6 w-[72px] shrink-0 text-warning" viewBox="0 0 80 28" fill="none" aria-label="Visitors meningkat"><path d="M2 24 14 16l11 3 12-8 12 4 13-12 16 4" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 27v-3l12-8 11 3 12-8 12 4L62 3l16 4v20Z" fill="currentColor" opacity=".08"/></svg>
+                    </div>
+                </article>
+
+                <article class="card card-interactive min-h-[148px] rounded-[18px] border-line/70 p-5 shadow-elevation-md">
+                    <div class="flex items-start gap-3">
+                        <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] bg-danger/10 text-danger ring-1 ring-inset ring-danger/15">
+                            <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 19 6v6c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6z"/><path d="m9 12 2 2 4-4"/></svg>
+                        </span>
+                        <div class="min-w-0 flex-1">
+                            <p class="truncate text-xs font-medium text-ink-muted" data-i18n="auto.conversion-rate.e4c3da">Conversion Rate</p>
+                            <div class="mt-1 flex flex-wrap items-center gap-2">
+                                <p class="text-2xl font-bold tabular-nums text-ink-heading">3.24%</p>
+                                <span class="badge-soft-neutral">0.4%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-2.5 flex items-end justify-between gap-3">
+                        <p class="min-w-0 text-xs text-ink-muted" data-i18n="auto.target-bulanan-3-50.8ea63c">Target bulanan 3.50%</p>
+                        <svg class="h-6 w-[72px] shrink-0 text-danger" viewBox="0 0 80 28" fill="none" aria-label="Conversion stabil"><path d="M2 17 14 15l11 2 12-3 12 2 13-1 16-3" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 27V17l12-2 11 2 12-3 12 2 13-1 16-3v15Z" fill="currentColor" opacity=".08"/></svg>
+                    </div>
+                </article>
+            </section>
+
+            <!-- Section 3: analytics and activity -->
+            <section aria-label="Analytics dan aktivitas" class="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,7fr)_minmax(280px,3fr)]">
+                <article class="card min-w-0 rounded-2xl p-5 shadow-elevation-sm md:p-6">
+                    <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                        <div>
+                            <h2 class="font-display text-card-title font-semibold" data-i18n="auto.revenue-analytics.a81588">Revenue Analytics</h2>
+                            <p class="mt-1 text-xs text-ink-muted" data-i18n="auto.pendapatan-dan-target-selama-12.2ba5dc">Pendapatan dan target selama 12 bulan terakhir</p>
+                        </div>
+                        <select aria-label="Periode analytics" class="h-9 rounded-lg border border-line bg-surface px-3 font-ui text-sm text-ink-body outline-none focus:border-primary-300 focus:ring-2 focus:ring-primary-500/15">
+                            <option data-i18n="auto.last-12-months.53a709">Last 12 months</option>
+                            <option data-i18n="auto.last-6-months.71fcee">Last 6 months</option>
+                            <option data-i18n="auto.this-quarter.46d364">This quarter</option>
+                        </select>
+                    </div>
+                    <div class="mt-4 flex flex-wrap items-center gap-4 text-xs text-ink-muted" aria-label="Chart legend">
+                        <span class="inline-flex items-center gap-2"><span class="h-2.5 w-2.5 rounded-full bg-primary-600"></span>Revenue</span>
+                        <span class="inline-flex items-center gap-2"><span class="h-0.5 w-5 bg-success"></span>Target</span>
+                        <span class="ml-auto font-medium text-success" data-i18n="auto.18-4-year-over-year.914ee4">+18.4% year over year</span>
+                    </div>
+                    <div class="mt-4 h-[220px] w-full" role="img" aria-label="Revenue analytics line chart">
+                        <svg class="h-full w-full overflow-visible" viewBox="0 0 760 220" preserveAspectRatio="none">
+                            <g class="stroke-line" stroke-width="1">
+                                <line x1="18" y1="20" x2="748" y2="20"/><line x1="18" y1="65" x2="748" y2="65"/><line x1="18" y1="110" x2="748" y2="110"/><line x1="18" y1="155" x2="748" y2="155"/><line x1="18" y1="200" x2="748" y2="200"/>
+                            </g>
+                            <path d="M18 174 84 153 150 160 216 126 282 139 348 104 414 112 480 78 546 92 612 56 678 69 744 32V200H18Z" class="fill-primary-600/10"/>
+                            <path d="M18 174 84 153 150 160 216 126 282 139 348 104 414 112 480 78 546 92 612 56 678 69 744 32" fill="none" class="stroke-primary-600" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
+                            <path d="M18 163 84 150 150 145 216 132 282 124 348 112 414 101 480 90 546 79 612 67 678 55 744 43" fill="none" class="stroke-success" stroke-width="2" stroke-dasharray="7 6" vector-effect="non-scaling-stroke"/>
+                            <g class="fill-surface stroke-primary-600" stroke-width="2" vector-effect="non-scaling-stroke">
+                                <circle cx="18" cy="174" r="4"/><circle cx="84" cy="153" r="4"/><circle cx="150" cy="160" r="4"/><circle cx="216" cy="126" r="4"/><circle cx="282" cy="139" r="4"/><circle cx="348" cy="104" r="4"/><circle cx="414" cy="112" r="4"/><circle cx="480" cy="78" r="4"/><circle cx="546" cy="92" r="4"/><circle cx="612" cy="56" r="4"/><circle cx="678" cy="69" r="4"/><circle cx="744" cy="32" r="4"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="mt-2 grid grid-cols-6 gap-1 text-center text-[11px] text-ink-muted sm:grid-cols-12">
+                        <span data-i18n="auto.jan.e68564">Jan</span><span data-i18n="auto.feb.ea171d">Feb</span><span data-i18n="auto.mar.7ce6b2">Mar</span><span data-i18n="auto.apr.6d7215">Apr</span><span data-i18n="auto.mei.f2fa6a">Mei</span><span data-i18n="auto.jun.eb4b40">Jun</span><span data-i18n="auto.jul.a2866c">Jul</span><span data-i18n="auto.agu.88d369">Agu</span><span data-i18n="auto.sep.f04aa7">Sep</span><span data-i18n="auto.okt.36c9b1">Okt</span><span data-i18n="auto.nov.343e69">Nov</span><span data-i18n="auto.des.f6f666">Des</span>
+                    </div>
+                </article>
+
+                <article class="card rounded-[18px] border-line/80 p-5 shadow-elevation-sm md:p-6">
+                    <div class="flex items-center justify-between gap-3">
+                        <div>
+                            <h2 class="font-display text-card-title font-semibold" data-i18n="starter.recentActivity">Recent Activity</h2>
+                            <p class="mt-1 text-xs text-ink-muted" data-i18n="auto.update-operasional-terbaru.004ab4">Update operasional terbaru</p>
+                        </div>
+                        <button type="button" data-placeholder class="text-xs font-semibold text-primary-600 hover:text-primary-700" data-i18n="auto.view-all.0b4db2">View all</button>
+                    </div>
+                    <ul class="mt-4 divide-y divide-line">
+                        <li class="flex gap-3 py-3 first:pt-0">
+                            <span class="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-50 text-xs font-semibold text-primary-700">AR<span class="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-surface bg-success"></span></span>
+                            <div class="min-w-0 flex-1"><p class="truncate text-sm font-medium text-ink-heading" data-i18n="demo.notif.order">New order received</p><p class="truncate text-xs text-ink-muted" data-i18n="auto.arif-submitted-order-1024.21e888">Arif submitted order #1024</p></div>
+                            <time class="shrink-0 text-[11px] text-ink-muted">2m</time>
+                        </li>
+                        <li class="flex gap-3 py-3">
+                            <span class="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-success/10 text-xs font-semibold text-success">NS<span class="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-surface bg-success"></span></span>
+                            <div class="min-w-0 flex-1"><p class="truncate text-sm font-medium text-ink-heading" data-i18n="demo.notif.payment">Payment confirmed</p><p class="truncate text-xs text-ink-muted" data-i18n="auto.nisa-verified-invoice-482.9a98de">Nisa verified invoice #482</p></div>
+                            <time class="shrink-0 text-[11px] text-ink-muted">15m</time>
+                        </li>
+                        <li class="flex gap-3 py-3">
+                            <span class="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-warning/10 text-xs font-semibold text-warning">DW<span class="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-surface bg-warning"></span></span>
+                            <div class="min-w-0 flex-1"><p class="truncate text-sm font-medium text-ink-heading" data-i18n="demo.notif.campaign">Campaign updated</p><p class="truncate text-xs text-ink-muted" data-i18n="auto.dewi-published-summer-campaign.0b5d9d">Dewi published summer campaign</p></div>
+                            <time class="shrink-0 text-[11px] text-ink-muted">1h</time>
+                        </li>
+                        <li class="flex gap-3 py-3">
+                            <span class="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-info/10 text-xs font-semibold text-info">RK<span class="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-surface bg-success"></span></span>
+                            <div class="min-w-0 flex-1"><p class="truncate text-sm font-medium text-ink-heading" data-i18n="auto.review-published.1a86cb">Review published</p><p class="truncate text-xs text-ink-muted" data-i18n="auto.raka-approved-customer-review.61772a">Raka approved customer review</p></div>
+                            <time class="shrink-0 text-[11px] text-ink-muted">2h</time>
+                        </li>
+                        <li class="flex gap-3 py-3 pb-0">
+                            <span class="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-danger/10 text-xs font-semibold text-danger">SA<span class="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-surface bg-state-disabled"></span></span>
+                            <div class="min-w-0 flex-1"><p class="truncate text-sm font-medium text-ink-heading" data-i18n="auto.report-generated.cf7f69">Report generated</p><p class="truncate text-xs text-ink-muted" data-i18n="auto.sari-exported-weekly-report.6de6ab">Sari exported weekly report</p></div>
+                            <time class="shrink-0 text-[11px] text-ink-muted">3h</time>
+                        </li>
+                    </ul>
+                </article>
+            </section>
+
+            <!-- Section 4: recent data and donut analytics -->
+            <section aria-label="Recent data dan channel analytics" class="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(280px,1fr)]">
+                <article class="card min-w-0 overflow-hidden rounded-2xl shadow-elevation-sm">
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-line px-5 py-4 md:px-6">
+                        <div><h2 class="font-display text-card-title font-semibold" data-i18n="auto.recent-data.d70b5f">Recent Data</h2><p class="mt-1 text-xs text-ink-muted" data-i18n="auto.transaksi-terbaru-yang-membutuhk.021504">Transaksi terbaru yang membutuhkan perhatian</p></div>
+                        <button type="button" data-placeholder class="text-xs font-semibold text-primary-600 hover:text-primary-700" data-i18n="auto.view-all-records.f3165b">View all records</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full min-w-[640px] text-left text-sm">
+                            <thead class="bg-canvas/60 text-xs font-medium uppercase tracking-wide text-ink-muted">
+                                <tr><th class="px-5 py-3 md:px-6" data-i18n="auto.customer.ce2660">Customer</th><th class="px-4 py-3" data-i18n="common.status">Status</th><th class="px-4 py-3" data-i18n="starter.form.date">Date</th><th class="px-4 py-3" data-i18n="auto.amount.b2f406">Amount</th><th class="px-5 py-3 text-right md:px-6" data-i18n="auto.action.004bf6">Action</th></tr>
+                            </thead>
+                            <tbody class="divide-y divide-line">
+                                <tr class="transition-colors hover:bg-canvas/50"><td class="px-5 py-3 md:px-6"><div class="flex items-center gap-3"><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-50 text-xs font-semibold text-primary-700">AM</span><div><p class="font-medium text-ink-heading" data-i18n="auto.amanda-putri.c1f359">Amanda Putri</p><p class="text-xs text-ink-muted" data-i18n="auto.ord-1048.6b2394">#ORD-1048</p></div></div></td><td class="px-4 py-3"><span class="badge-soft-success" data-i18n="status.completed">Completed</span></td><td class="px-4 py-3 text-ink-muted" data-i18n="auto.16-jul-2026.40a587">16 Jul 2026</td><td class="px-4 py-3 font-medium tabular-nums text-ink-heading">$1,240</td><td class="px-5 py-3 text-right md:px-6"><button type="button" data-placeholder class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-ink-muted hover:bg-primary-50 hover:text-primary-700" aria-label="Aksi untuk Amanda Putri"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg></button></td></tr>
+                                <tr class="transition-colors hover:bg-canvas/50"><td class="px-5 py-3 md:px-6"><div class="flex items-center gap-3"><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-success/10 text-xs font-semibold text-success">BS</span><div><p class="font-medium text-ink-heading" data-i18n="auto.bagus-santoso.d6d165">Bagus Santoso</p><p class="text-xs text-ink-muted" data-i18n="auto.ord-1047.2813fe">#ORD-1047</p></div></div></td><td class="px-4 py-3"><span class="badge-soft-warning" data-i18n="auto.processing.643562">Processing</span></td><td class="px-4 py-3 text-ink-muted" data-i18n="auto.16-jul-2026.40a587">16 Jul 2026</td><td class="px-4 py-3 font-medium tabular-nums text-ink-heading">$860</td><td class="px-5 py-3 text-right md:px-6"><button type="button" data-placeholder class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-ink-muted hover:bg-primary-50 hover:text-primary-700" aria-label="Aksi untuk Bagus Santoso"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg></button></td></tr>
+                                <tr class="transition-colors hover:bg-canvas/50"><td class="px-5 py-3 md:px-6"><div class="flex items-center gap-3"><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-warning/10 text-xs font-semibold text-warning">CL</span><div><p class="font-medium text-ink-heading" data-i18n="auto.citra-lestari.a676cf">Citra Lestari</p><p class="text-xs text-ink-muted" data-i18n="auto.ord-1046.e2d801">#ORD-1046</p></div></div></td><td class="px-4 py-3"><span class="badge-soft-neutral" data-i18n="status.pending">Pending</span></td><td class="px-4 py-3 text-ink-muted" data-i18n="auto.15-jul-2026.b1dec2">15 Jul 2026</td><td class="px-4 py-3 font-medium tabular-nums text-ink-heading">$540</td><td class="px-5 py-3 text-right md:px-6"><button type="button" data-placeholder class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-ink-muted hover:bg-primary-50 hover:text-primary-700" aria-label="Aksi untuk Citra Lestari"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg></button></td></tr>
+                                <tr class="transition-colors hover:bg-canvas/50"><td class="px-5 py-3 md:px-6"><div class="flex items-center gap-3"><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-info/10 text-xs font-semibold text-info">DR</span><div><p class="font-medium text-ink-heading" data-i18n="auto.dimas-ramadhan.c219ec">Dimas Ramadhan</p><p class="text-xs text-ink-muted" data-i18n="auto.ord-1045.560b2b">#ORD-1045</p></div></div></td><td class="px-4 py-3"><span class="badge-soft-success" data-i18n="status.completed">Completed</span></td><td class="px-4 py-3 text-ink-muted" data-i18n="auto.15-jul-2026.b1dec2">15 Jul 2026</td><td class="px-4 py-3 font-medium tabular-nums text-ink-heading">$1,080</td><td class="px-5 py-3 text-right md:px-6"><button type="button" data-placeholder class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-ink-muted hover:bg-primary-50 hover:text-primary-700" aria-label="Aksi untuk Dimas Ramadhan"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg></button></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+
+                <article class="card rounded-2xl p-5 shadow-elevation-sm md:p-6">
+                    <div><h2 class="font-display text-card-title font-semibold" data-i18n="auto.channel-analytics.a5f016">Channel Analytics</h2><p class="mt-1 text-xs text-ink-muted" data-i18n="auto.distribusi-sumber-transaksi.2720df">Distribusi sumber transaksi</p></div>
+                    <div class="mt-5 flex flex-col items-center gap-4 sm:flex-row sm:justify-center xl:flex-col">
+                        <div class="relative h-44 w-44 shrink-0">
+                            <svg class="h-full w-full" viewBox="0 0 140 140" shape-rendering="geometricPrecision" role="img" aria-label="Donut analytics: Organic 56%, Referral 24%, Social 12%, lainnya 8%">
+                                <path d="M 70.000 16.000 A 54 54 0 1 1 60.886 123.225" fill="none" class="stroke-primary-600" stroke-width="15.5" stroke-linecap="butt"/>
+                                <path d="M 56.004 122.155 A 54 54 0 0 1 16.329 64.048" fill="none" class="stroke-success" stroke-width="15.5" stroke-linecap="butt"/>
+                                <path d="M 17.109 59.111 A 54 54 0 0 1 36.968 27.281" fill="none" class="stroke-warning" stroke-width="15.5" stroke-linecap="butt"/>
+                                <path d="M 41.059 24.410 A 54 54 0 0 1 65.007 16.231" fill="none" class="stroke-line" stroke-width="15.5" stroke-linecap="butt"/>
+                            </svg>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center"><span class="text-xl font-bold tabular-nums text-ink-heading">92%</span><span class="text-[10px] font-medium uppercase tracking-wide text-ink-muted" data-i18n="auto.identified.a0d5c2">identified</span></div>
+                        </div>
+                        <div class="w-full space-y-2.5 px-1 sm:max-w-[180px] xl:max-w-none">
+                            <div class="flex items-center justify-between gap-3 text-sm"><span class="inline-flex items-center gap-2 text-ink-body"><span class="h-2 w-2 rounded-full bg-primary-600"></span>Organic</span><span class="font-medium tabular-nums text-ink-heading">56%</span></div>
+                            <div class="flex items-center justify-between gap-3 text-sm"><span class="inline-flex items-center gap-2 text-ink-body"><span class="h-2 w-2 rounded-full bg-success"></span>Referral</span><span class="font-medium tabular-nums text-ink-heading">24%</span></div>
+                            <div class="flex items-center justify-between gap-3 text-sm"><span class="inline-flex items-center gap-2 text-ink-body"><span class="h-2 w-2 rounded-full bg-warning"></span>Social</span><span class="font-medium tabular-nums text-ink-heading">12%</span></div>
+                            <div class="flex items-center justify-between gap-3 text-sm"><span class="inline-flex items-center gap-2 text-ink-body"><span class="h-2 w-2 rounded-full bg-line"></span>Others</span><span class="font-medium tabular-nums text-ink-heading">8%</span></div>
+                        </div>
+                    </div>
+                    <div class="mt-3 rounded-lg border border-line/70 bg-canvas/40 px-3 py-2 text-center"><p class="text-[11px] text-ink-muted" data-i18n="auto.top-performing-channel.b6f614">Top performing channel</p><p class="text-sm font-semibold text-ink-heading" data-i18n="auto.organic-search-26-9k.b9fd52">Organic Search · $26.9K</p></div>
+                </article>
+            </section>
+
+            <!-- Section 5: quick actions -->
+            <section aria-labelledby="quick-actions-title" class="mt-6">
+                <div class="flex items-end justify-between gap-3"><div><h2 id="quick-actions-title" class="font-display text-card-title font-semibold" data-i18n="starter.quickActions">Quick Actions</h2><p class="mt-1 text-xs text-ink-muted" data-i18n="auto.shortcut-untuk-pekerjaan-yang-pa.b92a63">Shortcut untuk pekerjaan yang paling sering dilakukan</p></div></div>
+                <div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
+                    <a href="#" data-placeholder class="group flex min-w-0 items-center gap-3 rounded-xl border border-line bg-surface p-3 shadow-elevation-xs transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-elevation-sm"><span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-50 text-primary-600"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span><span class="truncate text-sm font-medium text-ink-heading" data-i18n="auto.new-order.6810a1">New Order</span></a>
+                    <a href="#" data-placeholder class="group flex min-w-0 items-center gap-3 rounded-xl border border-line bg-surface p-3 shadow-elevation-xs transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-elevation-sm"><span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-success/10 text-success"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3.5 19c.8-3 3-4.5 5.5-4.5s4.7 1.5 5.5 4.5M18 8v6m-3-3h6"/></svg></span><span class="truncate text-sm font-medium text-ink-heading" data-i18n="auto.new-project.18e90c">New Project</span></a>
+                    <a href="#" data-placeholder class="group flex min-w-0 items-center gap-3 rounded-xl border border-line bg-surface p-3 shadow-elevation-xs transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-elevation-sm"><span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-warning/10 text-warning"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19V9m6 10V5m6 14v-7m4 7H2"/></svg></span><span class="truncate text-sm font-medium text-ink-heading" data-i18n="common.analytics">Analytics</span></a>
+                    <a href="#" data-placeholder class="group flex min-w-0 items-center gap-3 rounded-xl border border-line bg-surface p-3 shadow-elevation-xs transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-elevation-sm"><span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-info/10 text-info"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h10l4 4v14H5zM15 3v5h5M8 13h8M8 17h6"/></svg></span><span class="truncate text-sm font-medium text-ink-heading" data-i18n="auto.create-report.b0c504">Create Report</span></a>
+                    <a href="./basic-components.html" class="group flex min-w-0 items-center gap-3 rounded-xl border border-line bg-surface p-3 shadow-elevation-xs transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-elevation-sm"><span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-danger/10 text-danger"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9zM12 12l8-4.5M12 12 4 7.5M12 12v9"/></svg></span><span class="truncate text-sm font-medium text-ink-heading" data-i18n="nav.heading.components">Components</span></a>
+                    <a href="./foundation.html" class="group flex min-w-0 items-center gap-3 rounded-xl border border-line bg-surface p-3 shadow-elevation-xs transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-elevation-sm"><span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-canvas text-ink-body"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h9m4 0h3M4 12h3m4 0h9M4 18h9m4 0h3"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="15" cy="18" r="2"/></svg></span><span class="truncate text-sm font-medium text-ink-heading" data-i18n="nav.foundation">Foundation</span></a>
+                </div>
+            </section>
+
+        </main>
+
+        
+<footer class="mt-auto border-t border-line">
+    <div class="mx-auto flex w-full max-w-container flex-wrap items-center justify-between gap-2 px-4 py-4 text-xs text-ink-muted md:px-6 xl:px-8">
+        <p data-i18n="footer.copyright">&copy; 2026 PA DEV. Hak cipta dilindungi.</p>
+        <p data-i18n="auto.v1-0-0-middot-pa-dev-framework.c15edb">v1.0.0 &middot; PA DEV Framework</p>
+    </div>
+</footer>
+
+    </div>
+</div>
+
+<script src="./assets/js/sidebar.js" defer></script>
+<script src="./assets/js/app.js" defer></script>
+<script src="./assets/js/navbar-search.js" defer></script>
+<script src="./assets/js/i18n.js" defer></script>
+<script src="./assets/js/auto-i18n.js" defer></script>
+<script src="./assets/js/nav-item-i18n.js" defer></script>
+<script src="./assets/js/dashboard-i18n.js" defer></script>
+<script src="./assets/js/theme-customizer.js" defer></script>
+</body>
+</html>

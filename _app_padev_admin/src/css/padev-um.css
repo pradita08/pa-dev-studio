@@ -1,0 +1,343 @@
+/* Komponen halaman User Management, dipindahkan dari `api_bridge_gateway`.
+ *
+ * Sumbernya adalah blok-blok milik gateway sendiri di `src/public/ui-fixes.css`
+ * dan `src/public/padev-tables.css` — bagian yang menambal kekhasan halaman
+ * User Management dan tidak ada di tema PA DEV Admin: susunan dua kolom
+ * formulir, panel izin, galeri ikon menu, dan kartu role.
+ *
+ * Yang TIDAK ikut dipindahkan: seluruh blok gateway yang menyangkut halaman
+ * lain (`dataset-*`, `source-*`, `preview-grid`, `filter-builder`, `postman-*`,
+ * `copy-row`, `key-reveal*`, `sql-*`, `monitoring-*`) dan blok dasar
+ * `.card`/`.button`/`.badge`/`.muted` milik `app.css` gateway. Tema di sini
+ * sudah punya padanannya (`ui-button`, `ui-table-status`, `.card`,
+ * `text-ink-muted`), dan menyalin dasar visual proyek lain berarti dua sistem
+ * desain hidup berdampingan di satu halaman.
+ *
+ * Nilai warna memakai token tema ini (`--color-border`, `--color-text-muted`,
+ * …), bukan token gateway (`--line`, `--muted`, …), sehingga light/dark mode
+ * dan Theme Customizer tetap berlaku tanpa satu pun warna mati di berkas ini.
+ *
+ * Sama seperti `padev-tables.css`: TIDAK ikut Tailwind. Seluruh isinya selektor
+ * turunan tanpa kandidat utility, jadi ia disalin apa adanya oleh
+ * `scripts/build.mjs` dan hanya ditautkan halaman User Management.
+ */
+
+/* ── Primitif susunan yang dipakai markup rujukan ──────────────────────────
+ *
+ * `.card` dan `.account-switch` sudah ada di tema ini, tetapi `.stack`,
+ * `.form-stack`, `.card-head`, `.check-list`, dan `.switch-row` tidak — di
+ * gateway kelimanya berasal dari `app.css` dasarnya sendiri. Supaya markup
+ * rujukan bisa dipakai apa adanya, kelimanya ditulis ulang di sini dengan
+ * token tema ini, bukan disalin beserta nilai gateway.
+ *
+ * Kontrol isian memakai kontrak visual `.ui-form-control` tema (tinggi, radius,
+ * warna garis, cincin fokus) yang dipasang langsung pada `input`/`select`,
+ * karena markup rujukan menaruh kontrolnya di dalam `<label>` tanpa pembungkus.
+ */
+.stack { display: grid; gap: 1.125rem; align-content: start; }
+
+.form-stack { display: flex; flex-direction: column; gap: 1.0625rem; }
+.form-stack h2 {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-family: var(--font-heading);
+  font-size: 1.0625rem;
+  font-weight: 700;
+}
+.form-stack.is-compact { gap: .75rem; }
+.form-stack label,
+.form-grid label {
+  display: grid;
+  min-width: 0;
+  gap: .35rem;
+  color: var(--color-text-primary);
+  font-size: .8rem;
+  font-weight: 650;
+}
+.form-stack label small,
+.form-grid label small {
+  color: var(--color-text-muted);
+  font-size: .72rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.form-stack input:not([type='checkbox']):not([type='radio']),
+.form-stack select,
+.form-grid input:not([type='checkbox']):not([type='radio']),
+.form-grid select {
+  width: 100%;
+  min-width: 0;
+  min-height: 2.5rem;
+  padding: 0 .75rem;
+  border: 1px solid var(--color-border);
+  border-radius: .625rem;
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font: inherit;
+  font-size: .875rem;
+  font-weight: 500;
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+.form-stack input:hover:not(:disabled),
+.form-stack select:hover:not(:disabled),
+.form-grid input:hover:not(:disabled),
+.form-grid select:hover:not(:disabled) { border-color: var(--color-primary); }
+.form-stack input:focus-visible,
+.form-stack select:focus-visible,
+.form-grid input:focus-visible,
+.form-grid select:focus-visible {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 20%, transparent);
+}
+.form-stack input:disabled,
+.form-stack select:disabled,
+.form-grid input:disabled,
+.form-grid select:disabled {
+  background: var(--color-canvas);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}
+/* Slot galat per field. Disembunyikan sampai server mengisinya. */
+.form-stack .field-error,
+.form-grid .field-error { color: var(--color-danger); font-size: .72rem; font-weight: 600; }
+.form-stack .field-error:empty,
+.form-grid .field-error:empty { display: none; }
+
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  margin-bottom: 1.125rem;
+}
+.card-head h2 { margin: 0; }
+.card-head p { margin: .3125rem 0 0; color: var(--color-text-muted); font-size: .8125rem; }
+.card-head .table-actions { display: flex; flex: 0 0 auto; gap: .4rem; }
+
+.check-list { display: grid; gap: .625rem; }
+.check-list label { font-weight: 500; }
+.check-list input { width: auto; margin: 0; }
+
+.switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+}
+.switch-row > span:first-child { font-size: .8rem; font-weight: 650; }
+
+.muted { color: var(--color-text-muted); line-height: 1.65; }
+.empty { padding: 1.5625rem; color: var(--color-text-muted); text-align: center; }
+
+/* ── Kepala halaman formulir ───────────────────────────────────────────────
+ * Judul di kiri, satu tombol kembali di kanan yang tidak pernah ikut menyusut.
+ */
+.page-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+.page-heading > div:first-child { min-width: 0; flex: 1 1 auto; }
+.page-heading .eyebrow {
+  margin: 0;
+  color: var(--color-primary);
+  font-size: .75rem;
+  font-weight: 600;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+.page-heading h1 {
+  margin: .35rem 0 0;
+  color: var(--color-text-primary);
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+.page-heading .muted {
+  margin: .5rem 0 0;
+  color: var(--color-text-muted);
+  font-size: .875rem;
+  line-height: 1.6;
+}
+.page-heading > a,
+.page-heading > .header-actions { flex: 0 0 auto; white-space: nowrap; }
+
+/* ── Susunan formulir ──────────────────────────────────────────────────────
+ * Identitas dan role/kata sandi berdampingan. Sebelum ini keduanya bertumpuk
+ * sehingga panel izin — bagian yang paling sering disentuh — baru terlihat
+ * setelah menggulir jauh ke bawah.
+ */
+.user-form-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+.user-form-grid > .card { margin: 0; }
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .9rem;
+}
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: .65rem;
+  margin-top: 1rem;
+}
+.label-optional { font-weight: 500; color: var(--color-text-muted); }
+
+/* Satu kolom pada layar sempit; dua kartu berdampingan di bawah ~900px hanya
+ * menyisakan field yang terlalu sempit untuk dibaca. */
+@media (max-width: 900px) {
+  .user-form-grid { grid-template-columns: minmax(0, 1fr); }
+  .form-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ── Panel izin ────────────────────────────────────────────────────────────
+ * Satu fieldset per kelompok halaman. Kunci teknis (`adminpanel/x:read`) hidup
+ * di atribut `title`, bukan di bawah setiap kotak: menampilkannya membuat tiap
+ * izin memakan dua baris dan satu halaman izin saja sudah menuntut gulir
+ * panjang.
+ */
+.permission-group {
+  margin: 0 0 .55rem;
+  padding: .6rem .7rem;
+  border: 1px solid var(--color-border);
+  border-radius: .5625rem;
+}
+.permission-group legend {
+  padding: 0 .3rem;
+  color: var(--color-text-muted);
+  font-size: .7rem;
+  font-weight: 750;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.permission-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: .2rem;
+}
+.permission-list label {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: .4rem;
+  padding: .3rem .4rem;
+  border: 1px solid transparent;
+  border-radius: .5625rem;
+}
+.permission-list label:hover {
+  border-color: var(--color-border);
+  background: var(--color-canvas);
+}
+.permission-list .ui-choice-label {
+  overflow: hidden;
+  font-size: .8rem;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.permission-panel .card-head { margin-bottom: .6rem; }
+.permission-panel h2 { margin: 0; }
+.permission-note { margin: .3rem 0 0; color: var(--color-text-muted); font-size: .75rem; }
+
+/* ── Kartu role pada halaman Pengguna ──────────────────────────────────────
+ * Dua angka yang menempel pada sebuah role — berapa izin yang dibawanya dan
+ * berapa orang yang memakainya — adalah yang menentukan apakah role itu perlu
+ * ditinjau. Di dalam chip keduanya berdesakan sebagai teks kecil seukuran
+ * namanya, jadi tidak ada yang menonjol dan daftarnya hanya terbaca sebagai
+ * label; karena itu bentuknya kartu metrik.
+ */
+.users-role-section { margin-top: 1.5rem; padding: 1.4rem; }
+/* Di dalam `basic-section-body` jaraknya sudah diatur `gap` grid host-nya;
+ * margin sendiri hanya menambah satu jarak kedua. */
+.padev-table-section > .basic-section-body > .users-role-section { margin: 0; }
+.users-role-section > h2 {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 700;
+}
+.users-role-section > p { margin: .45rem 0 0; color: var(--color-text-muted); font-size: .8125rem; }
+.users-role-grid { margin-top: 1rem; margin-bottom: 0; gap: 1.25rem; }
+
+/* ── Tabel Menu & Izin ─────────────────────────────────────────────────────
+ * Keempat kunci dalam satu baris selalu sama kecuali sufiks aksinya. Awalannya
+ * ditampilkan sekali di baris meta; kolom aksinya cukup membawa sufiks, dengan
+ * nilai penuh tetap ada di `title` dan tetap terjaring pencarian.
+ */
+.menu-permission-table code.permission-key {
+  display: inline-block;
+  max-width: 9rem;
+  overflow: hidden;
+  font-size: .78rem;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+.menu-permission-table td { vertical-align: middle; }
+.menu-permission-table tbody td { white-space: nowrap; }
+.menu-permission-table .menu-permission-name { min-width: 13rem; max-width: 22rem; }
+.menu-permission-table .menu-permission-name strong,
+.menu-permission-table .menu-permission-name small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.menu-permission-table .menu-permission-name small {
+  color: var(--color-text-muted);
+  font-size: .72rem;
+}
+
+/* ── Galeri ikon menu ──────────────────────────────────────────────────────
+ * Path SVG dipilih dari daftar tertutup, tidak diketik bebas: nilai itu masuk
+ * langsung ke atribut `d` sebuah <path>.
+ */
+.icon-picker { display: flex; align-items: center; gap: .55rem; flex-wrap: wrap; }
+.icon-preview {
+  display: grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  flex: 0 0 auto;
+  border: 1px solid var(--color-border);
+  border-radius: .625rem;
+  background: var(--color-canvas);
+  color: var(--color-primary);
+}
+.icon-preview svg { width: 1.35rem; height: 1.35rem; }
+.icon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: .55rem;
+}
+.icon-option {
+  display: grid;
+  justify-items: center;
+  gap: .4rem;
+  padding: .75rem .5rem;
+  border: 1px solid var(--color-border);
+  border-radius: .6875rem;
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font: inherit;
+  cursor: pointer;
+}
+.icon-option:hover {
+  border-color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 8%, var(--color-surface));
+  color: var(--color-primary);
+}
+.icon-option svg { width: 1.5rem; height: 1.5rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.icon-option span { color: var(--color-text-muted); font-size: .75rem; }
+.icon-option:hover span { color: var(--color-primary); }

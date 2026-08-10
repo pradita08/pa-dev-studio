@@ -1,0 +1,90 @@
+name: pa_dev
+services:
+  # Pintu masuk tunggal. Sebelumnya port 1080 dipegang langsung oleh pa_dev;
+  # sekarang dipegang gateway supaya homepage, halaman login, halaman admin,
+  # dan API berbagi satu origin (syarat cookie sesi httpOnly bekerja).
+  gateway:
+    build:
+      context: .
+      dockerfile: _docker/gateway/Dockerfile
+    container_name: pa_dev_gateway
+    ports:
+      - "1080:80"
+    depends_on:
+      - pa_dev
+      - pa_dev_api
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  pa_dev:
+    build:
+      context: .
+      dockerfile: _docker/node/Dockerfile
+    container_name: pa_dev
+    ports:
+      # Akses langsung untuk debug frontend publik; jalur resmi lewat gateway.
+      - "1083:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+    networks:
+      - app-network
+
+  pa_dev_api:
+    build:
+      context: .
+      dockerfile: _docker/api/Dockerfile
+    container_name: pa_dev_api
+    ports:
+      - "1082:4000"
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: pa_dev
+      DB_USER: pa_dev_user
+      DB_PASSWORD: pa_dev_password
+    volumes:
+      - padev_uploads:/app/uploads
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  mysql:
+    image: mysql:8.0.36
+    command:
+      --sql-mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+    container_name: pa_dev_mysql
+    ports:
+      - "1081:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: pa_dev
+      MYSQL_USER: pa_dev_user
+      MYSQL_PASSWORD: pa_dev_password
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+volumes:
+  mysql_data:
+  padev_uploads:
+  pa_dev_vendor:
+  pa_dev_writable:
+
+networks:
+  app-network:
+    driver: bridge

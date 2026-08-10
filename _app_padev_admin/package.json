@@ -1,0 +1,15 @@
+{
+  "name": "@padev/admin-theme",
+  "version": "1.0.0",
+  "private": true,
+  "description": "PA DEV Admin Theme — standalone Tailwind HTML source of truth",
+  "scripts": {
+    "build": "node ./scripts/build.mjs",
+    "dev": "npm run build && node ./scripts/dev.mjs",
+    "dev:css": "tailwindcss -c ./tailwind.config.js -i ./src/css/input.css -o ./dist/assets/css/app.css --watch",
+    "preview": "node ./scripts/dev.mjs"
+  },
+  "devDependencies": {
+    "tailwindcss": "3.4.19"
+  }
+}

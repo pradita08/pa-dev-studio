@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="PA DEV Auth — 500 Auth Service Error">
+  <title>500 Auth Service Error — PA DEV Auth</title>
+  <link rel="icon" href="./assets/images/brand/pa-dev-logo.png" type="image/png">
+  <link rel="stylesheet" href="./assets/css/app.css">
+  <script src="./assets/js/theme-init.js"></script>
+</head>
+<!--
+  DIHASILKAN dari scripts pembangun halaman auth. Shell (navbar, strip fitur,
+  footer) berasal dari satu sumber supaya 15 halaman tidak saling melenceng.
+
+  CATATAN TAUTAN LINTAS PRODUK
+  ./admin/ menunjuk PA DEV Admin, ../ menunjuk PA DEV Frontpage. Asumsinya
+  ketiganya disajikan dari root yang sama. Kalau berbeda, cukup cari-ganti
+  prefiksnya di berkas pembangun.
+-->
+<body class="auth-page landing-page" data-auth>
+
+<header class="landing-topbar auth-reveal auth-reveal--down" data-landing-topbar data-auth-reveal data-auth-delay="0">
+  <div class="landing-topbar-inner">
+    <a class="landing-brand" href="./index.html">
+      <img src="./assets/images/brand/pa-dev-logo.png" alt="Logo PA DEV" width="47" height="36">
+      <span>PA DEV</span>
+    </a>
+
+    <nav class="landing-nav" data-landing-nav aria-label="Navigasi halaman">
+      <span class="landing-nav-group" data-dropdown>
+        <a href="#fitur" data-dropdown-toggle aria-expanded="false" aria-haspopup="true"><span data-i18n="landing.nav.features">Fitur</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></a>
+        <span class="dropdown-panel w-56" data-dropdown-panel role="menu">
+          <a class="dropdown-item" href="/admin/dashboard.html" data-i18n="landing.nav.dashboard" role="menuitem">Dashboard</a>
+          <a class="dropdown-item" href="/admin/table-components.html" data-i18n="auth.sub.tables" role="menuitem">Tabel Data</a>
+          <a class="dropdown-item" href="/admin/foundation.html" data-i18n="auth.sub.tokens" role="menuitem">Design Token</a>
+          <a class="dropdown-item" href="./register.html" data-i18n="auth.sub.auth" role="menuitem">Autentikasi</a>
+        </span>
+      </span>
+      <a href="/#komponen" data-i18n="landing.nav.components">Komponen</a>
+      <a href="/#pricing" data-i18n="auth.footer.pricing">Harga</a>
+      <a href="/admin/index.html" data-i18n="auth.nav.docs">Dokumentasi</a>
+      <a href="#kontak" data-i18n="auth.footer.blog">Blog</a>
+      <a href="#kontak" data-i18n="landing.nav.contact">Kontak</a>
+    </nav>
+
+    <div class="landing-topbar-actions">
+      <span class="landing-nav-group landing-switcher" data-dropdown>
+        <button type="button" class="landing-icon-btn" data-dropdown-toggle aria-expanded="false" aria-haspopup="true" aria-label="Pindah produk" data-i18n-aria-label="suite.switch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        </button>
+        <span class="dropdown-panel w-60" data-dropdown-panel role="menu" aria-label="Produk PA DEV" data-i18n-aria-label="suite.menu">
+          <span class="landing-switcher-head" data-i18n="suite.title">PA DEV Suite</span>
+          <a class="dropdown-item" href="/" role="menuitem" data-suite="frontpage"><span data-i18n="suite.landing">Landing Page</span></a>
+          <a class="dropdown-item" href="/auth/" role="menuitem" data-suite="auth"><span data-i18n="suite.auth">Autentikasi</span></a>
+          <a class="dropdown-item" href="/admin/" role="menuitem" data-suite="admin"><span data-i18n="suite.admin">Admin Theme</span></a>
+        </span>
+      </span>
+      <button type="button" class="landing-icon-btn" data-theme-toggle aria-pressed="false" aria-label="Ganti mode terang atau gelap" data-i18n-aria-label="landing.nav.theme">
+        <svg data-theme-icon="light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg data-theme-icon="dark" class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+      </button>
+
+      <div class="relative" data-dropdown>
+        <button type="button" class="landing-icon-btn" data-dropdown-toggle aria-expanded="false" aria-haspopup="true" aria-label="Ganti bahasa" data-i18n-aria-label="landing.nav.language">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 3.5 6.5 3.5 9s-1 6.5-3.5 9c-2.5-3.5-3.5-6.5-3.5-9S9.5 6.5 12 3Z"/></svg>
+        </button>
+        <div class="dropdown-panel w-52" data-dropdown-panel role="menu" aria-label="Pilih bahasa" data-i18n-aria-label="landing.nav.languageMenu">
+          <button type="button" class="dropdown-item" role="menuitemradio" aria-checked="false" data-locale-choice="en">English</button>
+          <button type="button" class="dropdown-item" role="menuitemradio" aria-checked="false" data-locale-choice="id">Bahasa Indonesia</button>
+          <button type="button" class="dropdown-item" role="menuitemradio" aria-checked="false" data-locale-choice="ms">Bahasa Melayu</button>
+        </div>
+      </div>
+
+      <a href="./index.html" class="landing-link-quiet" data-i18n="auth.action.signin">Masuk</a>
+      <a href="./register.html" class="landing-btn landing-btn--primary hidden sm:inline-flex" data-i18n="auth.action.start">Mulai Gratis</a>
+
+      <button type="button" class="landing-burger" data-landing-burger aria-expanded="false" aria-controls="menu-mobile" aria-label="Buka menu" data-i18n-aria-label="landing.nav.menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="landing-mobile-panel" id="menu-mobile" data-landing-mobile>
+    <div>
+      <nav class="landing-mobile-nav" data-landing-nav aria-label="Navigasi halaman (mobile)">
+        <a href="#fitur" data-i18n="landing.nav.features">Fitur</a>
+        <a class="landing-mobile-sub" href="/admin/dashboard.html" data-i18n="landing.nav.dashboard">Dashboard</a>
+        <a class="landing-mobile-sub" href="/admin/table-components.html" data-i18n="auth.sub.tables">Tabel Data</a>
+        <a class="landing-mobile-sub" href="/admin/foundation.html" data-i18n="auth.sub.tokens">Design Token</a>
+        <a class="landing-mobile-sub" href="./register.html" data-i18n="auth.sub.auth">Autentikasi</a>
+        <a href="/#komponen" data-i18n="landing.nav.components">Komponen</a>
+        <a href="/#pricing" data-i18n="auth.footer.pricing">Harga</a>
+        <a href="/admin/index.html" data-i18n="auth.nav.docs">Dokumentasi</a>
+        <a href="#kontak" data-i18n="auth.footer.blog">Blog</a>
+        <a href="#kontak" data-i18n="landing.nav.contact">Kontak</a>
+        <a href="./register.html" class="landing-btn landing-btn--primary" data-i18n="auth.action.start">Mulai Gratis</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="landing-section">
+    <div class="landing-container">
+      <div class="auth-state">
+        <div class="auth-illus auth-reveal auth-reveal--scale" data-auth-reveal>
+          <div class="auth-illus-screen">
+            <span class="auth-illus-bar" aria-hidden="true"><i></i><i></i><i></i></span>
+            <div class="auth-illus-body">
+              <span class="auth-illus-code">500</span>
+              <span class="auth-illus-lines" aria-hidden="true"><span></span><span></span></span>
+            </div>
+          </div>
+          <span class="auth-ornament auth-ornament--a"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg></span>
+          <span class="auth-ornament auth-ornament--b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.2 8.2-8 9-4.8-.8-8-4.5-8-9V6l8-3Z"/></svg></span>
+          <span class="auth-ornament auth-ornament--c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m13 2-9 12h7l-1 8 9-12h-7l1-8Z"/></svg></span>
+        </div>
+
+        <h1 class="auth-state-title auth-reveal" data-auth-reveal><span data-i18n="auth.e500.t">500 —</span> <em data-i18n="auth.e500.s">Auth Service Error</em></h1>
+        <p class="auth-state-lead auth-reveal" data-auth-reveal data-i18n="auth.e500.l">Terjadi kesalahan pada layanan autentikasi. Tim kami telah diberi tahu dan sedang memperbaikinya.</p>
+
+        <div class="auth-state-actions auth-reveal" data-auth-reveal>
+        <a class="landing-btn landing-btn--primary" href="./index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg><span data-i18n="auth.e500.a1">Coba Lagi</span></a>
+        <a class="landing-btn landing-btn--ghost" href="#kontak"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 0 0-9 9v4a2 2 0 0 0 2 2h2v-6H5a7 7 0 0 1 14 0h-2v6h2a2 2 0 0 0 2-2v-4a9 9 0 0 0-9-9Z"/></svg><span data-i18n="auth.e500.a2">Hubungi Support</span></a>
+        </div>
+      </div>
+
+      <div class="auth-help auth-reveal" data-auth-reveal>
+        <p class="auth-help-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 0 0-9 9v4a2 2 0 0 0 2 2h2v-6H5a7 7 0 0 1 14 0h-2v6h2a2 2 0 0 0 2-2v-4a9 9 0 0 0-9-9Z"/></svg><span data-i18n="auth.help.title">Butuh bantuan? Tim kami siap membantu Anda 24/7.</span></p>
+        <div class="auth-help-links">
+          <a href="#kontak"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><span>help@padev.com</span></a>
+          <a href="#kontak"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.8a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.8 2.1Z"/></svg><span>(021) 1234 5678</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="landing-section landing-section--tint" id="fitur">
+    <div class="landing-container">
+      <div class="landing-grid lg:grid-cols-4" data-auth-stagger="80">
+      <article class="landing-card auth-reveal" data-auth-reveal data-auth-seq="0">
+        <span class="landing-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m13 2-9 12h7l-1 8 9-12h-7l1-8Z"/></svg></span>
+        <h3 data-i18n="auth.feat.perfTitle">Performa Tinggi</h3>
+        <p data-i18n="auth.feat.perfBody">Infrastruktur modern untuk performa optimal.</p>
+      </article>
+      <article class="landing-card auth-reveal" data-auth-reveal data-auth-seq="1">
+        <span class="landing-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span>
+        <h3 data-i18n="auth.feat.secTitle">Keamanan Terjamin</h3>
+        <p data-i18n="auth.feat.secBody">Standar keamanan industri dan enkripsi menyeluruh.</p>
+      </article>
+      <article class="landing-card auth-reveal" data-auth-reveal data-auth-seq="2">
+        <span class="landing-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><rect x="3" y="3" width="18" height="18" rx="3"/></svg></span>
+        <h3 data-i18n="auth.feat.intTitle">Mudah Diintegrasikan</h3>
+        <p data-i18n="auth.feat.intBody">API dan dokumentasi lengkap dengan SDK siap pakai.</p>
+      </article>
+      <article class="landing-card auth-reveal" data-auth-reveal data-auth-seq="3">
+        <span class="landing-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"/><path d="M21 7v5h-5"/></svg></span>
+        <h3 data-i18n="auth.feat.scaTitle">Skalabel & Fleksibel</h3>
+        <p data-i18n="auth.feat.scaBody">Tumbuh bersama aplikasi Anda tanpa batas.</p>
+      </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="landing-section py-10">
+    <div class="landing-container">
+      <p class="mb-4 text-center font-ui text-xs font-semibold uppercase tracking-[0.14em] text-ink-muted" data-i18n="auth.demoPages">Semua halaman demo</p>
+      <nav class="auth-page-chips" aria-label="Halaman demo auth">
+        <a class="auth-page-chip" href="./index.html" data-i18n="auth.page.login">Login</a>
+        <a class="auth-page-chip" href="./register.html" data-i18n="auth.page.register">Register</a>
+        <a class="auth-page-chip" href="./forgot-password.html" data-i18n="auth.page.forgot">Lupa Password</a>
+        <a class="auth-page-chip" href="./check-email.html" data-i18n="auth.page.check">Cek Email</a>
+        <a class="auth-page-chip" href="./reset-password.html" data-i18n="auth.page.reset">Reset Password</a>
+        <a class="auth-page-chip" href="./reset-success.html" data-i18n="auth.page.done">Berhasil</a>
+        <a class="auth-page-chip" href="./error-401.html" data-i18n="auth.page.e401">401</a>
+        <a class="auth-page-chip" href="./error-403.html" data-i18n="auth.page.e403">403</a>
+        <a class="auth-page-chip" href="./error-404.html" data-i18n="auth.page.e404">404</a>
+        <a class="auth-page-chip" href="./error-419.html" data-i18n="auth.page.e419">419</a>
+        <a class="auth-page-chip" href="./error-429.html" data-i18n="auth.page.e429">429</a>
+        <a class="auth-page-chip" href="./error-500.html" data-i18n="auth.page.e500">500</a>
+        <a class="auth-page-chip" href="./coming-soon.html" data-i18n="auth.page.soon">Coming Soon</a>
+        <a class="auth-page-chip" href="./maintenance.html" data-i18n="auth.page.maint">Maintenance</a>
+        <a class="auth-page-chip" href="./pending-approval.html" data-i18n="auth.page.pending">Pending Approval</a>
+      </nav>
+    </div>
+  </section>
+</main>
+
+<footer class="landing-footer auth-reveal" id="kontak" data-auth-reveal>
+  <div class="landing-container">
+    <div class="landing-footer-grid">
+      <div class="landing-footer-about">
+        <a class="landing-brand" href="./index.html"><img src="./assets/images/brand/pa-dev-logo.png" alt="Logo PA DEV" width="47" height="36"><span>PA DEV</span></a>
+        <p data-i18n="auth.footer.about">Platform backend modern untuk membangun, mengelola, dan menskalakan aplikasi dengan lebih cepat dan aman.</p>
+      </div>
+
+      <div class="landing-footer-col">
+        <h4 data-i18n="auth.footer.product">Produk</h4>
+        <ul>
+          <li><a href="#fitur" data-i18n="landing.nav.features">Fitur</a></li>
+          <li><a href="/#pricing" data-i18n="auth.footer.pricing">Harga</a></li>
+          <li><a href="/#komponen" data-i18n="landing.nav.components">Komponen</a></li>
+          <li><a href="/admin/index.html#changelog" data-i18n="auth.footer.changelog">Changelog</a></li>
+        </ul>
+      </div>
+      <div class="landing-footer-col">
+        <h4 data-i18n="auth.footer.resource">Sumber Daya</h4>
+        <ul>
+          <li><a href="/admin/index.html" data-i18n="auth.nav.docs">Dokumentasi</a></li>
+          <li><a href="#kontak" data-i18n="auth.footer.blog">Blog</a></li>
+          <li><a href="./maintenance.html" data-i18n="auth.footer.status">Status</a></li>
+          <li><a href="/admin/foundation.html" data-i18n="auth.footer.api">API Reference</a></li>
+        </ul>
+      </div>
+      <div class="landing-footer-col">
+        <h4 data-i18n="auth.footer.company">Perusahaan</h4>
+        <ul>
+          <li><a href="#fitur" data-i18n="auth.footer.about">Tentang Kami</a></li>
+          <li><a href="#kontak" data-i18n="auth.footer.career">Karier</a></li>
+          <li><a href="#kontak" data-i18n="landing.nav.contact">Kontak</a></li>
+          <li><a href="#kontak" data-i18n="auth.footer.privacy">Kebijakan Privasi</a></li>
+        </ul>
+      </div>
+
+      <div class="landing-footer-col">
+        <h4 data-i18n="auth.footer.stay">Tetap Terhubung</h4>
+        <p class="landing-newsletter-note" data-i18n="auth.footer.stayNote">Dapatkan update terbaru, tips, dan informasi produk langsung ke email Anda.</p>
+        <form class="landing-newsletter" data-newsletter novalidate>
+          <label class="sr-only" for="news-email" data-i18n="auth.footer.newsLabel">Alamat email</label>
+          <input id="news-email" type="email" name="email" placeholder="nama@domain.com" data-i18n-placeholder="auth.ph.email" autocomplete="email" required>
+          <button type="submit" class="landing-btn landing-btn--primary" aria-label="Berlangganan" data-i18n-aria-label="auth.footer.subscribe"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+          <p class="sr-only" data-newsletter-note role="status"></p>
+        </form>
+      </div>
+    </div>
+
+    <div class="landing-footer-bottom">
+      <p>© <span data-landing-year>2026</span> PA DEV. <span data-i18n="auth.footer.rights">Semua hak dilindungi.</span></p>
+      <div class="landing-footer-legal">
+        <a href="#kontak" data-i18n="auth.footer.terms">Syarat &amp; Ketentuan</a>
+        <a href="#kontak" data-i18n="auth.footer.privacy">Kebijakan Privasi</a>
+        <a href="#kontak" data-i18n="auth.footer.cookie">Kebijakan Cookie</a>
+      </div>
+      <div class="landing-social">
+        <a href="#kontak" aria-label="GitHub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 19c-4 1.4-4-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.3 4.3 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12 12 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.3 4.3 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a>
+        <a href="#kontak" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 10v7M8 7h.01M12 17v-4a2 2 0 0 1 4 0v4"/></svg></a>
+        <a href="#kontak" aria-label="Twitter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 5.5a8 8 0 0 1-2.3.7 4 4 0 0 0 1.8-2.2 8 8 0 0 1-2.6 1A4 4 0 0 0 11 8.6 11.4 11.4 0 0 1 3 4.6a4 4 0 0 0 1.2 5.3A4 4 0 0 1 2.4 9v.1a4 4 0 0 0 3.2 3.9 4 4 0 0 1-1.8.1 4 4 0 0 0 3.7 2.8A8 8 0 0 1 2 17.6 11.3 11.3 0 0 0 8.1 19c7 0 11-6 11-11v-.5A7.7 7.7 0 0 0 21 5.5Z"/></svg></a>
+        <a href="#kontak" aria-label="Email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="./assets/js/auth.js" defer></script>
+<script src="./assets/js/i18n.js" defer></script>
+<script src="./assets/js/pages-auth-i18n.js" defer></script>
+<script src="./assets/js/app.js" defer></script>
+</body>
+</html>

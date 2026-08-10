@@ -1,0 +1,369 @@
+/* Perilaku tabel gateway di atas kontrak visual tabel PA DEV Admin.
+ *
+ * Dipindahkan dari `api_bridge_gateway` (`src/public/padev-tables.css`). Berkas
+ * ini TIDAK ikut Tailwind: ia disalin apa adanya oleh `scripts/build.mjs` ke
+ * `dist/assets/css/padev-tables.css` dan hanya ditautkan oleh halaman User
+ * Management. Alasannya, seluruh isinya adalah selektor turunan
+ * (`.padev-table .ui-table thead th`) yang tidak punya kandidat utility untuk
+ * ditemukan pemindai Tailwind — dimasukkan ke `@layer components` ia justru
+ * berisiko terpangkas build produksi.
+ *
+ * Empat blok milik gateway TIDAK ikut dipindahkan karena tidak punya
+ * pemakainya di sini: `builder-preview-*` dan `dataset-field-policy-card`
+ * (halaman dataset builder), `padev-table--static`, serta `users-role-*`.
+ * Blok `pa-metric*` juga tidak ada di sini — ia sudah lebih dulu dipindahkan
+ * ke `input.css` supaya kartu metrik tersedia untuk halaman mana pun, bukan
+ * hanya halaman bertabel; menaruhnya di dua tempat berarti keduanya akan
+ * pelan-pelan berbeda.
+ */
+.padev-table {
+  min-width: 0;
+  overflow: visible;
+}
+
+/* ── Area gulir + thead milik gateway ──────────────────────────────────────
+ *
+ * `ui-table-scroll--sticky` milik tema TIDAK dipakai lagi. Mekanisme thead
+ * sticky-nya punya tiga cacat yang membuat garis header ikut bergerak saat
+ * tabel digulir:
+ *
+ *   1. Garis header digambar sebagai shadow *inset* di dalam kotak `th`,
+ *      sementara tiap `td` juga membawa inset shadow-nya sendiri. Ketika baris
+ *      menyelinap di bawah header yang ter-pin, kedua garis berselisih ~1px
+ *      pada offset gulir pecahan sehingga terbaca berkedip/bergerak.
+ *   2. Offset baris kolom memakai angka mati `2rem`. Bila tinggi baris grouped
+ *      header nyatanya bukan 2rem, baris kolom meleset dan isi baris terlihat
+ *      menembus header.
+ *   3. Latar hanya dipasang pada `th`, bukan pada barisnya, sehingga masih
+ *      bisa muncul rambut celah antar dua baris header yang ter-pin.
+ *
+ * Penggantinya: satu garis saja, digambar sebagai shadow *outset* pada baris
+ * thead terakhir sehingga duduk di batas kontainer dan tidak pernah bertemu
+ * garis `td`; offset baris kolom diukur `padev-tables.js` dari tinggi nyata
+ * lalu dibulatkan ke piksel utuh; dan pemisah baris memakai `border-bottom`
+ * (bukan `border-top`) supaya tidak ada baris yang menggambar garis di sisi
+ * atasnya — jadi tidak ada yang bisa bertabrakan dengan garis header. */
+.padev-table .ui-table-scroll {
+  --padev-check-width: 48px;
+  --padev-rownum-width: 44px;
+  --padev-control-width: 40px;
+  --ui-table-action-width: 64px;
+  min-width: 0;
+  /* Tinggi mengikuti layar, bukan angka rem mati: pada Rows bawaan tabelnya
+   * muat utuh tanpa baris terpotong, dan baru menggulir pada Rows besar —
+   * di situlah header yang ter-pin memang dibutuhkan. */
+  max-height: 78vh;
+  overflow: auto;
+  overscroll-behavior: contain;
+  background: var(--color-surface);
+}
+
+/* Garis header dan pemisah baris digambar per sel, jadi keduanya hanya
+ * sepanjang tabelnya. Kalau lebar kolom tidak memenuhi kontainer, garisnya
+ * berhenti sebelum tepi kartu dan terbaca terputus. Lebar dikunci 100% supaya
+ * sel terakhir selalu mencapai tepi kanan. */
+.padev-table .ui-table { width: 100%; }
+
+/* Penyebab kedua garis terputus: batang gulir klasik memakan lebar di dalam
+ * kontainer, jadi tabel selebar 100% berhenti sejauh lebar batang itu dari
+ * tepi kartu. Batang gulir dibuat tipis dan tracknya transparan agar sisa
+ * ruangnya sekecil mungkin dan seragam di semua tabel. */
+.padev-table .ui-table-scroll { scrollbar-width: thin; scrollbar-color: var(--color-border) transparent; }
+.padev-table .ui-table-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
+.padev-table .ui-table-scroll::-webkit-scrollbar-track { background: transparent; }
+.padev-table .ui-table-scroll::-webkit-scrollbar-thumb { border-radius: 999px; background: var(--color-border); }
+.padev-table .ui-table-scroll::-webkit-scrollbar-corner { background: transparent; }
+
+.padev-table .ui-table thead th {
+  position: sticky;
+  z-index: 25;
+  background: var(--color-surface);
+  background-clip: padding-box;
+  box-shadow: none;
+}
+.padev-table .ui-table thead tr:first-child th { top: 0; }
+.padev-table .ui-table thead tr:last-child th { top: var(--padev-group-header-height, 0px); }
+/* Satu-satunya garis header. Outset, jadi ia menempel di batas bawah header
+ * dan tetap di sana berapa pun posisi gulirnya. */
+.padev-table .ui-table thead tr:last-child th { box-shadow: 0 1px 0 0 var(--color-border); }
+.padev-table .ui-table-group-header th:not(:empty) { box-shadow: 0 1px 0 0 var(--color-border); }
+/* Sel beku di body memakai z-index 30 dan berada lebih akhir di dokumen, jadi
+ * tanpa ini ia menimpa header yang ter-pin persis di kolom centang, nomor, dan
+ * chevron — isinya lalu terlihat menembus header saat digulir. Menaikkan tiap
+ * sel header satu per satu tidak cukup: sel pengganjal di baris grouped header
+ * tidak membawa kelas beku apa pun, jadi ia tetap kalah. Seluruh `thead`
+ * diangkat jadi satu lapisan di atas body, lalu urutan di dalamnya diatur
+ * sendiri. */
+.padev-table .ui-table thead { position: relative; z-index: 50; }
+.padev-table .ui-table thead th { z-index: 26; }
+.padev-table .ui-table thead :is(.ui-table-sticky-checkbox, .ui-table-sticky-rownum, .ui-table-sticky-control, .ui-table-sticky-action) { z-index: 40; }
+
+/* Pemisah baris di sisi bawah — tidak pernah menyentuh garis header. */
+.padev-table .ui-table td {
+  border-top: 0;
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: none;
+}
+.padev-table .ui-table tbody tr:last-child > td { border-bottom: 0; }
+
+/* Kolom beku: centang, nomor baris, lalu chevron. Kolom nomor ikut dibekukan —
+ * ia terjepit di antara dua kolom beku, jadi kalau dibiarkan statis ia akan
+ * bergeser sendiri saat tabel digulir mendatar. */
+.padev-table .ui-table-sticky-checkbox { left: 0; }
+.padev-table .ui-table-sticky-rownum {
+  position: sticky;
+  z-index: 30;
+  left: var(--padev-check-width, 48px);
+  background-color: var(--color-surface);
+  background-clip: padding-box;
+}
+.padev-table .ui-table-sticky-control { left: calc(var(--padev-check-width, 48px) + var(--padev-rownum-width, 44px)); }
+
+/* Kolom beku tidak boleh terbaca sebagai kotak tersendiri.
+ *
+ * Tema memberi baris yang di-hover latar setengah transparan
+ * (`primary-50 / .5`) tetapi memberi sel beku warna penuhnya, jadi kolom
+ * centang, nomor, chevron, dan aksi tampak seperti tempelan yang lebih biru
+ * daripada barisnya — itulah "tanda" yang terlihat di tiap baris. Sel beku
+ * tetap harus buram supaya isi yang tergulir tidak menembusnya, jadi yang
+ * dipakai adalah warna yang sama setelah diratakan di atas permukaan kartu:
+ * hasilnya sama persis dengan baris, tanpa kehilangan sifat buramnya. */
+.padev-table .ui-table--hover tbody tr[data-row]:hover > :is(.ui-table-check, .ui-table-rownum, .ui-table-row-control, .ui-table-action-cell) {
+  background-color: color-mix(in srgb, rgb(var(--primary-50)) 50%, var(--color-surface));
+}
+.padev-table .ui-table tbody tr.is-selected > :is(.ui-table-check, .ui-table-rownum, .ui-table-row-control, .ui-table-action-cell) {
+  background-color: color-mix(in srgb, rgb(var(--primary-50)) 70%, var(--color-surface));
+}
+/* Tanpa garis pemisah vertikal di tepi kolom beku, supaya pemisah baris
+ * terbaca menerus dari tepi kiri sampai tepi kanan tabel. */
+.padev-table .ui-table-sticky-control,
+.padev-table .ui-table-sticky-action { box-shadow: none; }
+
+.ui-table-rownum {
+  padding: 0;
+  width: var(--padev-rownum-width, 44px);
+  min-width: var(--padev-rownum-width, 44px);
+  max-width: var(--padev-rownum-width, 44px);
+  color: var(--color-text-muted);
+  font-size: .78125rem;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.padev-table-toolbar,
+.padev-table-pagination {
+  gap: .65rem;
+}
+.padev-table-toolbar { flex-wrap: wrap; }
+.padev-table-toolbar .ui-table-search { flex: 1 1 20rem; min-width: 16rem; }
+.padev-table-toolbar .ui-table-result { margin-left: auto; white-space: nowrap; }
+
+.padev-table-filter-panel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: .8rem 1rem;
+}
+
+.padev-table-filter-panel[hidden] { display: none; }
+.padev-table-filter-panel label { min-width: 12rem; }
+.padev-table-filter-panel label > span { display: block; margin-bottom: .35rem; font-size: .72rem; font-weight: 700; color: var(--color-text-muted); }
+.padev-table-pagination[hidden] { display: none; }
+
+/* Everything the reference table draws — selection column, expand control,
+ * nested row, sort button, numbered pagination — is already styled by the PA
+ * DEV Admin theme. The rules below only cover what the theme leaves to the
+ * host: Rows folded into the toolbar, the chevron glyph, the function-coloured
+ * action icons, and the stacking fix for an open row menu. */
+.padev-table-toolbar .ui-table-page-size { flex-shrink: 0; }
+
+/* `app.css` styles every bare `select` for stacked forms — full width, a 7px
+ * top margin and 10px of vertical padding. In a table toolbar that pushes the
+ * control out of line, and against the theme's fixed 2rem Rows select it
+ * leaves 12px of content box for a 12.5px value, clipping it. */
+.padev-table .ui-table-page-size select {
+  width: auto;
+  margin: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.padev-table .ui-table-toolbar select,
+.padev-table-filter-panel select { margin-top: 0; }
+
+/* ── Bungkus dua lapis card ────────────────────────────────────────────────
+ * Card luar `basic-section` (header + garis pemisah + body) seluruhnya milik
+ * tema, termasuk header yang berubah jadi baris di ≥640px. Yang tersisa untuk
+ * host: slot kanan header dipakai aksi halaman, bukan badge statis, dan card
+ * tabel di dalam body tidak boleh menambah jarak di atasnya. */
+.padev-table-section > .basic-section-body { display: grid; gap: 1.25rem; }
+.padev-table-section .basic-section-header > div { align-content: start; }
+.padev-table-section .basic-section-actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  align-self: flex-start;
+  gap: .65rem;
+}
+.padev-table-section .basic-section-actions .button { margin: 0; }
+.padev-table-section > .basic-section-body > .pa-metric-grid { margin: 0; }
+
+.ui-table-row-toggle {
+  display: inline-grid;
+  width: 1.75rem;
+  height: 1.75rem;
+  place-items: center;
+  border-radius: .375rem;
+  color: var(--color-text-muted);
+  transition: color var(--duration-fast, .15s), background-color var(--duration-fast, .15s), transform var(--duration-fast, .15s);
+}
+.ui-table-row-toggle svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.ui-table-row-toggle:hover { background: color-mix(in srgb, var(--color-primary) 8%, transparent); color: var(--color-primary); }
+.ui-table tbody tr.is-expanded > .ui-table-row-control .ui-table-row-toggle { color: var(--color-primary); transform: rotate(180deg); }
+
+.ui-table-sort .ui-table-sort-icon,
+.ui-table-sort svg { opacity: .55; }
+.ui-table th.is-sorted-asc .ui-table-sort,
+.ui-table th.is-sorted-desc .ui-table-sort { color: var(--color-primary); }
+.ui-table th.is-sorted-asc .ui-table-sort svg,
+.ui-table th.is-sorted-desc .ui-table-sort svg { opacity: 1; }
+
+/* The action cell is `position:sticky; z-index:30`, so it is its own stacking
+ * context. The sticky action cells of the rows below share that z-index and
+ * come later in document order, which made them paint over an open menu and
+ * clip its labels. Lifting only the cell that owns the open menu keeps the
+ * menu markup inside its row, which `admin-ui.js` needs for `closest('tr')`. */
+.ui-table-action-cell.is-menu-open { z-index: 60; }
+
+.padev-table.is-compact .ui-table th,
+.padev-table.is-compact .ui-table td { padding-top: .55rem; padding-bottom: .55rem; }
+.padev-table.is-compact .ui-table td small { line-height: 1.2; }
+
+.padev-table.is-card-mode .ui-table-scroll {
+  max-height: none;
+  overflow: visible;
+  background: color-mix(in srgb, var(--color-canvas) 40%, transparent);
+  padding: .75rem;
+}
+.padev-table.is-card-mode .ui-table { display: block; min-width: 0; }
+.padev-table.is-card-mode .ui-table thead,
+.padev-table.is-card-mode .ui-table tfoot { display: none; }
+.padev-table.is-card-mode .ui-table tbody { display: grid; gap: .75rem; }
+.padev-table.is-card-mode .ui-table tbody tr[data-row]:not([hidden]) {
+  display: block;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: .75rem;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-xs);
+}
+.padev-table.is-card-mode .ui-table tbody tr[data-row] td {
+  display: grid;
+  grid-template-columns: minmax(6rem, 34%) minmax(0, 1fr);
+  gap: .75rem;
+  border-bottom: 1px solid var(--color-border);
+}
+.padev-table.is-card-mode .ui-table tbody tr[data-row] td:last-child { border-bottom: 0; }
+.padev-table.is-card-mode .ui-table tbody tr[data-row] td::before {
+  content: attr(data-label);
+  color: var(--color-text-muted);
+  font-size: .7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.padev-table.is-card-mode .ui-table tbody tr[data-row] td > .badge,
+.padev-table.is-card-mode .ui-table tbody tr[data-row] td > .ui-badge,
+.padev-table.is-card-mode .ui-table tbody tr[data-row] td > code { justify-self: start; }
+.padev-table.is-card-mode .ui-table tbody tr[data-row] td.ui-table-action-cell { display: block; text-align: right; }
+/* A card already shows every field as a label/value pair, so the selection
+ * column, the expand control and the nested row it opens have nothing left to
+ * add — while the folded detail columns become ordinary card rows. */
+.padev-table.is-card-mode .ui-table tbody tr[data-row] td.ui-table-check,
+.padev-table.is-card-mode .ui-table tbody tr[data-row] td.ui-table-rownum,
+.padev-table.is-card-mode .ui-table tbody tr[data-row] td.ui-table-row-control,
+.padev-table.is-card-mode .ui-table tbody tr.ui-table-nested { display: none; }
+.padev-table.is-card-mode .ui-table tbody tr[data-row] td.padev-detail-column[hidden] {
+  display: grid;
+  grid-template-columns: minmax(6rem, 34%) minmax(0, 1fr);
+  gap: .75rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* Tautan dan tombol harus punya kotak yang sama persis.
+ *
+ * Tema menata `.ui-table-action-menu button` (0,1,1) yang mengalahkan
+ * `.ui-table-action-menu-item` (0,1,0), jadi item berupa tombol jatuh ke
+ * `display:block` dengan padding vertikalnya sendiri: labelnya bergeser ~10px
+ * dan tingginya beda 1px dari item berupa tautan. Selektor di bawah sengaja
+ * dinaikkan agar keduanya diatur satu aturan yang sama. */
+.ui-table-action-menu :is(.ui-table-action-menu-link, .ui-table-action-menu-item) {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  width: 100%;
+  min-height: 2.25rem;
+  padding: .5rem .75rem;
+  border-radius: .25rem;
+  color: var(--color-text-primary);
+  font: inherit;
+  text-align: left;
+  white-space: nowrap;
+}
+.ui-table-action-menu .ui-table-action-form { display: block; margin: 0; }
+.ui-table-action-menu .ui-table-action-label { flex: 1 1 auto; min-width: 0; }
+.ui-table-action-icon { display: inline-grid; width: 1.15rem; height: 1.15rem; flex: 0 0 1.15rem; place-items: center; color: var(--color-primary); }
+.ui-table-action-icon svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+/* Warna ikon mengikuti fungsinya, bukan sekadar nada baris: menghapus selalu
+ * merah, mengaktifkan selalu hijau, melihat selalu biru info. `tone` yang
+ * ditulis eksplisit di view tetap menang atas nilai bawaan ini. */
+.ui-table-action-icon[data-icon="trash"] { color: var(--color-danger); }
+.ui-table-action-icon[data-icon="check"] { color: var(--color-success); }
+.ui-table-action-icon[data-icon="eye"] { color: var(--color-info); }
+.ui-table-action-icon[data-icon="edit"] { color: var(--color-primary); }
+.ui-table-action-icon[data-icon="settings"] { color: var(--color-text-secondary); }
+.ui-table-action-menu-link.is-danger .ui-table-action-icon,
+.ui-table-action-menu-item.is-danger .ui-table-action-icon { color: var(--color-danger); }
+.ui-table-action-menu-link.is-success .ui-table-action-icon,
+.ui-table-action-menu-item.is-success .ui-table-action-icon { color: var(--color-success); }
+/* Sama seperti kotaknya, keadaan hover dan nada bahaya harus lewat selektor
+ * yang cukup kuat — kalau tidak, `.ui-table-action-menu button:hover` milik
+ * tema membuat tombol Hapus berubah biru saat disentuh sementara tautan
+ * Hapus tetap merah. */
+.ui-table-action-menu :is(.ui-table-action-menu-link, .ui-table-action-menu-item):hover,
+.ui-table-action-menu :is(.ui-table-action-menu-link, .ui-table-action-menu-item):focus-visible { background: var(--color-hover); color: var(--color-text-primary); }
+.ui-table-action-menu :is(.ui-table-action-menu-link, .ui-table-action-menu-item).is-danger,
+.ui-table-action-menu :is(.ui-table-action-menu-link, .ui-table-action-menu-item).is-danger:hover { color: var(--color-danger); }
+
+@media (max-width: 767px) {
+  .padev-table-toolbar { align-items: stretch; }
+  .padev-table-toolbar .ui-table-search { flex: 1 1 100%; }
+  /* The theme already stacks `.ui-table-pagination` below 640px; keep the
+   * summary and the button row from sitting shoulder to shoulder. */
+  .padev-table-pagination { align-items: flex-start; }
+  .padev-table .ui-table { min-width: 42rem; }
+  .padev-table.is-card-mode .ui-table { min-width: 0; }
+}
+
+@media print {
+  .padev-table-toolbar,
+  .padev-table-pagination,
+  .ui-table-commandbar,
+  .ui-table-bulk,
+  .ui-table-action-cell,
+  .ui-table-check,
+  .ui-table-rownum,
+  .ui-table-row-control,
+  .ui-table-nested { display: none !important; }
+  /* Di atas kertas tidak ada yang bisa digulir, jadi thead kembali statis. */
+  .padev-table .ui-table thead th { position: static; box-shadow: none; }
+  .padev-table .ui-table-scroll { max-height: none; }
+  /* Nothing can be expanded on paper, so the folded columns print inline. */
+  .padev-table .padev-detail-column[hidden] { display: table-cell !important; }
+  .padev-table .ui-table-scroll { overflow: visible; }
+}
+
+/* Tombol aksi massal. Nada bahaya dibedakan supaya "Hapus terpilih" tidak
+   terbaca sama dengan aksi yang bisa dibatalkan. */
+.ui-table-bulk-controls button.is-danger { color: var(--color-danger); }
+.ui-table-bulk-controls button.is-danger:hover { background: color-mix(in srgb, var(--color-danger) 12%, transparent); }
+.ui-table-bulk-controls button[disabled] { cursor: progress; opacity: .6; }

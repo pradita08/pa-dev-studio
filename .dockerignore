@@ -1,0 +1,21 @@
+_app_padev_landing/.env
+_app_padev_landing/.env.*
+!_app_padev_landing/.env.example
+_app_padev_landing/vendor
+_app_padev_landing/writable
+_app_padev_landing/node_modules
+_app_padev_landing/dist
+_app_padev_landing/coverage
+*.log
+.git
+.DS_Store
+
+# API autentikasi dan template auth/admin yang di-vendor
+.env
+.env.*
+!.env.example
+_api_padev/node_modules
+_app_padev_auth/node_modules
+_app_padev_auth/dist
+_app_padev_admin/node_modules
+_app_padev_admin/dist

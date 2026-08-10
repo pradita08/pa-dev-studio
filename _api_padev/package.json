@@ -1,0 +1,20 @@
+{
+  "name": "pa-dev-studio-api",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "PA DEV STUDIO — API autentikasi JWT dan penyaji halaman auth/adminpanel",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node --test tests/*.test.js"
+  },
+  "dependencies": {
+    "bcryptjs": "3.0.3",
+    "cookie-parser": "1.4.7",
+    "express": "5.2.1",
+    "jsonwebtoken": "9.0.3",
+    "multer": "^2.2.0",
+    "mysql2": "3.23.2"
+  }
+}
