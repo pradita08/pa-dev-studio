@@ -34,6 +34,36 @@
  * warna garis, cincin fokus) yang dipasang langsung pada `input`/`select`,
  * karena markup rujukan menaruh kontrolnya di dalam `<label>` tanpa pembungkus.
  */
+/* Penjaga `hidden` untuk halaman formulir.
+ *
+ * Setiap kelas di bawah memasang `display`, dan sebuah kelas selalu menang atas
+ * aturan bawaan browser `[hidden] { display: none }`. Akibatnya field kata
+ * sandi, panel izin, dan blok khusus mode tambah/sunting tampil sekaligus —
+ * formulir terlihat berantakan padahal JS-nya sudah menyembunyikannya.
+ *
+ * Tema ini memasang penjaga per kelas (`.ui-overlay-layer[hidden]`, …). Di sini
+ * satu aturan berlingkup halaman formulir lebih aman daripada belasan penjaga
+ * yang mudah tertinggal saat kelas baru ditambahkan. Lingkupnya sengaja
+ * `[data-padev-um-form]`: halaman daftar memakai `[data-padev-um]` dan mesin
+ * tabelnya justru butuh menampilkan sebagian sel ber-`hidden`.
+ *
+ * Galeri ikon menempel di <body>, di luar lingkup ini — ia memakai
+ * `.ui-overlay-layer` milik tema yang sudah punya penjaganya sendiri.
+ */
+[data-padev-um-form] [hidden] { display: none !important; }
+
+/* Tema ini menyerahkan padding `.card` ke utility per pemakaian, sementara
+ * markup rujukan menulis `<section class="card form-stack">` polos. Tanpa ini
+ * isi kartu menempel ke garis tepinya. Angkanya mengikuti kartu rujukan. */
+[data-padev-um-form] .card,
+[data-padev-um='profile'] .card,
+[data-padev-settings] .card { padding: 1.375rem; }
+@media (max-width: 640px) {
+  [data-padev-um-form] .card,
+  [data-padev-um='profile'] .card,
+  [data-padev-settings] .card { padding: 1rem; }
+}
+
 .stack { display: grid; gap: 1.125rem; align-content: start; }
 
 .form-stack { display: flex; flex-direction: column; gap: 1.0625rem; }
@@ -45,9 +75,13 @@
   font-weight: 700;
 }
 .form-stack.is-compact { gap: .75rem; }
+/* `align-content: start` wajib. Label adalah grid di dalam grid: tanpa ini
+ * barisnya diregangkan setinggi baris terpanjang di sebelahnya, dan yang ikut
+ * memanjang adalah kotak isiannya — satu field bisa setinggi tiga field. */
 .form-stack label,
 .form-grid label {
   display: grid;
+  align-content: start;
   min-width: 0;
   gap: .35rem;
   color: var(--color-text-primary);
@@ -62,10 +96,17 @@
   line-height: 1.5;
 }
 
+/* `textarea` ikut aturan yang sama.
+ *
+ * Sebelumnya hanya `input` dan `select` yang distel, sehingga area teks jatuh
+ * ke tampilan bawaan browser: di mode gelap itu berarti kotak abu terang
+ * dengan garis yang berbeda sendiri di tengah formulir bertema. */
 .form-stack input:not([type='checkbox']):not([type='radio']),
 .form-stack select,
+.form-stack textarea,
 .form-grid input:not([type='checkbox']):not([type='radio']),
-.form-grid select {
+.form-grid select,
+.form-grid textarea {
   width: 100%;
   min-width: 0;
   min-height: 2.5rem;
@@ -80,21 +121,35 @@
   outline: none;
   transition: border-color .15s, box-shadow .15s;
 }
+.form-stack textarea,
+.form-grid textarea {
+  min-height: 5.5rem;
+  padding: .6rem .75rem;
+  line-height: 1.6;
+  resize: vertical;
+}
+
 .form-stack input:hover:not(:disabled),
 .form-stack select:hover:not(:disabled),
 .form-grid input:hover:not(:disabled),
-.form-grid select:hover:not(:disabled) { border-color: var(--color-primary); }
+.form-grid select:hover:not(:disabled),
+.form-stack textarea:hover:not(:disabled),
+.form-grid textarea:hover:not(:disabled) { border-color: var(--color-primary); }
 .form-stack input:focus-visible,
 .form-stack select:focus-visible,
 .form-grid input:focus-visible,
-.form-grid select:focus-visible {
+.form-grid select:focus-visible,
+.form-stack textarea:focus-visible,
+.form-grid textarea:focus-visible {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 20%, transparent);
 }
 .form-stack input:disabled,
 .form-stack select:disabled,
 .form-grid input:disabled,
-.form-grid select:disabled {
+.form-grid select:disabled,
+.form-stack textarea:disabled,
+.form-grid textarea:disabled {
   background: var(--color-canvas);
   color: var(--color-text-muted);
   cursor: not-allowed;
@@ -118,7 +173,11 @@
 
 .check-list { display: grid; gap: .625rem; }
 .check-list label { font-weight: 500; }
-.check-list input { width: auto; margin: 0; }
+/* Kotak centang tema (`.ui-choice-input`) memakai `appearance: none`, jadi
+ * ukurannya HANYA berasal dari `h`/`w`-nya. `width: auto` di sini pernah
+ * menimpanya dan menyisakan garis setinggi 18px selebar nol. Aturan ini
+ * ditujukan ke input polos saja. */
+.check-list input:not(.ui-choice-input) { width: auto; margin: 0; }
 
 .switch-row {
   display: flex;
@@ -183,6 +242,7 @@
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
   gap: .9rem;
 }
 .form-actions {
@@ -341,3 +401,102 @@
 .icon-option svg { width: 1.5rem; height: 1.5rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .icon-option span { color: var(--color-text-muted); font-size: .75rem; }
 .icon-option:hover span { color: var(--color-primary); }
+
+/* ── Profil Saya ───────────────────────────────────────────────────────────
+ * Kartu-kartunya memakai primitif yang sama dengan formulir User Management
+ * (`.card`, `.form-stack`, `.user-form-grid`, `.form-actions`); yang khas
+ * halaman ini hanya foto profil dan barisan chip izin.
+ */
+[data-padev-um='profile'] .pa-metric-grid { margin-bottom: 1rem; }
+[data-padev-um='profile'] .user-form-grid { margin-top: 1rem; }
+[data-padev-um='profile'] > [data-padev-panel] > .card { margin-top: 1rem; }
+
+/* Kiri: pratinjau bulat + tombol hapus. Kanan: kotak unggah milik tema. */
+.profil-foto-baris {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 1.25rem;
+}
+.profil-foto-sisi { display: grid; justify-items: center; gap: .6rem; }
+.profil-foto-zona { min-width: 0; }
+@media (max-width: 640px) {
+  .profil-foto-baris { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Bulat dan berukuran tetap: foto yang diunggah pengguna bisa rasio apa pun,
+ * dan `object-fit: cover` menjaga kartunya tidak ikut berubah tinggi. */
+.profil-foto {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  width: 4.5rem;
+  height: 4.5rem;
+  flex: 0 0 auto;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-primary) 10%, var(--color-surface));
+  color: var(--color-primary);
+  font-family: var(--font-heading);
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+.profil-foto img { width: 100%; height: 100%; object-fit: cover; }
+.profil-foto-aksi { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+
+.profil-chip-row { display: flex; flex-wrap: wrap; gap: .4rem; }
+.profil-chip {
+  display: inline-flex;
+  padding: .3rem .55rem;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-canvas);
+}
+.profil-chip code { color: var(--color-text-muted); font-size: .72rem; }
+
+/* ── Atur posisi foto profil ───────────────────────────────────────────────
+ * Jendela persegi dengan cincin lingkaran di atasnya: yang terlihat di dalam
+ * cincin itulah yang akan tersimpan, jadi bentuk pratinjaunya harus sama
+ * dengan bentuk avatar di navbar.
+ */
+.profil-krop {
+  position: relative;
+  overflow: hidden;
+  width: 264px;
+  height: 264px;
+  margin: 0 auto;
+  border-radius: .75rem;
+  background: var(--color-canvas);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+.profil-krop.is-menyeret { cursor: grabbing; }
+.profil-krop img { position: absolute; top: 0; left: 0; max-width: none; transform-origin: 0 0; }
+
+/* Bidang di luar lingkaran diredupkan dengan satu bayangan sebar, bukan empat
+ * elemen penutup — cincinnya jadi mulus pada ukuran berapa pun. */
+.profil-krop-bingkai {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  box-shadow: 0 0 0 9999px color-mix(in srgb, var(--color-canvas) 72%, transparent);
+  outline: 2px solid color-mix(in srgb, var(--color-primary) 60%, transparent);
+  outline-offset: -2px;
+  pointer-events: none;
+}
+
+.profil-krop-zoom {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: .75rem;
+  margin-top: 1rem;
+}
+.profil-krop-zoom > span { color: var(--color-text-primary); font-size: .8rem; font-weight: 650; }
+.profil-krop-zoom input[type='range'] { width: 100%; accent-color: var(--color-primary); }
+.profil-krop-bantuan { margin: .6rem 0 0; color: var(--color-text-muted); font-size: .78rem; text-align: center; }
+
+/* Jarak antar kartu pada halaman setelan. `.stack` sudah memberi gap, yang
+   ditambahkan di sini hanya jarak dari kepala halaman. */
+[data-padev-settings] > [data-padev-panel] { margin-top: 1rem; }

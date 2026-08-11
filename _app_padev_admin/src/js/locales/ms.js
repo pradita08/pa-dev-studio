@@ -122,6 +122,27 @@ window.PADevI18n.register('ms', {
   'nav.group.business': 'Perniagaan',
   'nav.group.storage': 'Storan',
 
+  /* Menu PA DEV Studio. Kunci diterbitkan daripada label menu oleh sidebar.js
+   * (`nav.<slug>` bagi induk, `nav.item.<slug>` bagi anak). */
+  'nav.user-management': 'Pengurusan Pengguna',
+  'nav.content': 'Kandungan',
+  'nav.portfolio-and-business': 'Portfolio & Perniagaan',
+  'nav.leads': 'Prospek',
+  'nav.settings': 'Tetapan',
+
+  'nav.item.users': 'Pengguna',
+  'nav.item.groups': 'Kumpulan',
+  'nav.item.permissions': 'Kebenaran',
+  'nav.item.homepage': 'Laman Utama',
+  'nav.item.insights': 'Insight',
+  'nav.item.testimonials': 'Testimoni',
+  'nav.item.faq': 'FAQ',
+  'nav.item.services': 'Perkhidmatan',
+  'nav.item.templates': 'Templat',
+  'nav.item.projects': 'Projek',
+  'nav.item.messages': 'Mesej',
+  'nav.item.subscribers': 'Pelanggan',
+
   'customizer.open': 'Buka Penyesuai Tema',
   'customizer.close': 'Tutup Penyesuai Tema',
   'customizer.title': 'Penyesuai Tema',

@@ -12,6 +12,7 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import { config } from './config.js';
 import { authRouter } from './routes/auth.js';
+import { publicAuthRouter } from './routes/public-auth.js';
 import { contentRouter } from './routes/content.js';
 import { userManagementRouter } from './user-management/routes.js';
 import { menuTreeFor } from './user-management/menu-service.js';
@@ -69,6 +70,7 @@ export const createApp = () => {
   });
 
   app.use('/api/auth', authRouter);
+  app.use('/api/public-auth', publicAuthRouter);
   app.use('/api/admin', userManagementRouter);
   app.use('/api', contentRouter);
 

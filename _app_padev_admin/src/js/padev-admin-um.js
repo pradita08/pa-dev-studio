@@ -5,10 +5,12 @@
  * `user-groups.ejs`, `menu-permissions.ejs`): kartu metrik di atas, lalu kartu
  * tabel yang dikemudikan `padev-tables.js`, di dalam satu `basic-section`.
  *
- * FORMULIR TIDAK ADA DI BERKAS INI. Tambah dan ubah pindah ke halaman
+ * FORMULIR CRUD TIDAK ADA DI BERKAS INI. Tambah dan ubah pindah ke halaman
  * tersendiri (`padev-*-form.html`, dikemudikan `padev-admin-um-form.js`),
- * sama seperti rujukannya. Yang tersisa di sini hanyalah dialog ganti kata
- * sandi milik halaman Profil — itu tindakan layanan-diri, bukan formulir CRUD.
+ * sama seperti rujukannya. Satu-satunya formulir yang tersisa milik halaman
+ * Profil — identitas, foto, dan kata sandi sendiri — dan itu layanan-diri,
+ * bukan CRUD atas orang lain. Bentuknya kartu inline mengikuti rujukan, bukan
+ * dialog: tidak ada daftar di belakangnya yang perlu dijaga tetap terlihat.
  *
  * DUA ATURAN PADF-UM-001 YANG TERLIHAT DI HALAMAN INI:
  *
@@ -40,9 +42,19 @@
   };
 
   const minta = async (url, opsi = {}) => {
+    /* Content-Type HANYA dipasang untuk badan JSON.
+     *
+     * Unggahan berkas memakai FormData, dan batas antar-bagiannya (boundary)
+     * hanya diketahui `fetch` saat ia menyusun sendiri header itu. Menuliskan
+     * `application/json` di sini membuat multipart-nya tidak pernah terbaca
+     * server — permintaannya berangkat, lalu ditolak seolah tidak ada berkas. */
+    const formData = opsi.body instanceof FormData;
     const r = await fetch(url, {
       credentials: 'same-origin',
-      headers: { Accept: 'application/json', ...(opsi.body ? { 'Content-Type': 'application/json' } : {}) },
+      headers: {
+        Accept: 'application/json',
+        ...(opsi.body && !formData ? { 'Content-Type': 'application/json' } : {}),
+      },
       ...opsi,
     });
     if (r.status === 401) {
@@ -63,6 +75,7 @@
   document.body.append(toastRegion);
 
   const toast = (pesan, jenis = 'success') => {
+    if (window.PADevToast) return window.PADevToast(pesan, jenis === 'danger' ? 'error' : jenis);
     const k = el('article', `ui-toast ui-feedback--${jenis}`);
     k.setAttribute('role', jenis === 'danger' ? 'alert' : 'status');
     const isi = el('div');
@@ -114,410 +127,19 @@
     perluMuatUlang = true;
   };
 
-  /* ====================== Dialog (khusus Profil) ====================== */
-
-  const overlay = el('div', 'ui-overlay-layer');
-  overlay.hidden = true;
-  const backdrop = el('div', 'ui-overlay-backdrop');
-  const kotak = el('section', 'ui-modal ui-modal--md');
-  kotak.setAttribute('role', 'dialog');
-  kotak.setAttribute('aria-modal', 'true');
-  overlay.append(backdrop, kotak);
-  document.body.append(overlay);
-
-  const tutup = () => { overlay.hidden = true; kotak.replaceChildren(); };
-  backdrop.addEventListener('click', tutup);
-  window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !overlay.hidden) tutup(); });
-
-  const bukaModal = (eyebrow, judul, isiForm, onSubmit, labelSimpan = 'Simpan') => {
-    kotak.replaceChildren();
-    const header = document.createElement('header');
-    const teks = el('div');
-    teks.append(el('p', null, eyebrow), el('h2', null, judul));
-    const tombolX = el('button', null, '×');
-    tombolX.type = 'button';
-    tombolX.setAttribute('aria-label', 'Tutup');
-    tombolX.addEventListener('click', tutup);
-    header.append(teks, tombolX);
-
-    const form = document.createElement('form');
-    form.noValidate = true;
-    const badan = el('div', 'ui-modal-body ui-modal-form');
-    isiForm(badan, form);
-
-    const footer = document.createElement('footer');
-    const batal = el('button', null, 'Batal');
-    batal.type = 'button';
-    batal.addEventListener('click', tutup);
-    const simpan = el('button', 'is-primary', labelSimpan);
-    simpan.type = 'submit';
-    footer.append(batal, simpan);
-    form.append(badan, footer);
-
-    form.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      form.querySelectorAll('[data-galat]').forEach((p) => { p.textContent = ''; p.classList.add('hidden'); });
-      simpan.disabled = true;
-      const semula = simpan.textContent;
-      simpan.textContent = 'Menyimpan…';
-      try {
-        await onSubmit(new FormData(form), form);
-        tutup();
-      } catch (error) {
-        simpan.disabled = false;
-        simpan.textContent = semula;
-        Object.entries(error.errors || {}).forEach(([nama, pesan]) => {
-          const slot = form.querySelector(`[data-galat="${nama}"]`);
-          if (slot) { slot.textContent = pesan; slot.classList.remove('hidden'); }
-        });
-        toast(error.message, 'danger');
-      }
-    });
-
-    kotak.append(header, form);
-    overlay.hidden = false;
-    form.querySelector('input, select, textarea')?.focus();
-  };
-
-  const bidang = (nama, label, { tipe = 'text', bantuan = '', wajib = false } = {}) => {
-    const wrap = el('label');
-    wrap.append(el('span', null, label));
-    const kontrol = document.createElement('input');
-    kontrol.type = tipe;
-    if (tipe === 'password') kontrol.autocomplete = 'new-password';
-    kontrol.name = nama;
-    if (wajib) kontrol.required = true;
-    wrap.append(kontrol);
-    if (bantuan) wrap.append(el('small', 'text-ink-muted', bantuan));
-    const galat = el('p', 'hidden text-xs text-danger');
-    galat.dataset.galat = nama;
-    wrap.append(galat);
-    return wrap;
-  };
-
   /* ========================= Tabel PA DEV =========================
    *
-   * Markup di bawah adalah kontrak `padev-tables.js`, disalin dari rujukan
-   * `api_bridge_gateway` (`partials/padev-table-toolbar.ejs` dan `users.ejs`).
-   * Di sana ia dicetak server; di sini datanya baru tiba setelah fetch, jadi
-   * markupnya dibangun sebagai DOM lalu diserahkan ke mesin yang sama.
-   *
-   * Yang dikerjakan mesin dan TIDAK ditulis ulang di sini: kolom pilih, nomor
-   * baris, chevron detail, tombol urut, pencarian, saringan, pemilih kolom,
-   * kerapatan, mode kartu, aksi massal, dan pagination. Halaman hanya
-   * menyatakan maksud lewat atribut — `data-sort`, `data-detail`,
-   * `data-sort-value`, `data-search`, dan `data-bulk-*`.
+   * Perakitnya pindah ke `padev-table-build.js` supaya halaman modul konten
+   * memakai perakit yang sama persis. Yang tinggal di sini hanya PEMAKAIANNYA:
+   * kolom apa, baris apa, saringan apa. Lihat berkas itu untuk kontrak
+   * markupnya.
    */
+  const {
+    berIkon, tanggal, selAvatar, tautanAksi, aksi, tabel: bangunTabel, BENTUK_IKON,
+  } = window.PADevTableBuild;
 
-  const BENTUK_IKON = {
-    arrow: '<path d="M5 12h13M13 6l6 6-6 6"/>',
-    check: '<path d="m5 12 4 4L19 6"/>',
-    edit: '<path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z"/>',
-    eye: '<path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.5"/>',
-    settings: '<path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/><circle cx="12" cy="12" r="3"/>',
-    trash: '<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',
-    user: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
-  };
-
-  /**
-   * Elemen berisi satu SVG. Seluruh bentuk di berkas ini literal tetap yang
-   * ditulis di sini, bukan data dari server — tidak ada yang bisa disuntikkan
-   * lewat `innerHTML` ini.
-   */
-  const berIkon = (tag, kelas, bentuk, atribut = {}) => {
-    const n = document.createElement(tag);
-    if (kelas) n.className = kelas;
-    if (tag === 'button') n.type = 'button';
-    if (bentuk) n.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true">${bentuk}</svg>`;
-    Object.entries(atribut).forEach(([nama, nilai]) => n.setAttribute(nama, nilai));
-    return n;
-  };
-
-  const inisial = (nama) => String(nama || '?').trim().split(/\s+/).slice(0, 2)
-    .map((bagian) => bagian.charAt(0).toUpperCase()).join('');
-
-  const tanggal = (nilai) => (nilai
-    ? new Date(nilai).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })
-    : 'Belum');
-
-  /** Sel nama + baris kedua kecil, susunan avatar rujukan. */
-  const selAvatar = (nama, keterangan, nada = '') => {
-    const wrap = el('span', 'ui-avatar-cell');
-    const avatar = el('span', `ui-table-avatar${nada ? ` is-${nada}` : ''}`, inisial(nama));
-    avatar.setAttribute('aria-hidden', 'true');
-    const teks = el('span');
-    teks.append(el('strong', null, nama));
-    if (keterangan) teks.append(el('small', null, keterangan));
-    wrap.append(avatar, teks);
-    return wrap;
-  };
-
-  /** Satu item menu aksi berupa tautan — susunan rujukan untuk "Ubah". */
-  const tautanAksi = (label, href, { bentuk = 'edit' } = {}) => {
-    const a = berIkon('a', 'ui-table-action-menu-link', null, { role: 'menuitem', href });
-    a.append(berIkon('span', 'ui-table-action-icon', BENTUK_IKON[bentuk], { 'data-icon': bentuk, 'aria-hidden': 'true' }));
-    a.append(el('span', 'ui-table-action-label', label));
-    return a;
-  };
-
-  /** Satu item menu aksi berupa tombol. API di sini JSON, bukan form. */
-  const aksi = (label, { bentuk = 'arrow', nada = '', onClick }) => {
-    const b = berIkon('button', `ui-table-action-menu-item${nada ? ` is-${nada}` : ''}`, null, { role: 'menuitem' });
-    b.append(berIkon('span', 'ui-table-action-icon', BENTUK_IKON[bentuk], { 'data-icon': bentuk, 'aria-hidden': 'true' }));
-    b.append(el('span', 'ui-table-action-label', label));
-    b.addEventListener('click', onClick);
-    return b;
-  };
-
-  const selAksi = (id, labelAria, daftar) => {
-    const td = el('td', 'ui-table-action-cell ui-table-sticky-action');
-    if (daftar.length === 0) return td;
-    const bungkus = el('div', 'ui-table-action');
-    const tombolPemicu = berIkon(
-      'button',
-      'ui-table-action-trigger',
-      '<circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>',
-      { 'data-action-trigger': '', 'aria-label': labelAria, 'aria-haspopup': 'menu', 'aria-expanded': 'false', 'aria-controls': id },
-    );
-
-    const menu = el('div', 'ui-table-action-menu');
-    menu.id = id;
-    menu.setAttribute('data-action-menu', '');
-    menu.setAttribute('role', 'menu');
-    menu.hidden = true;
-    daftar.forEach((item) => menu.append(item));
-    bungkus.append(tombolPemicu, menu);
-    td.append(bungkus);
-    return td;
-  };
-
-  const opsiSelect = (select, daftar, labelKosong) => {
-    select.append(new Option(labelKosong, ''));
-    daftar.forEach((o) => select.append(new Option(o.label, o.value)));
-  };
-
-  const toolbarTabel = (akar, { countLabel, cari, filter, bulk }) => {
-    const sejajar = filter[0] || null;
-    const lanjutan = filter.slice(1);
-
-    const toolbar = el('div', 'ui-table-toolbar padev-table-toolbar');
-    toolbar.setAttribute('data-padev-toolbar', '');
-    toolbar.dataset.padevCountLabel = countLabel;
-
-    const labelCari = berIkon('label', 'ui-table-search', '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>');
-    labelCari.prepend(el('span', 'sr-only', cari));
-    const isian = document.createElement('input');
-    isian.type = 'search';
-    isian.placeholder = cari;
-    isian.autocomplete = 'off';
-    isian.setAttribute('data-padev-search', '');
-    labelCari.append(isian);
-    toolbar.append(labelCari);
-
-    if (sejajar) {
-      const l = el('label', 'ui-table-filter');
-      l.append(el('span', 'sr-only', sejajar.label));
-      const s = document.createElement('select');
-      s.dataset.padevFilter = sejajar.key;
-      s.dataset.padevMatch = sejajar.match || 'exact';
-      opsiSelect(s, sejajar.options, sejajar.label);
-      l.append(s);
-      toolbar.append(l);
-    }
-
-    if (lanjutan.length) {
-      const tombolFilter = berIkon('button', 'ui-table-tool-button', '<path d="M4 6h16M7 12h10M10 18h4"/>', {
-        'data-padev-filter-toggle': '', 'aria-expanded': 'false',
-      });
-      tombolFilter.append('Filter');
-      toolbar.append(tombolFilter);
-    }
-
-    const view = el('details', 'ui-table-settings');
-    view.setAttribute('data-padev-view', '');
-    const ringkas = berIkon('summary', 'ui-table-tool-button', '<path d="M5 7h14M5 12h14M5 17h14"/>');
-    ringkas.append('Tampilan');
-    const panelView = el('div', 'ui-table-settings-panel');
-
-    const fsKolom = document.createElement('fieldset');
-    fsKolom.setAttribute('data-padev-columns', '');
-    // Paragraf ini dibuang mesin saat daftar kolom pertama disisipkan.
-    fsKolom.append(el('legend', null, 'Kolom'), el('p', 'text-ink-muted', 'Memuat kolom…'));
-
-    const fsKerapatan = document.createElement('fieldset');
-    fsKerapatan.append(el('legend', null, 'Kerapatan'));
-    const saklar = el('div', 'ui-density-switch');
-    saklar.setAttribute('role', 'group');
-    saklar.setAttribute('aria-label', 'Kerapatan tabel');
-    [['comfortable', 'Normal', true], ['compact', 'Rapat', false]].forEach(([nilai, label, aktif]) => {
-      const b = el('button', aktif ? 'is-active' : null, label);
-      b.type = 'button';
-      b.dataset.padevDensity = nilai;
-      b.setAttribute('aria-pressed', String(aktif));
-      saklar.append(b);
-    });
-    fsKerapatan.append(saklar);
-    panelView.append(fsKolom, fsKerapatan);
-    view.append(ringkas, panelView);
-    toolbar.append(view);
-
-    const tombolKartu = berIkon('button', 'ui-table-tool-button', '<path d="M4 5h16v5H4zM4 14h16v5H4z"/>', {
-      'data-padev-cards': '', 'aria-pressed': 'false',
-    });
-    tombolKartu.append('Kartu');
-    toolbar.append(tombolKartu);
-
-    const hitung = el('span', 'ui-table-result', `— ${countLabel}`);
-    hitung.setAttribute('data-padev-count', '');
-    hitung.setAttribute('aria-live', 'polite');
-    toolbar.append(hitung);
-
-    const rows = el('label', 'ui-table-page-size');
-    rows.append(el('span', null, 'Baris'));
-    const pilihRows = document.createElement('select');
-    pilihRows.setAttribute('data-padev-page-size', '');
-    pilihRows.setAttribute('aria-label', 'Baris per halaman');
-    [5, 10, 25, 50].forEach((n) => pilihRows.append(new Option(String(n), String(n), n === 10, n === 10)));
-    rows.append(pilihRows);
-    toolbar.append(rows);
-    akar.append(toolbar);
-
-    if (lanjutan.length) {
-      const panelFilter = el('div', 'ui-table-advanced-filter padev-table-filter-panel');
-      panelFilter.setAttribute('data-padev-filter-panel', '');
-      panelFilter.hidden = true;
-      lanjutan.forEach((f) => {
-        const l = document.createElement('label');
-        l.append(el('span', null, f.label));
-        const s = document.createElement('select');
-        s.dataset.padevFilter = f.key;
-        s.dataset.padevMatch = f.match || 'exact';
-        opsiSelect(s, f.options, 'Semua');
-        l.append(s);
-        panelFilter.append(l);
-      });
-      const aksiPanel = el('div');
-      const reset = el('button', 'ui-button ui-button--primary ui-button--sm', 'Reset');
-      reset.type = 'button';
-      reset.setAttribute('data-padev-filter-reset', '');
-      aksiPanel.append(reset);
-      panelFilter.append(aksiPanel);
-      akar.append(panelFilter);
-    }
-
-    if (bulk.length) {
-      const bar = el('div', 'ui-table-bulk');
-      bar.setAttribute('data-padev-bulk', '');
-      bar.hidden = true;
-      const jumlah = el('span', null, `0 ${countLabel} dipilih`);
-      jumlah.setAttribute('data-padev-bulk-count', '');
-      jumlah.setAttribute('aria-live', 'polite');
-      const kontrol = el('div', 'ui-table-bulk-controls');
-      bulk.forEach((b) => {
-        const t = el('button', b.nada === 'danger' ? 'is-danger' : null, b.label);
-        t.type = 'button';
-        t.dataset.padevBulkAction = b.key;
-        t.dataset.padevBulkConfirm = b.konfirmasi;
-        kontrol.append(t);
-      });
-      const bersih = el('button', null, 'Bersihkan pilihan');
-      bersih.type = 'button';
-      bersih.setAttribute('data-padev-bulk-clear', '');
-      kontrol.append(bersih);
-      bar.append(jumlah, kontrol);
-      akar.append(bar);
-    }
-  };
-
-  const kakiTabel = (akar) => {
-    const ringkasan = el('div', 'ui-table-footer-summary');
-    ringkasan.setAttribute('data-padev-summary', '');
-    ringkasan.setAttribute('aria-live', 'polite');
-
-    const pager = el('div', 'ui-table-pagination padev-table-pagination');
-    pager.setAttribute('data-padev-pager', '');
-    const teks = el('span', null, 'Menampilkan 0 dari 0');
-    teks.setAttribute('data-padev-page-summary', '');
-    teks.setAttribute('aria-live', 'polite');
-    const tombolHalaman = el('div');
-    tombolHalaman.setAttribute('data-page-buttons', '');
-    [['data-padev-prev', 'Halaman sebelumnya', '<path d="m15 18-6-6 6-6"/>'],
-      ['data-padev-next', 'Halaman berikutnya', '<path d="m9 18 6-6-6-6"/>']].forEach(([atribut, label, bentuk]) => {
-      tombolHalaman.append(berIkon('button', null, bentuk, { [atribut]: '', 'aria-label': label }));
-    });
-    pager.append(teks, tombolHalaman);
-    akar.append(ringkasan, pager);
-  };
-
-  /**
-   * @param kolom  [{ label, urut, detail }]
-   * @param baris  [{ kunci, cari, bulk, sel, aksi, aksiLabel }]
-   *               `sel` boleh string, Node, atau { isi, urut } bila nilai yang
-   *               diurutkan berbeda dari yang ditampilkan.
-   */
-  const tabel = ({ countLabel, cari, kolom, baris, filter = [], bulk = [], kirim, kelas = '' }) => {
-    const akar = el('section', `ui-table-card padev-table${kelas ? ` ${kelas}` : ''}`);
-    akar.setAttribute('data-padev-table', '');
-    toolbarTabel(akar, { countLabel, cari, filter, bulk });
-
-    const gulir = el('div', 'ui-table-scroll');
-    const t = el('table', 'ui-table ui-table--hover');
-
-    const thead = document.createElement('thead');
-    const trh = document.createElement('tr');
-    kolom.forEach((k) => {
-      const th = el('th', null, k.label);
-      if (k.urut !== false) th.setAttribute('data-sort', '');
-      if (k.detail) th.setAttribute('data-detail', '');
-      trh.append(th);
-    });
-    const adaAksi = baris.some((r) => (r.aksi || []).length);
-    if (adaAksi) trh.append(el('th', 'ui-table-action-cell ui-table-sticky-action', 'Aksi'));
-    thead.append(trh);
-
-    const tbody = document.createElement('tbody');
-    if (baris.length === 0) {
-      const tr = document.createElement('tr');
-      tr.setAttribute('data-table-empty', '');
-      const td = el('td', 'empty', 'Belum ada data.');
-      td.colSpan = kolom.length + (adaAksi ? 1 : 0);
-      tr.append(td);
-      tbody.append(tr);
-    }
-
-    baris.forEach((r, urutan) => {
-      const tr = document.createElement('tr');
-      tr.setAttribute('data-row', '');
-      Object.entries(r.kunci || {}).forEach(([nama, nilai]) => { tr.dataset[nama] = nilai ?? ''; });
-      tr.dataset.search = String(r.cari || '').toLowerCase();
-      Object.entries(r.bulk || {}).forEach(([nama, nilai]) => { tr.dataset[nama] = nilai; });
-
-      r.sel.forEach((sel) => {
-        const td = el('td');
-        const isi = sel && typeof sel === 'object' && !(sel instanceof Node) ? sel.isi : sel;
-        if (sel && typeof sel === 'object' && !(sel instanceof Node)) {
-          if (sel.urut !== undefined) td.dataset.sortValue = String(sel.urut);
-          if (sel.kelas) td.className = sel.kelas;
-        }
-        if (isi instanceof Node) td.append(isi);
-        else td.textContent = isi ?? '—';
-        tr.append(td);
-      });
-
-      if (adaAksi) tr.append(selAksi(`aksi-${modul}-${urutan}`, r.aksiLabel || 'Aksi baris', r.aksi || []));
-      tbody.append(tr);
-    });
-
-    t.append(thead, tbody);
-    gulir.append(t);
-    akar.append(gulir);
-    kakiTabel(akar);
-
-    // Dipasang setelah akar berada di dokumen: `syncStickyOffset` mengukur
-    // tinggi baris header, dan elemen yang belum terpasang selalu nol.
-    window.requestAnimationFrame(() => window.PADevTables?.mount(akar, { kirim }));
-    return akar;
-  };
+  // `idPrefix` menjaga id menu aksi tetap unik antar modul pada satu dokumen.
+  const tabel = (opsi) => bangunTabel({ ...opsi, idPrefix: modul });
 
   const tautanTombol = (label, href, gaya = 'primary') => {
     const a = el('a', `ui-button ui-button--${gaya} ui-button--sm`, label);
@@ -889,45 +511,476 @@
 
   /* ============================== Profil ============================== */
 
-  const halamanProfil = async () => {
-    const { user } = await minta('/api/auth/me');
-    aksiBar.replaceChildren(tombol('Ubah kata sandi', 'primary', formKataSandiSendiri));
+  /* ============================== Profil Saya ==============================
+   *
+   * Susunan mengikuti rujukan `api_bridge_gateway` (`profile.ejs`): kepala
+   * halaman, pita metrik, lalu dua kartu berdampingan — identitas dan kata
+   * sandi — dengan daftar izin sebagai kartu penutup.
+   *
+   * TAMBAHAN DI LUAR RUJUKAN: kartu foto profil. Rujukan tidak punya avatar
+   * sama sekali; di sini navbar template sudah menyediakan tempatnya, jadi
+   * fotonya diunggah dari halaman ini dan dipakai kembali di sana.
+   *
+   * Yang boleh disunting pemiliknya sendiri hanya nama, email, foto, dan kata
+   * sandi. Role, status, dan izin tidak ada formulirnya di sini — akun yang
+   * bisa menaikkan izinnya sendiri membuat seluruh model izin kehilangan
+   * artinya. Daftar izin ditampilkan sebagai bacaan, persis seperti rujukan.
+   */
 
-    const kartu = el('div', 'grid gap-4 rounded-xl border border-line bg-surface p-5 shadow-elevation-xs md:grid-cols-2');
-    [['Nama', user.name], ['Email', user.email], ['Role', user.role],
-      ['Jumlah izin', `${user.permissions.length} izin`]].forEach(([label, nilai]) => {
-      const b = el('div', 'grid gap-1');
-      b.append(el('span', 'text-xs uppercase tracking-wide text-ink-muted', label),
-        el('span', 'text-sm font-medium text-ink-heading', nilai));
-      kartu.append(b);
+  const kartuProfil = (judul, ...isi) => {
+    const kartu = el('article', 'card form-stack');
+    kartu.append(el('h2', null, judul), ...isi);
+    return kartu;
+  };
+
+  /** Satu label + input, susunan yang sama dengan formulir User Management. */
+  const bidangProfil = (nama, label, { tipe = 'text', nilai = '', bantuan = '', wajib = false, nonaktif = false, opsional = false, autocomplete } = {}) => {
+    const wrap = el('label');
+    const teks = el('span', null, label);
+    if (opsional) {
+      teks.append(' ');
+      teks.append(el('small', 'label-optional', '(opsional)'));
+    }
+    wrap.append(teks);
+    const kontrol = document.createElement('input');
+    kontrol.type = tipe;
+    kontrol.name = nama;
+    kontrol.value = nilai ?? '';
+    if (autocomplete) kontrol.autocomplete = autocomplete;
+    if (wajib) kontrol.required = true;
+    if (nonaktif) kontrol.disabled = true;
+    wrap.append(kontrol);
+    if (bantuan) wrap.append(el('small', null, bantuan));
+    const galat = el('span', 'field-error');
+    galat.dataset.galat = nama;
+    wrap.append(galat);
+    return wrap;
+  };
+
+  const bersihkanGalat = (form) => {
+    form.querySelectorAll('[data-galat]').forEach((n) => { n.textContent = ''; });
+  };
+
+  const tampilkanGalat = (form, errors) => {
+    Object.entries(errors || {}).forEach(([nama, pesan]) => {
+      const slot = form.querySelector(`[data-galat="${nama}"]`);
+      if (slot) slot.textContent = pesan;
+    });
+  };
+
+  /**
+   * Modal atur posisi foto.
+   *
+   * Foto yang diunggah orang hampir tidak pernah persegi, sementara avatar
+   * selalu lingkaran. Tanpa langkah ini browser memangkasnya dari tengah, dan
+   * wajah yang tidak berada di tengah frame ikut terpotong. Di sini pemiliknya
+   * yang menentukan bagian mana yang dipakai.
+   *
+   * Yang dikirim ke server adalah hasil potongannya, bukan berkas aslinya:
+   * ukurannya jadi tetap 512×512 dan tidak ada foto beresolusi kamera yang
+   * diam-diam ikut tersimpan.
+   */
+  const LEBAR_JENDELA = 264;   // sisi area pratinjau, px
+  const SISI_KELUARAN = 512;   // sisi berkas hasil, px
+
+  const bukaPengaturPosisi = (berkas, onSelesai) => {
+    const overlay = el('div', 'ui-overlay-layer');
+    const backdrop = el('div', 'ui-overlay-backdrop');
+    const kotak = el('section', 'ui-modal ui-modal--md');
+    kotak.setAttribute('role', 'dialog');
+    kotak.setAttribute('aria-modal', 'true');
+    kotak.setAttribute('aria-label', 'Atur posisi foto profil');
+
+    const header = document.createElement('header');
+    const teks = el('div');
+    teks.append(el('p', null, 'Foto profil'), el('h2', null, 'Atur posisi'));
+    const tombolX = el('button', null, '×');
+    tombolX.type = 'button';
+    tombolX.setAttribute('aria-label', 'Tutup');
+    header.append(teks, tombolX);
+
+    const badan = el('div', 'ui-modal-body');
+    const jendela = el('div', 'profil-krop');
+    const gambar = document.createElement('img');
+    gambar.alt = '';
+    gambar.draggable = false;
+    const bingkai = el('span', 'profil-krop-bingkai');
+    bingkai.setAttribute('aria-hidden', 'true');
+    jendela.append(gambar, bingkai);
+
+    const kendali = el('label', 'profil-krop-zoom');
+    kendali.append(el('span', null, 'Perbesar'));
+    const zoom = document.createElement('input');
+    zoom.type = 'range';
+    zoom.min = '1';
+    zoom.max = '3';
+    zoom.step = '0.01';
+    zoom.value = '1';
+    kendali.append(zoom);
+    badan.append(
+      jendela,
+      kendali,
+      el('p', 'profil-krop-bantuan', 'Geser foto untuk memindahkan, lalu atur perbesarannya.'),
+    );
+
+    const footer = document.createElement('footer');
+    const batal = el('button', null, 'Batal');
+    batal.type = 'button';
+    const simpan = el('button', 'is-primary', 'Simpan foto');
+    simpan.type = 'button';
+    footer.append(batal, simpan);
+
+    kotak.append(header, badan, footer);
+    overlay.append(backdrop, kotak);
+    document.body.append(overlay);
+
+    const sumber = URL.createObjectURL(berkas);
+    let dasar = 1;   // skala terkecil yang masih menutup penuh jendela
+    let skala = 1;
+    let ox = 0;
+    let oy = 0;
+
+    /* Foto WAJIB selalu menutup penuh jendela: begitu tepinya masuk, hasil
+     * potongannya berisi bidang kosong yang tidak pernah diminta siapa pun. */
+    const jepit = () => {
+      const lebar = gambar.naturalWidth * skala;
+      const tinggi = gambar.naturalHeight * skala;
+      ox = Math.min(0, Math.max(LEBAR_JENDELA - lebar, ox));
+      oy = Math.min(0, Math.max(LEBAR_JENDELA - tinggi, oy));
+    };
+
+    const gambarkan = () => {
+      jepit();
+      gambar.style.width = `${gambar.naturalWidth * skala}px`;
+      gambar.style.height = `${gambar.naturalHeight * skala}px`;
+      gambar.style.transform = `translate(${ox}px, ${oy}px)`;
+    };
+
+    gambar.addEventListener('load', () => {
+      dasar = Math.max(LEBAR_JENDELA / gambar.naturalWidth, LEBAR_JENDELA / gambar.naturalHeight);
+      skala = dasar;
+      ox = (LEBAR_JENDELA - gambar.naturalWidth * skala) / 2;
+      oy = (LEBAR_JENDELA - gambar.naturalHeight * skala) / 2;
+      gambarkan();
+    }, { once: true });
+    gambar.src = sumber;
+
+    zoom.addEventListener('input', () => {
+      const tengahX = (LEBAR_JENDELA / 2 - ox) / skala;
+      const tengahY = (LEBAR_JENDELA / 2 - oy) / skala;
+      skala = dasar * Number(zoom.value);
+      // Titik yang tadinya di tengah jendela tetap di tengah setelah diperbesar.
+      ox = LEBAR_JENDELA / 2 - tengahX * skala;
+      oy = LEBAR_JENDELA / 2 - tengahY * skala;
+      gambarkan();
     });
 
-    const daftarIzin = el('div', 'mt-4 rounded-xl border border-line bg-surface p-5 shadow-elevation-xs');
-    daftarIzin.append(el('p', 'mb-3 text-xs font-semibold uppercase tracking-wide text-ink-muted', 'Izin yang Anda pegang'));
-    const chip = el('div', 'flex flex-wrap gap-2');
-    user.permissions.slice().sort().forEach((k) => chip.append(el('span', 'ui-table-status is-neutral', k)));
-    daftarIzin.append(chip);
+    let seret = null;
+    jendela.addEventListener('pointerdown', (event) => {
+      seret = { x: event.clientX, y: event.clientY, ox, oy };
+      jendela.setPointerCapture(event.pointerId);
+      jendela.classList.add('is-menyeret');
+    });
+    jendela.addEventListener('pointermove', (event) => {
+      if (!seret) return;
+      ox = seret.ox + (event.clientX - seret.x);
+      oy = seret.oy + (event.clientY - seret.y);
+      gambarkan();
+    });
+    const lepas = () => { seret = null; jendela.classList.remove('is-menyeret'); };
+    jendela.addEventListener('pointerup', lepas);
+    jendela.addEventListener('pointercancel', lepas);
 
-    panel.replaceChildren(kartu, daftarIzin);
-  };
+    const tutup = () => {
+      URL.revokeObjectURL(sumber);
+      overlay.remove();
+      document.removeEventListener('keydown', padaEscape);
+    };
+    function padaEscape(event) { if (event.key === 'Escape') tutup(); }
+    document.addEventListener('keydown', padaEscape);
+    [backdrop, tombolX, batal].forEach((n) => n.addEventListener('click', tutup));
 
-  const formKataSandiSendiri = () => {
-    bukaModal('Akun', 'Ubah kata sandi', (badan) => {
-      badan.append(
-        bidang('current_password', 'Kata sandi saat ini', { tipe: 'password', wajib: true }),
-        bidang('new_password', 'Kata sandi baru', { tipe: 'password', wajib: true, bantuan: 'Minimal 10 karakter.' }),
+    simpan.addEventListener('click', () => {
+      const kanvas = document.createElement('canvas');
+      kanvas.width = SISI_KELUARAN;
+      kanvas.height = SISI_KELUARAN;
+      const rasio = SISI_KELUARAN / LEBAR_JENDELA;
+      const konteks = kanvas.getContext('2d');
+      konteks.drawImage(
+        gambar,
+        ox * rasio, oy * rasio,
+        gambar.naturalWidth * skala * rasio, gambar.naturalHeight * skala * rasio,
       );
-    }, async (data) => {
-      const hasil = await minta('/api/admin/me/password', {
-        method: 'POST',
-        body: JSON.stringify({
-          current_password: data.get('current_password'),
-          new_password: data.get('new_password'),
-        }),
-      });
-      toast(hasil.message);
-    }, 'Ubah');
+      // JPEG: hasilnya foto, dan lingkarannya dibentuk CSS — tidak ada
+      // transparansi yang perlu dipertahankan.
+      kanvas.toBlob((blob) => {
+        if (!blob) { toast('Foto gagal diproses di browser.', 'danger'); return; }
+        tutup();
+        onSelesai(new File([blob], 'foto-profil.jpg', { type: 'image/jpeg' }));
+      }, 'image/jpeg', 0.9);
+    });
   };
+
+  /**
+   * Kartu foto profil.
+   *
+   * Bentuk unggahnya memakai komponen `ui-dropzone` milik tema — kotak putus
+   * yang sama dengan halaman upload template, lengkap dengan keadaan seret.
+   * Halaman ini tidak menggambar bentuk unggah sendiri.
+   */
+  const kartuFoto = (user, sesudahBerubah) => {
+    const kartu = el('article', 'card form-stack');
+    kartu.append(el('h2', null, 'Foto profil'));
+
+    const baris = el('div', 'profil-foto-baris');
+    const pratinjau = el('span', 'profil-foto');
+    const gambarkanPratinjau = (url) => {
+      pratinjau.replaceChildren();
+      if (url) {
+        const img = document.createElement('img');
+        img.src = url;
+        img.alt = `Foto profil ${user.name}`;
+        pratinjau.append(img);
+      } else {
+        pratinjau.textContent = inisialNama(user.name || user.email);
+      }
+    };
+    gambarkanPratinjau(user.avatarUrl);
+
+    const status = el('p', 'upload-live-status');
+    status.setAttribute('aria-live', 'polite');
+    status.textContent = user.avatarUrl ? 'Foto profil terpasang.' : 'Belum ada foto profil.';
+
+    const berkas = document.createElement('input');
+    berkas.type = 'file';
+    berkas.className = 'sr-only';
+    berkas.accept = 'image/png,image/jpeg,image/webp,image/avif';
+    berkas.id = 'profil-foto-berkas';
+
+    const zona = el('div', 'ui-dropzone');
+    zona.setAttribute('role', 'button');
+    zona.setAttribute('tabindex', '0');
+    zona.setAttribute('aria-label', 'Pilih foto profil');
+    /* SVG-nya ditulis lengkap dengan `fill="none"` dan `stroke`, sama persis
+     * dengan markup dropzone template. `berIkon` menaruh atribut pada
+     * pembungkusnya, bukan pada <svg>, sehingga ikonnya jatuh ke fill hitam
+     * bawaan dan tampil sebagai kotak pekat. */
+    const ikon = el('span', 'ui-dropzone-icon');
+    ikon.setAttribute('aria-hidden', 'true');
+    ikon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 14v5h14v-5"/></svg>';
+    zona.append(
+      berkas,
+      ikon,
+      el('span', 'ui-dropzone-title', 'Tarik foto atau klik untuk pilih'),
+      el('span', 'ui-dropzone-hint', 'PNG, JPG, WebP, atau AVIF · maksimum 4 MB'),
+    );
+
+    const unggah = async (file) => {
+      const data = new FormData();
+      data.append('file', file);
+      status.textContent = 'Mengunggah…';
+      try {
+        const hasil = await minta('/api/admin/me/avatar', { method: 'POST', body: data });
+        gambarkanPratinjau(hasil.url);
+        status.textContent = 'Foto profil terpasang.';
+        hapus.disabled = false;
+        toast(hasil.message);
+        sesudahBerubah();
+      } catch (error) {
+        status.textContent = 'Foto gagal diunggah.';
+        toast(error.message, 'danger');
+      }
+    };
+
+    const terima = (file) => {
+      if (!file) return;
+      if (!file.type.startsWith('image/')) {
+        toast('Berkas yang dipilih bukan gambar.', 'danger');
+        return;
+      }
+      // Modal atur posisi selalu muncul: bagian foto yang dipakai ditentukan
+      // pemiliknya, bukan hasil pangkas tengah oleh browser.
+      bukaPengaturPosisi(file, unggah);
+    };
+
+    zona.addEventListener('click', (event) => {
+      if (event.target !== berkas) berkas.click();
+    });
+    zona.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); berkas.click(); }
+    });
+    berkas.addEventListener('change', () => {
+      terima(berkas.files?.[0]);
+      berkas.value = '';
+    });
+    ['dragenter', 'dragover'].forEach((nama) => zona.addEventListener(nama, (event) => {
+      event.preventDefault();
+      zona.classList.add('is-drag-active');
+    }));
+    ['dragleave', 'drop'].forEach((nama) => zona.addEventListener(nama, (event) => {
+      event.preventDefault();
+      zona.classList.remove('is-drag-active');
+    }));
+    zona.addEventListener('drop', (event) => terima(event.dataTransfer?.files?.[0]));
+
+    const hapus = el('button', 'ui-button ui-button--outline ui-button--sm', 'Hapus foto');
+    hapus.type = 'button';
+    hapus.disabled = !user.avatarUrl;
+    hapus.addEventListener('click', async () => {
+      try {
+        const hasil = await minta('/api/admin/me/avatar', { method: 'DELETE' });
+        gambarkanPratinjau(null);
+        status.textContent = 'Belum ada foto profil.';
+        hapus.disabled = true;
+        toast(hasil.message);
+        sesudahBerubah();
+      } catch (error) {
+        toast(error.message, 'danger');
+      }
+    });
+
+    const sisiKiri = el('div', 'profil-foto-sisi');
+    sisiKiri.append(pratinjau, hapus);
+    const sisiKanan = el('div', 'profil-foto-zona');
+    sisiKanan.append(zona, status);
+    baris.append(sisiKiri, sisiKanan);
+    kartu.append(baris);
+    return kartu;
+  };
+  const inisialNama = (nama) => String(nama || '?').trim().split(/\s+/).slice(0, 2)
+    .map((bagian) => bagian.charAt(0).toUpperCase()).join('');
+
+  const halamanProfil = async () => {
+    const { user } = await minta('/api/auth/me');
+    const muatUlang = () => { halamanProfil().catch((error) => toast(error.message, 'danger')); };
+
+    /* Foto berubah tanpa menggambar ulang halaman: kartunya sudah memperbarui
+     * pratinjaunya sendiri, yang tersisa hanya avatar di navbar. Selektornya
+     * milik `padev-admin-session.js`, jadi yang dikirim dari sini cuma kabar —
+     * bukan salinan kedua dari cara melukis avatar. */
+    const kabarkanFotoBerubah = () => {
+      document.dispatchEvent(new CustomEvent('padev:profil-berubah'));
+    };
+
+    const judul = main.querySelector('[data-profil-nama]');
+    const ringkas = main.querySelector('[data-profil-ringkas]');
+    if (judul) judul.textContent = user.name || user.email;
+    if (ringkas) {
+      ringkas.textContent = [
+        user.username || user.email,
+        `grup ${user.role || 'tidak diatur'}`,
+        `${user.permissions.length} izin`,
+      ].join(' · ');
+    }
+    aksiBar.replaceChildren();
+
+    const pita = metrik([
+      { bentuk: 'check', label: 'Status akun', nilai: user.status === 'ACTIVE' ? 'Aktif' : 'Nonaktif', catatan: 'akses admin mengikuti status ini', naik: user.status === 'ACTIVE' },
+      { bentuk: 'user', label: 'Grup', nilai: user.role || '—', catatan: 'template izin terakhir' },
+      { bentuk: 'settings', label: 'Izin aktif', nilai: user.permissions.length, catatan: 'hak akses yang melekat pada akun' },
+      { bentuk: 'eye', label: 'Email', nilai: user.email ? 'Terisi' : 'Belum', catatan: 'dipakai untuk identitas akun' },
+    ]);
+
+    /* ---- Identitas ---- */
+    const formIdentitas = el('form', 'form-stack');
+    formIdentitas.noValidate = true;
+    formIdentitas.append(
+      bidangProfil('name', 'Nama lengkap', { nilai: user.name, wajib: true }),
+      bidangProfil('email', 'Email', { tipe: 'email', nilai: user.email, wajib: true }),
+      bidangProfil('username', 'Nama masuk', {
+        nilai: user.username || user.email,
+        nonaktif: true,
+        bantuan: 'Tidak dapat diubah sendiri. Hubungi pengelola pengguna bila perlu diganti.',
+      }),
+    );
+    const aksiIdentitas = el('div', 'form-actions');
+    const simpanIdentitas = el('button', 'ui-button ui-button--primary', 'Simpan identitas');
+    simpanIdentitas.type = 'submit';
+    aksiIdentitas.append(simpanIdentitas);
+    formIdentitas.append(aksiIdentitas);
+
+    formIdentitas.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      bersihkanGalat(formIdentitas);
+      const data = new FormData(formIdentitas);
+      try {
+        const hasil = await minta('/api/admin/me', {
+          method: 'PATCH',
+          body: JSON.stringify({ name: data.get('name'), email: data.get('email') }),
+        });
+        toast(hasil.message);
+        muatUlang();
+      } catch (error) {
+        tampilkanGalat(formIdentitas, error.errors);
+        toast(error.message, 'danger');
+      }
+    });
+
+    /* ---- Kata sandi ---- */
+    const formSandi = el('form', 'form-stack');
+    formSandi.noValidate = true;
+    formSandi.append(
+      bidangProfil('current_password', 'Kata sandi saat ini', { tipe: 'password', wajib: true, autocomplete: 'current-password' }),
+      bidangProfil('new_password', 'Kata sandi baru', { tipe: 'password', wajib: true, autocomplete: 'new-password', bantuan: 'Minimal 10 karakter. Seluruh sesi lain akan berakhir.' }),
+    );
+    const aksiSandi = el('div', 'form-actions');
+    const simpanSandi = el('button', 'ui-button ui-button--primary', 'Ubah kata sandi');
+    simpanSandi.type = 'submit';
+    aksiSandi.append(simpanSandi);
+    formSandi.append(aksiSandi);
+
+    formSandi.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      bersihkanGalat(formSandi);
+      const data = new FormData(formSandi);
+      try {
+        const hasil = await minta('/api/admin/me/password', {
+          method: 'POST',
+          body: JSON.stringify({
+            current_password: data.get('current_password'),
+            new_password: data.get('new_password'),
+          }),
+        });
+        toast(hasil.message);
+        formSandi.reset();
+      } catch (error) {
+        // Server memakai kunci `current`/`next`; slot galatnya bernama seperti field.
+        tampilkanGalat(formSandi, {
+          current_password: error.errors?.current,
+          new_password: error.errors?.next,
+        });
+        toast(error.message, 'danger');
+      }
+    });
+
+    const kolom = el('div', 'user-form-grid');
+    kolom.append(
+      kartuProfil('Identitas', formIdentitas),
+      kartuProfil('Ubah kata sandi',
+        el('p', 'muted', 'Kata sandi saat ini wajib diisi. Tanpa itu, sesi yang tertinggal terbuka di perangkat lain bisa dipakai mengunci Anda dari akun sendiri.'),
+        formSandi),
+    );
+
+    /* ---- Izin (bacaan saja) ---- */
+    const kartuIzin = el('article', 'card form-stack');
+    kartuIzin.append(
+      el('h2', null, 'Izin yang Anda miliki'),
+      el('p', 'muted', 'Daftar ini bersifat informatif. Perubahannya dilakukan pengelola pengguna, bukan dari halaman ini.'),
+    );
+    const chip = el('div', 'profil-chip-row');
+    if (user.permissions.length === 0) {
+      chip.append(el('p', 'empty', 'Belum ada izin. Hubungi pengelola pengguna.'));
+    }
+    user.permissions.slice().sort().forEach((k) => {
+      const s = el('span', 'profil-chip');
+      s.append(el('code', null, k));
+      chip.append(s);
+    });
+    kartuIzin.append(chip);
+
+    panel.replaceChildren(pita, kartuFoto(user, kabarkanFotoBerubah), kolom, kartuIzin);
+  };
+
 
   /* ============================== Umum ============================== */
 

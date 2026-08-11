@@ -52,15 +52,31 @@
         }
       });
 
-    // Avatar berupa inisial; kalau template memasang <img> demo, biarkan gambar
-    // yang tampil dan hanya perbaiki teks di belakangnya.
+    /* Avatar.
+     *
+     * Urutannya: foto yang diunggah pengguna di halaman Profil, lalu inisial.
+     * Gambar demo bawaan template BUKAN pilihan ketiga yang setara — begitu
+     * sebuah akun nyata masuk, wajah orang lain di pojok kanan atas adalah
+     * kekeliruan yang paling lama tidak disadari. Jadi ia hanya bertahan
+     * selama akun itu memang belum punya foto sendiri. */
     document.querySelectorAll('.profile-trigger > span:first-child, .profile-menu-summary > span:first-child')
       .forEach((avatar) => {
         const image = avatar.querySelector('img');
-        if (image) {
-          image.alt = label;
+        if (user.avatarUrl) {
+          if (image) {
+            image.src = user.avatarUrl;
+            image.alt = label;
+            return;
+          }
+          const baru = document.createElement('img');
+          baru.src = user.avatarUrl;
+          baru.alt = label;
+          baru.className = 'absolute inset-0 h-full w-full object-cover';
+          avatar.textContent = initials(label);
+          avatar.append(baru);
           return;
         }
+        image?.remove();
         avatar.textContent = initials(label);
       });
 
@@ -143,4 +159,17 @@
   } else {
     load();
   }
+
+  /* Halaman Profil memberi kabar setelah foto diganti atau dihapus.
+   *
+   * Yang dikirim hanya kabarnya, bukan URL fotonya: identitas dibaca ulang
+   * dari server, jadi avatar di navbar tidak pernah menampilkan sesuatu yang
+   * ternyata gagal tersimpan. Selektor avatar tetap hidup di satu tempat —
+   * berkas ini. */
+  document.addEventListener('padev:profil-berubah', () => {
+    request('/api/auth/me')
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data) => { if (data?.user) paint(data.user); })
+      .catch(() => { /* biarkan avatar apa adanya */ });
+  });
 }());

@@ -11,5 +11,8 @@
   },
   "devDependencies": {
     "tailwindcss": "3.4.19"
+  },
+  "dependencies": {
+    "tinymce": "8.8.2"
   }
 }

@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Profil Saya — PA DEV Studio</title>
     <link rel="stylesheet" href="./assets/css/app.css">
-    <link rel="stylesheet" href="./assets/css/padev-tables.css">
     <link rel="stylesheet" href="./assets/css/padev-um.css">
     <script src="./assets/js/theme-init.js"></script>
     <link rel="icon" href="./assets/images/brand/pa-dev-logo.png" type="image/png">
@@ -208,17 +207,16 @@
         <main id="konten-utama" class="mx-auto w-full max-w-container flex-1 p-4 md:p-6 xl:p-8"
               data-padev-um="profile">
 
-            <section class="basic-section padev-table-section">
-                <div class="basic-section-header">
-                    <div>
-                        <p class="basic-eyebrow">Akun</p>
-                        <h2>Profil Saya</h2>
-                        <p>Identitas akun dan penggantian kata sandi.</p>
-                    </div>
-                    <div class="basic-section-actions" data-padev-actions></div>
+            <div class="page-heading">
+                <div>
+                    <p class="eyebrow">Akun saya</p>
+                    <h1 data-profil-nama>Memuat…</h1>
+                    <p class="muted" data-profil-ringkas></p>
                 </div>
-                <div class="basic-section-body" data-padev-panel></div>
-            </section>
+                <div class="basic-section-actions" data-padev-actions></div>
+            </div>
+
+            <div data-padev-panel></div>
 
         </main>
 
@@ -241,7 +239,8 @@
 <script src="./assets/js/nav-item-i18n.js" defer></script>
 <script src="./assets/js/dashboard-i18n.js" defer></script>
 <script src="./assets/js/theme-customizer.js" defer></script>
-<script src="./assets/js/padev-tables.js" defer></script>
+
+<script src="./assets/js/padev-table-build.js" defer></script>
 <script src="./assets/js/padev-admin-um.js" defer></script>
 </body>
 </html>

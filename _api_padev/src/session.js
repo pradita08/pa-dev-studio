@@ -21,6 +21,10 @@ export const publicUser = (user) => ({
   id: Number(user.id),
   name: user.name,
   email: user.email,
+  // Nama masuk dan foto dipakai halaman Profil Saya serta avatar di navbar.
+  // Keduanya identitas, bukan otorisasi — tidak ada izin yang bergantung padanya.
+  username: user.username ?? null,
+  avatarUrl: user.avatarUrl ?? null,
   role: user.role,
   status: user.status,
   permissions: user.permissions || [],

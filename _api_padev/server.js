@@ -20,6 +20,8 @@ import { migrateSessions, purgeExpiredRefreshTokens, retireLegacyUsers, waitForD
 import { migrateContent } from './src/content-db.js';
 import { migrateUserManagement, seedBootstrapAdmin, seedUserManagement } from './src/user-management/schema.js';
 import { rebaseLegacyRegistry } from './src/user-management/rebase.js';
+import { migratePublicAuth } from './src/public-auth/schema.js';
+import { purgePublicAuthArtifacts } from './src/public-auth/service.js';
 
 const start = async () => {
   await waitForDatabase();
@@ -33,9 +35,11 @@ const start = async () => {
   await seedBootstrapAdmin(config.seed);
 
   await migrateSessions();
+  await migratePublicAuth();
   await retireLegacyUsers();
   await migrateContent();
   await purgeExpiredRefreshTokens().catch(() => null);
+  await purgePublicAuthArtifacts().catch(() => null);
 
   const server = createApp().listen(config.port, '0.0.0.0', () => {
     console.log(`PA DEV API listening on port ${config.port}`);

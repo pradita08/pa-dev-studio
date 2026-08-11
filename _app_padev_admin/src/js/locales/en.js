@@ -122,6 +122,28 @@ window.PADevI18n.register('en', {
   'nav.group.business': 'Business',
   'nav.group.storage': 'Storage',
 
+  /* PA DEV Studio menu. Keys are derived from the menu label by sidebar.js
+   * (`nav.<slug>` for parents, `nav.item.<slug>` for children), so labels in
+   * the menu registry and keys here must stay in step. */
+  'nav.user-management': 'User Management',
+  'nav.content': 'Content',
+  'nav.portfolio-and-business': 'Portfolio & Business',
+  'nav.leads': 'Leads',
+  'nav.settings': 'Settings',
+
+  'nav.item.users': 'Users',
+  'nav.item.groups': 'Groups',
+  'nav.item.permissions': 'Permissions',
+  'nav.item.homepage': 'Homepage',
+  'nav.item.insights': 'Insights',
+  'nav.item.testimonials': 'Testimonials',
+  'nav.item.faq': 'FAQ',
+  'nav.item.services': 'Services',
+  'nav.item.templates': 'Templates',
+  'nav.item.projects': 'Projects',
+  'nav.item.messages': 'Messages',
+  'nav.item.subscribers': 'Subscribers',
+
   'customizer.open': 'Open Theme Customizer',
   'customizer.close': 'Close Theme Customizer',
   'customizer.title': 'Theme Customizer',

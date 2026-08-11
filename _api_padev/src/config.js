@@ -64,6 +64,30 @@ export const config = {
     windowSeconds: number(process.env.LOGIN_WINDOW_SECONDS, 15 * 60),
   },
 
+  // Identitas publik sengaja mempunyai namespace, cookie, dan TTL sendiri.
+  // Tidak ada nilai di sini yang boleh dipakai ulang oleh auth admin.
+  publicAuth: {
+    cookieName: process.env.PUBLIC_AUTH_COOKIE_NAME || 'padev_public_session',
+    sessionTtlSeconds: number(process.env.PUBLIC_AUTH_SESSION_TTL_SECONDS, 7 * 24 * 60 * 60),
+    stateTtlSeconds: number(process.env.PUBLIC_AUTH_STATE_TTL_SECONDS, 10 * 60),
+    login: {
+      maxAttempts: number(process.env.PUBLIC_AUTH_LOGIN_MAX_ATTEMPTS, 8),
+      windowSeconds: number(process.env.PUBLIC_AUTH_LOGIN_WINDOW_SECONDS, 15 * 60),
+    },
+    frontendSuccessPath: process.env.PUBLIC_AUTH_SUCCESS_PATH || '/',
+    frontendFailurePath: process.env.PUBLIC_AUTH_FAILURE_PATH || '/login/?publicAuth=error',
+    google: {
+      clientId: process.env.PUBLIC_AUTH_GOOGLE_CLIENT_ID || '',
+      clientSecret: process.env.PUBLIC_AUTH_GOOGLE_CLIENT_SECRET || '',
+      redirectUri: process.env.PUBLIC_AUTH_GOOGLE_REDIRECT_URI || '',
+    },
+    github: {
+      clientId: process.env.PUBLIC_AUTH_GITHUB_CLIENT_ID || '',
+      clientSecret: process.env.PUBLIC_AUTH_GITHUB_CLIENT_SECRET || '',
+      redirectUri: process.env.PUBLIC_AUTH_GITHUB_REDIRECT_URI || '',
+    },
+  },
+
   paths: {
     authDist: process.env.AUTH_DIST || path.join(root, 'public', 'auth'),
     adminDist: process.env.ADMIN_DIST || path.join(root, 'public', 'adminpanel'),

@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Portfolio — PA DEV Studio</title>
     <link rel="stylesheet" href="./assets/css/app.css">
+    <link rel="stylesheet" href="./assets/css/padev-tables.css">
+    <link rel="stylesheet" href="./assets/css/padev-um.css">
     <script src="./assets/js/theme-init.js"></script>
     <link rel="icon" href="./assets/images/brand/pa-dev-logo.png" type="image/png">
 </head>
@@ -206,34 +208,16 @@
         <main id="konten-utama" class="mx-auto w-full max-w-container flex-1 p-4 md:p-6 xl:p-8"
               data-padev-module="projects">
 
-            <section class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
-                <div class="min-w-0">
-                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-primary-600">Real projects</p>
-                    <h1 class="page-title mt-1">Portfolio</h1>
-                    <p class="mt-2 text-sm text-ink-muted">Karya yang tampil pada bagian Projects di landing.</p>
+            <section class="basic-section padev-table-section">
+                <div class="basic-section-header">
+                    <div>
+                        <p class="basic-eyebrow">Real projects</p>
+                        <h2>Portfolio</h2>
+                        <p>Karya yang tampil pada bagian Projects di landing.</p>
+                    </div>
+                    <div class="basic-section-actions" data-padev-actions></div>
                 </div>
-                <div class="flex flex-wrap items-center gap-2" data-padev-actions></div>
-            </section>
-
-            <section class="mt-6 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-center">
-                <label class="relative block">
-                    <span class="sr-only">Cari</span>
-                    <input type="search" class="ui-form-input" placeholder="Cari…" data-padev-search>
-                </label>
-                <select class="ui-form-input" data-padev-filter aria-label="Saring status"></select>
-                <p class="text-sm text-ink-muted" data-padev-summary aria-live="polite"></p>
-            </section>
-
-            <section class="mt-4 rounded-xl border border-line bg-surface shadow-elevation-xs">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm" data-padev-table>
-                        <thead class="border-b border-line bg-canvas text-xs uppercase tracking-wide text-ink-muted">
-                            <tr data-padev-head></tr>
-                        </thead>
-                        <tbody class="divide-y divide-line" data-padev-body></tbody>
-                    </table>
-                </div>
-                <p class="hidden p-8 text-center text-sm text-ink-muted" data-padev-empty>Belum ada data.</p>
+                <div class="basic-section-body" data-padev-panel></div>
             </section>
 
         </main>
@@ -257,6 +241,9 @@
 <script src="./assets/js/nav-item-i18n.js" defer></script>
 <script src="./assets/js/dashboard-i18n.js" defer></script>
 <script src="./assets/js/theme-customizer.js" defer></script>
+<script src="./assets/vendor/tinymce/tinymce.min.js" defer></script>
+<script src="./assets/js/padev-tables.js" defer></script>
+<script src="./assets/js/padev-table-build.js" defer></script>
 <script src="./assets/js/padev-admin-crud.js" defer></script>
 </body>
 </html>

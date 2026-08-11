@@ -367,3 +367,27 @@
 .ui-table-bulk-controls button.is-danger { color: var(--color-danger); }
 .ui-table-bulk-controls button.is-danger:hover { background: color-mix(in srgb, var(--color-danger) 12%, transparent); }
 .ui-table-bulk-controls button[disabled] { cursor: progress; opacity: .6; }
+
+/* Sel gambar kecil pada tabel modul konten. Ukurannya dikunci supaya tinggi
+   baris tidak ikut berubah mengikuti rasio gambar yang diunggah. */
+.padev-thumb-cell {
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 2.5rem;
+  overflow: hidden;
+  border-radius: .5rem;
+  background: var(--color-canvas);
+}
+.padev-thumb-cell img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Sel gambar tanpa berkas pada modul yang fotonya opsional: inisial dipakai
+   supaya barisnya tidak terbaca seperti gambar yang gagal dimuat. */
+.padev-thumb-cell.is-inisial {
+  width: 2.5rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-primary) 12%, var(--color-surface));
+  color: var(--color-primary);
+  font-size: .78rem;
+  font-weight: 700;
+}

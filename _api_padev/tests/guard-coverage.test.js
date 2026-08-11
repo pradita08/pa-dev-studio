@@ -17,12 +17,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { authRouter } from '../src/routes/auth.js';
+import { publicAuthRouter } from '../src/routes/public-auth.js';
 import { contentRouter } from '../src/routes/content.js';
 import { userManagementRouter } from '../src/user-management/routes.js';
 
 /** Titik pasang di `app.js`. */
 const PASANGAN = [
   ['/api/auth', authRouter],
+  ['/api/public-auth', publicAuthRouter],
   ['/api/admin', userManagementRouter],
   ['/api', contentRouter],
 ];
@@ -39,12 +41,20 @@ const PUBLIK = new Set([
   'POST /api/auth/refresh',
   'POST /api/auth/logout',
   'GET /api/auth/me',
+  'POST /api/public-auth/register',
+  'POST /api/public-auth/login',
+  'GET /api/public-auth/me',
+  'POST /api/public-auth/logout',
+  'GET /api/public-auth/:provider/start',
+  'GET /api/public-auth/:provider/callback',
   'POST /api/inquiries',
+  'POST /api/subscribers',
   'GET /api/content/:module',
+  'GET /api/content/settings/:group',
 ]);
 
 /** Middleware yang dianggap penjaga otorisasi. */
-const PENJAGA = new Set(['requireApiAuth', 'requirePermissionGuard', 'requireContentPermission', 'requirePageAuth']);
+const PENJAGA = new Set(['requireApiAuth', 'requirePermissionGuard', 'requireContentPermission', 'requireSettingsPermission', 'requirePageAuth']);
 
 /** Mengumpulkan route sebuah router beserta middleware yang melewatinya. */
 const routeDari = (awalan, router) => {
@@ -93,9 +103,10 @@ test('setiap route pengubah data di bawah /api/admin menuntut izin, bukan sekada
     .filter((r) => r.tanda.includes('/api/admin'))
     .filter((r) => /^(POST|PATCH|PUT|DELETE)/.test(r.tanda))
     // Unggahan menempel pada modul yang memakainya dan dijaga izin create/update
-    // di endpoint penyimpanannya; ganti kata sandi sendiri adalah identitas.
-    .filter((r) => !r.tanda.endsWith('/uploads') && !r.tanda.endsWith('/me/password'))
-    .filter((r) => !r.middleware.some((n) => n === 'requirePermissionGuard' || n === 'requireContentPermission'))
+    // di endpoint penyimpanannya. Seluruh `/me` adalah layanan-diri: pengguna
+    // hanya dapat mengubah identitas, foto, atau kata sandinya sendiri.
+    .filter((r) => !r.tanda.endsWith('/uploads') && !/\/api\/admin\/me(?:\/|$)/.test(r.tanda))
+    .filter((r) => !r.middleware.some((n) => ['requirePermissionGuard', 'requireContentPermission', 'requireSettingsPermission'].includes(n)))
     .map((r) => r.tanda);
 
   assert.deepEqual(tanpaIzin, [], `route berikut hanya menuntut sesi:\n  ${tanpaIzin.join('\n  ')}`);

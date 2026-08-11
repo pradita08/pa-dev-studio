@@ -83,8 +83,12 @@ mid-task.
 
 Tables owned by this API are prefixed `padev_`:
 
-- `padev_users` — admin accounts (`password_hash`, bcrypt cost 12)
-- `padev_auth_refresh_tokens` — refresh session `jti`, for revocation
+- `mst_user` — admin accounts owned by the User Management migration
+- `padev_auth_refresh_tokens` — admin refresh session `jti`, for revocation
+- `padev_public_accounts` — public identities and manual password hashes
+- `padev_public_identities` — one provider identity per public account
+- `padev_public_sessions` — hashed opaque public session cookies
+- `padev_public_oauth_states` — short-lived, one-use OAuth state + PKCE verifier
 
 **The legacy CodeIgniter 4 + Shield schema in the `pa_dev` database (`users`,
 `auth_identities`, `auth_groups_users`, and so on) is never read, never
@@ -105,6 +109,13 @@ need attention:
   `NODE_ENV=production` if it is shorter. Changing it invalidates all sessions.
 - `COOKIE_SECURE` — set `true` only once the site is served over HTTPS. Over
   plain HTTP a `Secure` cookie is never sent by the browser, and login fails.
+
+Public account login is intentionally separate from admin login. The UI uses
+`/api/public-auth/register`, `/api/public-auth/login`, `/api/public-auth/me`,
+and `/api/public-auth/logout`; Google and GitHub use provider-specific `/start`
+and `/callback` routes. Populate the `PUBLIC_AUTH_*` variables in the root
+`.env` only after registering matching OAuth redirect URIs. Empty provider
+credentials return a safe `503` and never fall back to the admin identity.
 
 ## Tests
 

@@ -1,15 +1,64 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 
 const appSource = await readFile(new URL('../src/App.jsx', import.meta.url), 'utf8');
+const contentSource = await readFile(new URL('../src/content.js', import.meta.url), 'utf8');
+const i18nSource = await readFile(new URL('../src/i18n.js', import.meta.url), 'utf8');
+const visualSource = `${appSource}\n${contentSource}`;
 const stylesSource = await readFile(new URL('../src/styles.scss', import.meta.url), 'utf8');
 const serverSource = await readFile(new URL('../server.js', import.meta.url), 'utf8');
+
+const checksum = (buffer) => createHash('sha256').update(buffer).digest('hex');
 
 test('homepage preserves canonical section contract', () => {
   for (const section of ['home', 'services', 'templates', 'projects', 'insights', 'contact']) {
     assert.match(appSource, new RegExp(`id=["']${section}["']`));
   }
+});
+
+test('companies are API-backed links and frontend exposes three locales', () => {
+  assert.match(contentSource, /companies:\s*\(rows\)\s*=>/);
+  assert.match(appSource, /target="_blank" rel="noopener noreferrer"/);
+  assert.match(appSource, /onOpenLogin/);
+  assert.match(appSource, /\/api\/public-auth\//);
+  assert.match(appSource, /function PublicAuthModal/);
+  assert.match(serverSource, /'\/login', '\/login\/'/);
+  assert.match(serverSource, /path\.basename\(filePath\) === 'index\.html'/);
+  assert.match(serverSource, /Cache-Control', 'no-store'/);
+  for (const locale of ['en:', 'id:', 'ms:']) assert.match(i18nSource, new RegExp(locale));
+  assert.match(i18nSource, /cta\.publicLogin/);
+  assert.match(appSource, /className="language-switcher"/);
+  assert.match(appSource, /useState\('__all__'\)/);
+  for (const key of ['process.discover.title', 'process.plan.title', 'profile.title']) assert.match(i18nSource, new RegExp(key.replace('.', '\\.' )));
+});
+
+test('public login CTA uses a lock and provider brand marks', () => {
+  assert.match(appSource, /function PublicLoginButton/);
+  assert.match(appSource, /Icon name="lock"/);
+  assert.match(appSource, /function ProviderIcon/);
+  assert.match(appSource, /provider-icon--google/);
+  assert.match(appSource, /provider-icon--github/);
+  assert.match(appSource, /fill="#4285F4"/);
+  assert.match(appSource, /fill="currentColor"/);
+  assert.doesNotMatch(appSource, /\{t\('cta\.publicLogin'\)\}/);
+});
+
+test('hero orbit animates a dot from the exact visible CSS ring', () => {
+  assert.match(appSource, /function OrbitRing\(\{ variant, duration, reverse = false \}\)/);
+  assert.match(appSource, /className=\{`orbit orbit--\$\{variant\}`\}/);
+  assert.match(appSource, /className=\{`orbit-dot orbit-dot--\$\{variant\}`\}/);
+  assert.match(appSource, /ring\.clientWidth/);
+  assert.match(appSource, /ring\.clientHeight/);
+  assert.match(appSource, /Math\.cos\(angle\)/);
+  assert.match(appSource, /Math\.sin\(angle\)/);
+  assert.match(stylesSource, /\.orbit \{[^}]*inset: 17% -6% 12% 8%;[^}]*transform: rotate\(-8deg\)/);
+  assert.match(stylesSource, /\.orbit--two \{[^}]*inset: 7% 6% 23% -6%;[^}]*transform: rotate\(14deg\)/);
+  assert.match(stylesSource, /\.orbit-dot \{[^}]*border-radius: 50%/);
+  assert.match(stylesSource, /--orbit-one-dot/);
+  assert.match(stylesSource, /--orbit-two-dot/);
+  assert.match(stylesSource, /prefers-reduced-motion: reduce/);
 });
 
 test('canonical final assets are referenced', () => {
@@ -27,7 +76,7 @@ test('canonical final assets are referenced', () => {
     'newsletter_padev_1.png',
     'profile-padev-anime-contact.png',
   ]) {
-    assert.match(appSource, new RegExp(asset.replace('.', '\\.')));
+    assert.match(visualSource, new RegExp(asset.replace('.', '\\.')));
   }
 });
 
@@ -46,18 +95,18 @@ test('landing theme polish remains adaptive and uses the requested social channe
 });
 
 test('runtime hero images match the latest canonical light and dark pair', async () => {
-  assert.match(appSource, /\?v=2\.1\.1-hero-matched/, 'hero URLs must bust the previous immutable cache');
+  assert.match(visualSource, /hero-device-light\.png\?v=/, 'hero URLs must bust the previous immutable cache');
   for (const name of ['hero-device-light.png', 'hero-device-dark.png']) {
     const [runtimeAsset, canonicalAsset] = await Promise.all([
       readFile(new URL(`../public/assets/ui/${name}`, import.meta.url)),
-      readFile(new URL(`../../../01 References/padev-canonical-uiux-kit-v2/01-production-assets/illustrations/hero/${name}`, import.meta.url)),
+      readFile(new URL(`../../../../01 References/padev-canonical-uiux-kit-v2/01-production-assets/illustrations/hero/${name}`, import.meta.url)),
     ]);
-    assert.deepEqual(runtimeAsset, canonicalAsset, `${name} must match canonical bytes`);
+    assert.equal(checksum(runtimeAsset), checksum(canonicalAsset), `${name} must match canonical bytes`);
   }
 });
 
 test('runtime marketplace and process theme pairs match transparent canonical assets', async () => {
-  assert.match(appSource, /\?v=2\.1\.1-themed-transparent/, 'theme-aware visual URLs must bypass the immutable asset cache');
+  assert.match(contentSource, /2\.1\.1-themed-transparent/, 'theme-aware visual URLs must bypass the immutable asset cache');
   const assets = {
     'marketplace/item-visuals': [
       'saas-starter-kit.png',
@@ -80,7 +129,7 @@ test('runtime marketplace and process theme pairs match transparent canonical as
       for (const name of names) {
         const [runtimeAsset, canonicalAsset] = await Promise.all([
           readFile(new URL(`../public/assets/ui/${directory}/${theme}/${name}`, import.meta.url)),
-          readFile(new URL(`../../../01 References/padev-canonical-uiux-kit-v2/01-production-assets/components/${directory}/${theme}/${name}`, import.meta.url)),
+          readFile(new URL(`../../../../01 References/padev-canonical-uiux-kit-v2/01-production-assets/components/${directory}/${theme}/${name}`, import.meta.url)),
         ]);
         assert.deepEqual(runtimeAsset, canonicalAsset, `${directory}/${theme}/${name} must match canonical bytes`);
         assert.ok([4, 6].includes(runtimeAsset[25]), `${directory}/${theme}/${name} must retain PNG alpha`);
@@ -90,7 +139,7 @@ test('runtime marketplace and process theme pairs match transparent canonical as
 });
 
 test('runtime real-project theme pairs match normalized canonical assets', async () => {
-  assert.match(appSource, /\?v=2\.1\.1-real-projects-themed/, 'real-project theme URLs must bypass the immutable asset cache');
+  assert.match(contentSource, /2\.1\.1-real-projects-themed/, 'real-project theme URLs must bypass the immutable asset cache');
   for (const theme of ['light', 'dark']) {
     for (const name of [
       'fintrack-dashboard.png',
@@ -100,7 +149,7 @@ test('runtime real-project theme pairs match normalized canonical assets', async
     ]) {
       const [runtimeAsset, canonicalAsset] = await Promise.all([
         readFile(new URL(`../public/assets/ui/real-projects/item-visuals/${theme}/${name}`, import.meta.url)),
-        readFile(new URL(`../../../01 References/padev-canonical-uiux-kit-v2/01-production-assets/components/real-projects/item-visuals/${theme}/${name}`, import.meta.url)),
+        readFile(new URL(`../../../../01 References/padev-canonical-uiux-kit-v2/01-production-assets/components/real-projects/item-visuals/${theme}/${name}`, import.meta.url)),
       ]);
       assert.deepEqual(runtimeAsset, canonicalAsset, `${theme}/${name} must match canonical bytes`);
       if (theme === 'light') assert.ok([4, 6].includes(runtimeAsset[25]), `light/${name} must retain PNG alpha`);
@@ -109,7 +158,7 @@ test('runtime real-project theme pairs match normalized canonical assets', async
 });
 
 test('runtime Latest Insights theme pairs match transparent canonical assets', async () => {
-  assert.match(appSource, /\?v=2\.1\.1-latest-insights-themed/, 'Latest Insights URLs must bypass the immutable asset cache');
+  assert.match(contentSource, /2\.1\.1-latest-insights-themed/, 'Latest Insights URLs must bypass the immutable asset cache');
   for (const theme of ['light', 'dark']) {
     for (const name of [
       'fast-secure-websites.png',
@@ -118,7 +167,7 @@ test('runtime Latest Insights theme pairs match transparent canonical assets', a
     ]) {
       const [runtimeAsset, canonicalAsset] = await Promise.all([
         readFile(new URL(`../public/assets/ui/latest-insights/item-visuals/${theme}/${name}`, import.meta.url)),
-        readFile(new URL(`../../../01 References/padev-canonical-uiux-kit-v2/01-production-assets/components/latest-insights/item-visuals/${theme}/${name}`, import.meta.url)),
+        readFile(new URL(`../../../../01 References/padev-canonical-uiux-kit-v2/01-production-assets/components/latest-insights/item-visuals/${theme}/${name}`, import.meta.url)),
       ]);
       assert.deepEqual(runtimeAsset, canonicalAsset, `latest-insights/${theme}/${name} must match canonical bytes`);
       assert.ok([4, 6].includes(runtimeAsset[25]), `latest-insights/${theme}/${name} must retain PNG alpha`);

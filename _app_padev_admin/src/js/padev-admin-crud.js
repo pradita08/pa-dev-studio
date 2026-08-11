@@ -49,7 +49,7 @@
         { name: 'title', label: 'Judul', type: 'text', required: true },
         { name: 'category', label: 'Kategori', type: 'text', required: true, placeholder: 'Web Development' },
         { name: 'excerpt', label: 'Ringkasan', type: 'textarea', rows: 2 },
-        { name: 'body', label: 'Isi tulisan', type: 'textarea', rows: 6 },
+        { name: 'body', label: 'Isi tulisan', type: 'textarea', rows: 10, rich: true },
         ...kolomGambar,
         { name: 'status', label: 'Status', type: 'select', options: statusKonten },
         { name: 'position', label: 'Urutan', type: 'number' },
@@ -85,15 +85,15 @@
         { name: 'image_light', label: '', render: 'thumbnail' },
         { name: 'title', label: 'Template', render: 'judul', sub: 'slug' },
         { name: 'type', label: 'Tipe' },
-        { name: 'price_cents', label: 'Harga', render: 'harga' },
+        { name: 'price_amount', label: 'Harga', render: 'harga' },
         { name: 'status', label: 'Status', render: 'status' },
       ],
       form: [
         { name: 'title', label: 'Nama template', type: 'text', required: true },
         { name: 'type', label: 'Tipe', type: 'text', required: true, placeholder: 'SaaS' },
         { name: 'stack', label: 'Teknologi', type: 'text', placeholder: 'Next.js, Tailwind CSS' },
-        // Harga disimpan dalam sen di database; konversi terjadi di form ini.
-        { name: 'price', label: 'Harga', type: 'number', step: '0.01', bantuan: 'Dalam USD, contoh 49 atau 49.50.' },
+        { name: 'price_amount', label: 'Harga', type: 'number', min: 0, bantuan: 'Satuan penuh mata uangnya, contoh 49 atau 2500000.' },
+        { name: 'currency', label: 'Mata uang', type: 'select', options: [{ value: 'USD', label: 'USD ($)' }, { value: 'IDR', label: 'IDR (Rp)' }, { value: 'EUR', label: 'EUR (€)' }] },
         { name: 'url', label: 'Tautan pembelian', type: 'text', placeholder: 'https://…' },
         ...kolomGambar,
         { name: 'status', label: 'Status', type: 'select', options: statusKonten },
@@ -122,6 +122,112 @@
         { name: 'email', label: 'Email', type: 'text', readOnly: true },
         { name: 'service', label: 'Layanan', type: 'text', readOnly: true },
         { name: 'message', label: 'Pesan', type: 'textarea', rows: 6, readOnly: true },
+        { name: 'status', label: 'Status', type: 'select' },
+        { name: 'note', label: 'Catatan internal', type: 'textarea', rows: 2 },
+      ],
+    },
+
+    testimonials: {
+      judul: 'Testimoni',
+      status: statusKonten,
+      kolom: [
+        { name: 'avatar', label: '', render: 'thumbnail', inisialDari: 'author_name' },
+        { name: 'author_name', label: 'Nama', render: 'judul', sub: 'company' },
+        { name: 'quote', label: 'Kutipan', render: 'potong' },
+        { name: 'rating', label: 'Rating', render: 'rating' },
+        { name: 'status', label: 'Status', render: 'status' },
+      ],
+      form: [
+        { name: 'author_name', label: 'Nama', type: 'text', required: true },
+        { name: 'author_role', label: 'Jabatan', type: 'text', placeholder: 'CTO' },
+        { name: 'company', label: 'Perusahaan', type: 'text' },
+        { name: 'quote', label: 'Kutipan', type: 'textarea', rows: 4, required: true },
+        { name: 'rating', label: 'Rating (1–5)', type: 'number', bantuan: 'Bintang yang ditampilkan pada kartu.' },
+        { name: 'avatar', label: 'Foto', type: 'image' },
+        { name: 'status', label: 'Status', type: 'select', options: statusKonten },
+        { name: 'position', label: 'Urutan', type: 'number' },
+      ],
+    },
+
+    companies: {
+      judul: 'Company',
+      status: statusKonten,
+      kolom: [
+        { name: 'name', label: 'Nama company', render: 'judul', sub: 'url' },
+        { name: 'url', label: 'Tautan website', render: 'potong' },
+        { name: 'status', label: 'Status', render: 'status' },
+      ],
+      form: [
+        { name: 'name', label: 'Nama company', type: 'text', required: true, placeholder: 'Nama yang tampil pada trust strip' },
+        { name: 'url', label: 'Tautan website', type: 'url', required: true, placeholder: 'https://contoh.id/' },
+        { name: 'status', label: 'Status', type: 'select', options: statusKonten },
+        { name: 'position', label: 'Urutan', type: 'number' },
+      ],
+    },
+
+    faq: {
+      judul: 'FAQ',
+      status: statusKonten,
+      kolom: [
+        { name: 'question', label: 'Pertanyaan', render: 'judul', sub: 'category' },
+        { name: 'answer', label: 'Jawaban', render: 'potong' },
+        { name: 'status', label: 'Status', render: 'status' },
+      ],
+      form: [
+        { name: 'question', label: 'Pertanyaan', type: 'text', required: true },
+        { name: 'answer', label: 'Jawaban', type: 'textarea', rows: 5, required: true },
+        { name: 'category', label: 'Kategori', type: 'text', placeholder: 'Umum' },
+        { name: 'status', label: 'Status', type: 'select', options: statusKonten },
+        { name: 'position', label: 'Urutan', type: 'number' },
+      ],
+    },
+
+    services: {
+      judul: 'Paket',
+      status: statusKonten,
+      kolom: [
+        { name: 'title', label: 'Paket', render: 'judul', sub: 'tagline' },
+        { name: 'price_amount', label: 'Harga', render: 'hargaPaket' },
+        { name: 'deliverables', label: 'Isi paket', render: 'potong' },
+        { name: 'is_featured', label: 'Unggulan', render: 'unggulan' },
+        { name: 'status', label: 'Status', render: 'status' },
+      ],
+      form: [
+        { name: 'title', label: 'Nama paket', type: 'text', required: true, placeholder: 'Professional' },
+        { name: 'tagline', label: 'Keterangan singkat', type: 'text', placeholder: 'Best for growing businesses' },
+        { name: 'description', label: 'Deskripsi', type: 'textarea', rows: 4 },
+        { name: 'deliverables', label: 'Isi paket', type: 'text', bantuan: 'Pisahkan dengan koma. Tiap bagian tampil sebagai baris bercentang.' },
+        { name: 'price_amount', label: 'Harga', type: 'number', min: 0, bantuan: 'Satuan penuh mata uangnya, contoh 199 atau 2500000.' },
+        { name: 'currency', label: 'Mata uang', type: 'select', options: [{ value: 'USD', label: 'USD ($)' }, { value: 'IDR', label: 'IDR (Rp)' }, { value: 'EUR', label: 'EUR (€)' }] },
+        { name: 'price_label', label: 'Harga sebagai teks', type: 'text', placeholder: 'Custom', bantuan: 'Isi hanya bila harganya bukan angka. Kalau terisi, harga angka diabaikan.' },
+        { name: 'price_suffix', label: 'Keterangan harga', type: 'text', placeholder: '/project' },
+        { name: 'cta_label', label: 'Label tombol', type: 'text', placeholder: 'Get Started' },
+        { name: 'cta_url', label: 'Tautan tombol', type: 'text', placeholder: '#contact' },
+        { name: 'is_featured', label: 'Tandai unggulan', type: 'select', options: [{ value: '0', label: 'Tidak' }, { value: '1', label: 'Ya — tampil sebagai Most Popular' }] },
+        { name: 'status', label: 'Status', type: 'select', options: statusKonten },
+        { name: 'position', label: 'Urutan', type: 'number' },
+      ],
+    },
+
+    subscribers: {
+      judul: 'Subscriber',
+      status: [
+        { value: 'active', label: 'Aktif' },
+        { value: 'unsubscribed', label: 'Berhenti' },
+      ],
+      kolom: [
+        { name: 'email', label: 'Email', render: 'judul', sub: 'name' },
+        { name: 'source', label: 'Sumber' },
+        { name: 'created_at', label: 'Terdaftar', render: 'tanggal' },
+        { name: 'status', label: 'Status', render: 'status' },
+      ],
+      form: [
+        // Ketiganya hanya bacaan saat menyunting: server pun hanya menerima
+        // `status` dan `note` (lihat `adminEditable`). Menampilkannya sebagai
+        // field aktif akan menjanjikan perubahan yang diam-diam dibuang.
+        { name: 'email', label: 'Email', type: 'text', required: true, readOnlyOnEdit: true },
+        { name: 'name', label: 'Nama', type: 'text', readOnlyOnEdit: true },
+        { name: 'source', label: 'Sumber', type: 'text', placeholder: 'landing-footer', readOnlyOnEdit: true },
         { name: 'status', label: 'Status', type: 'select' },
         { name: 'note', label: 'Catatan internal', type: 'textarea', rows: 2 },
       ],
@@ -168,7 +274,11 @@
     ? new Date(nilai).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })
     : '—');
 
-  const rupiahDollar = (sen) => `$${(Number(sen || 0) / 100).toFixed(2).replace(/\.00$/, '')}`;
+  const formatHarga = (jumlah, mataUang = 'USD') => {
+    const nilai = Number(jumlah || 0);
+    const simbol = { USD: '$', IDR: 'Rp', EUR: '€' }[mataUang] || '';
+    return `${simbol}${Number.isInteger(nilai) ? nilai : nilai.toFixed(2)}`;
+  };
 
   // Toast memakai region dan kelas milik tema, bukan kotak mengambang buatan
   // sendiri, supaya posisi dan animasinya sama dengan notifikasi lain.
@@ -177,6 +287,7 @@
   document.body.append(toastRegion);
 
   const toast = (pesan, jenis = 'success') => {
+    if (window.PADevToast) return window.PADevToast(pesan, jenis === 'danger' ? 'error' : jenis);
     const kotak = el('article', `ui-toast ui-feedback--${jenis}`);
     kotak.setAttribute('role', jenis === 'danger' ? 'alert' : 'status');
     const isi = el('div');
@@ -186,38 +297,49 @@
     window.setTimeout(() => kotak.remove(), 3600);
   };
 
-  /* =============================== Tabel =============================== */
+  /* =============================== Tabel ===============================
+   *
+   * Toolbar, pencarian, saringan, pemilih kolom, kerapatan, mode kartu, pita
+   * ringkasan, dan pagination datang dari `padev-table-build.js` +
+   * `padev-tables.js` — mesin yang sama persis dengan daftar User Management.
+   * Halaman ini hanya menyatakan MAKSUD: kolom apa, baris apa, saringan apa.
+   *
+   * Sebelumnya halaman modul menggambar toolbar dan tabelnya sendiri. Dua
+   * sistem tabel untuk satu maksud selalu jadi dua tampilan yang beda sedikit,
+   * dan bedanya bertambah tiap halaman baru.
+   *
+   * Konsekuensi yang disengaja: pencarian dan saringan status kini dikerjakan
+   * mesin di sisi klien atas seluruh baris, bukan query ke API tiap ketikan —
+   * sama seperti daftar User Management.
+   */
 
-  const tbody = main.querySelector('[data-padev-body]');
-  const thead = main.querySelector('[data-padev-head]');
-  const kosong = main.querySelector('[data-padev-empty]');
-  const ringkasan = main.querySelector('[data-padev-summary]');
-  const pencarian = main.querySelector('[data-padev-search]');
-  const saringan = main.querySelector('[data-padev-filter]');
-  const aksi = main.querySelector('[data-padev-actions]');
+  const { tabel, tautanAksi, aksi: itemAksi } = window.PADevTableBuild;
 
-  def.kolom.forEach((kolom) => {
-    thead.append(el('th', 'whitespace-nowrap px-4 py-3 font-semibold', kolom.label));
-  });
-  thead.append(el('th', 'px-4 py-3 text-right font-semibold', 'Aksi'));
-
-  saringan.append(new Option('Semua status', ''));
-  def.status.forEach((s) => saringan.append(new Option(s.label, s.value)));
+  const panelTabel = main.querySelector('[data-padev-panel]');
+  const barAksi = main.querySelector('[data-padev-actions]');
 
   if (!def.hanyaBaca) {
     const tombol = el('button', 'ui-button ui-button--primary ui-button--sm', `Tambah ${def.judul}`);
     tombol.type = 'button';
     tombol.addEventListener('click', () => bukaForm(null));
-    aksi.append(tombol);
+    barAksi.append(tombol);
   }
 
-  const selGambar = (baris) => {
-    const wrap = el('span', 'flex h-10 w-14 items-center justify-center overflow-hidden rounded-lg bg-canvas');
-    if (baris.image_light) {
+  const selGambar = (baris, kolom) => {
+    const wrap = el('span', 'padev-thumb-cell');
+    // Kolomnya disebut definisi modul: testimoni memakai `avatar`, modul
+    // bervisual tema memakai `image_light`.
+    const sumber = baris[kolom.name];
+    if (!sumber && kolom.inisialDari) {
+      wrap.classList.add('is-inisial');
+      wrap.textContent = String(baris[kolom.inisialDari] || '?').trim().split(/\s+/).slice(0, 2)
+        .map((bagian) => bagian.charAt(0).toUpperCase()).join('');
+      return wrap;
+    }
+    if (sumber) {
       const img = document.createElement('img');
-      img.src = baris.image_light;
+      img.src = sumber;
       img.alt = '';
-      img.className = 'h-full w-full object-cover';
       img.loading = 'lazy';
       wrap.append(img);
     }
@@ -225,94 +347,93 @@
   };
 
   const selJudul = (baris, kolom) => {
-    const wrap = el('span', 'grid min-w-0');
-    wrap.append(el('span', 'truncate font-medium text-ink-heading', baris[kolom.name] || '—'));
-    if (kolom.sub) wrap.append(el('span', 'truncate text-xs text-ink-muted', baris[kolom.sub] || ''));
+    const wrap = el('span', 'ui-avatar-cell');
+    const teks = el('span');
+    teks.append(el('strong', null, baris[kolom.name] || '—'));
+    if (kolom.sub && baris[kolom.sub]) teks.append(el('small', null, baris[kolom.sub]));
+    wrap.append(teks);
     return wrap;
   };
 
-  const gambarBaris = (data) => {
-    tbody.replaceChildren();
-    kosong.classList.toggle('hidden', data.length > 0);
-
-    data.forEach((baris) => {
-      const tr = el('tr', 'align-middle');
-
-      def.kolom.forEach((kolom) => {
-        const td = el('td', 'px-4 py-3');
-        const nilai = baris[kolom.name];
-
-        switch (kolom.render) {
-          case 'thumbnail': td.append(selGambar(baris)); break;
-          case 'judul': td.append(selJudul(baris, kolom)); break;
-          case 'status': {
-            const badge = el('span', nadaStatus(nilai), labelStatus(nilai));
-            td.append(badge);
-            break;
-          }
-          case 'tanggal': td.textContent = tanggal(nilai); break;
-          case 'harga': td.textContent = rupiahDollar(nilai); break;
-          case 'potong': {
-            const teks = String(nilai || '');
-            td.className = 'px-4 py-3 text-ink-muted';
-            td.textContent = teks.length > 70 ? `${teks.slice(0, 70)}…` : teks;
-            break;
-          }
-          default: td.textContent = nilai || '—';
-        }
-        tr.append(td);
-      });
-
-      const tdAksi = el('td', 'px-4 py-3');
-      const grup = el('div', 'flex justify-end gap-2');
-
-      const ubah = el('button', 'ui-button ui-button--ghost ui-button--sm', def.hanyaBaca ? 'Tinjau' : 'Ubah');
-      ubah.type = 'button';
-      ubah.addEventListener('click', () => bukaForm(baris));
-      grup.append(ubah);
-
-      if (!def.hanyaBaca) {
-        const hapus = el('button', 'ui-button ui-button--ghost ui-button--sm', 'Hapus');
-        hapus.type = 'button';
-        hapus.addEventListener('click', () => hapusBaris(baris));
-        grup.append(hapus);
+  /**
+   * Satu sel menurut definisi kolomnya.
+   *
+   * Nilai yang DITAMPILKAN dan nilai yang DIURUTKAN sengaja dipisah untuk
+   * tanggal dan harga: "10 Agu 2026" dan "$12" tidak pernah terurut benar
+   * secara teks, jadi keduanya membawa `urut` berupa nilai mentahnya.
+   */
+  const selKolom = (baris, kolom) => {
+    const nilai = baris[kolom.name];
+    switch (kolom.render) {
+      case 'thumbnail': return selGambar(baris, kolom);
+      case 'judul': return selJudul(baris, kolom);
+      case 'status': {
+        const badge = el('span', nadaStatus(nilai), labelStatus(nilai));
+        return { isi: badge, urut: labelStatus(nilai) };
       }
-
-      tdAksi.append(grup);
-      tr.append(tdAksi);
-      tbody.append(tr);
-    });
+      case 'tanggal': return { isi: tanggal(nilai), urut: nilai ? new Date(nilai).getTime() : 0 };
+      case 'rating': {
+        const bintang = Math.max(0, Math.min(5, Number(nilai) || 0));
+        return { isi: `${'\u2605'.repeat(bintang)}${'\u2606'.repeat(5 - bintang)}`, urut: bintang };
+      }
+      case 'harga': return { isi: formatHarga(nilai, baris.currency), urut: Number(nilai || 0) };
+      // Harga berupa teks menang atas angkanya — "Custom" bukan nilai yang
+      // bisa dinyatakan sebagai bilangan.
+      case 'hargaPaket': {
+        const teks = baris.price_label || formatHarga(nilai, baris.currency);
+        return { isi: `${teks}${baris.price_suffix ? ` ${baris.price_suffix}` : ''}`, urut: Number(nilai || 0) };
+      }
+      case 'unggulan': return Number(nilai) === 1
+        ? { isi: el('span', 'ui-table-status is-success', 'Most Popular'), urut: 1 }
+        : { isi: '—', urut: 0 };
+      case 'potong': {
+        const teks = String(nilai || '');
+        return { isi: teks.length > 70 ? `${teks.slice(0, 70)}…` : teks, urut: teks };
+      }
+      default: return nilai || '—';
+    }
   };
 
-  let permintaanTerakhir = 0;
+  const aksiBaris = (baris) => {
+    const daftar = [];
+    if (def.hanyaBaca) {
+      daftar.push(itemAksi('Tinjau', { bentuk: 'eye', onClick: () => bukaForm(baris) }));
+      return daftar;
+    }
+    if (!def.tanpaUbah) daftar.push(itemAksi('Ubah', { bentuk: 'edit', onClick: () => bukaForm(baris) }));
+    daftar.push(itemAksi('Hapus', { bentuk: 'trash', nada: 'danger', onClick: () => hapusBaris(baris) }));
+    return daftar;
+  };
+
+  const gambarTabel = (data) => {
+    panelTabel.replaceChildren(tabel({
+      idPrefix: modul,
+      countLabel: 'data',
+      cari: `Cari ${def.judul.toLowerCase()}…`,
+      kolom: def.kolom.map((k) => ({ label: k.label, urut: k.render !== 'thumbnail' })),
+      filter: [{
+        key: 'status',
+        label: 'Semua status',
+        options: def.status.map((s) => ({ value: s.value, label: s.label })),
+      }],
+      baris: data.map((baris) => ({
+        kunci: { status: baris.status ?? '' },
+        cari: def.kolom.map((k) => baris[k.name] ?? '').join(' '),
+        sel: def.kolom.map((k) => selKolom(baris, k)),
+        aksi: aksiBaris(baris),
+        aksiLabel: `Aksi untuk ${baris.title || baris.name || 'baris ini'}`,
+      })),
+    }));
+  };
 
   const muat = async () => {
-    const nomor = ++permintaanTerakhir;
-    const params = new URLSearchParams();
-    if (pencarian.value.trim()) params.set('q', pencarian.value.trim());
-    if (saringan.value) params.set('status', saringan.value);
-
     try {
-      const hasil = await minta(`${api}?${params}`);
-      // Balasan yang datang terlambat diabaikan supaya hasil ketikan lama
-      // tidak menimpa hasil ketikan terbaru.
-      if (nomor !== permintaanTerakhir) return;
-      gambarBaris(hasil.data);
-      const rincian = Object.entries(hasil.ringkasan || {})
-        .map(([status, jumlah]) => `${labelStatus(status)} ${jumlah}`)
-        .join(' · ');
-      ringkasan.textContent = `${hasil.total} data${rincian ? ` — ${rincian}` : ''}`;
+      const hasil = await minta(api);
+      gambarTabel(hasil.data);
     } catch (error) {
       toast(error.message, 'danger');
     }
   };
-
-  let jedaKetik;
-  pencarian.addEventListener('input', () => {
-    window.clearTimeout(jedaKetik);
-    jedaKetik = window.setTimeout(muat, 300);
-  });
-  saringan.addEventListener('change', muat);
 
   /* ============================ Form modal ============================ */
 
@@ -329,6 +450,9 @@
   document.body.append(overlay);
 
   const tutup = () => {
+    panel.querySelectorAll('textarea[data-padev-rich-editor]').forEach((textarea) => {
+      window.tinymce?.get(textarea.id)?.remove();
+    });
     overlay.hidden = true;
     panel.replaceChildren();
   };
@@ -398,6 +522,7 @@
         status.textContent = 'PNG, JPG, WebP, atau AVIF — maksimal 4 MB.';
         galat.textContent = error.message;
         galat.classList.remove('hidden');
+        toast(error.message, 'danger');
         input.value = '';
       }
     });
@@ -409,7 +534,7 @@
     return wrap;
   };
 
-  const kotakBiasa = (field, nilaiAwal) => {
+  const kotakBiasa = (field, nilaiAwal, menyunting = false) => {
     const wrap = el('label');
     wrap.dataset.padevField = field.name;
     wrap.append(el('span', null, field.label));
@@ -418,6 +543,10 @@
     if (field.type === 'textarea') {
       kontrol = document.createElement('textarea');
       kontrol.rows = field.rows || 3;
+      if (field.rich) {
+        kontrol.dataset.padevRichEditor = 'true';
+        kontrol.id = `padev-rich-${modul}-${field.name}`;
+      }
       
     } else if (field.type === 'select') {
       kontrol = document.createElement('select');
@@ -425,8 +554,9 @@
       field.options.forEach((o) => kontrol.append(new Option(o.label, o.value)));
     } else {
       kontrol = document.createElement('input');
-      kontrol.type = field.type === 'number' ? 'number' : 'text';
+      kontrol.type = field.type === 'number' ? 'number' : (field.type === 'url' ? 'url' : 'text');
       if (field.step) kontrol.step = field.step;
+      if (field.min !== undefined) kontrol.min = String(field.min);
       
       if (field.placeholder) kontrol.placeholder = field.placeholder;
     }
@@ -434,7 +564,7 @@
     kontrol.name = field.name;
     if (nilaiAwal !== undefined && nilaiAwal !== null && nilaiAwal !== '') kontrol.value = nilaiAwal;
     else if (field.type !== 'select') kontrol.value = '';
-    if (field.readOnly) {
+    if (field.readOnly || (field.readOnlyOnEdit && menyunting)) {
       kontrol.readOnly = true;
       kontrol.disabled = field.type === 'select' ? false : kontrol.disabled;
       kontrol.classList.add('bg-canvas', 'text-ink-muted');
@@ -468,9 +598,7 @@
 
     def.form.forEach((field) => {
       let awal = baris ? baris[field.name] : '';
-      // Harga tampil dalam dolar walau tersimpan sebagai sen.
-      if (field.name === 'price') awal = baris ? (Number(baris.price_cents || 0) / 100) : '';
-      badan.append(field.type === 'image' ? kotakGambar(field, awal) : kotakBiasa(field, awal));
+      badan.append(field.type === 'image' ? kotakGambar(field, awal) : kotakBiasa(field, awal, Boolean(baris)));
     });
 
     const kaki = document.createElement('footer');
@@ -486,11 +614,10 @@
       event.preventDefault();
       form.querySelectorAll('[data-padev-field] p').forEach((p) => p.classList.add('hidden'));
 
+      // TinyMCE menyimpan isi editor kembali ke <textarea> sebelum FormData
+      // dibaca. Jika asset editor gagal dimuat, textarea biasa tetap bekerja.
+      window.tinymce?.triggerSave();
       const data = Object.fromEntries(new FormData(form).entries());
-      if ('price' in data) {
-        data.price_cents = Math.round(Number(data.price || 0) * 100);
-        delete data.price;
-      }
 
       simpan.disabled = true;
       simpan.textContent = 'Menyimpan…';
@@ -521,6 +648,25 @@
 
     panel.append(kepala, form);
     overlay.hidden = false;
+    form.querySelectorAll('textarea[data-padev-rich-editor]').forEach((textarea) => {
+      if (!window.tinymce) return;
+      window.tinymce.init({
+        target: textarea,
+        base_url: '/adminpanel/assets/vendor/tinymce',
+        suffix: '.min',
+        license_key: 'gpl',
+        menubar: false,
+        plugins: 'lists link',
+        toolbar: 'undo redo | blocks | bold italic | bullist numlist | link | removeformat',
+        toolbar_mode: 'wrap',
+        statusbar: false,
+        branding: false,
+        promotion: false,
+        min_height: 280,
+        resize: true,
+        content_style: 'body { font-family: Outfit, Arial, sans-serif; font-size: 14px; line-height: 1.65; color: #172033; }',
+      }).catch(() => toast('Editor kaya tidak dapat dimuat; gunakan area teks biasa.', 'danger'));
+    });
     form.querySelector('input, textarea, select')?.focus();
   }
 

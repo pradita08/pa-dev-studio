@@ -36,6 +36,11 @@ if (result.status !== 0) process.exit(result.status ?? 1);
 await cp(path.join(src, 'assets'), path.join(dist, 'assets'), { recursive: true });
 await cp(path.join(src, 'js'), path.join(dist, 'assets', 'js'), { recursive: true });
 
+// Editor dipublikasikan bersama panel, bukan melalui CDN. Selain membuat
+// editor tetap tersedia di lingkungan tanpa koneksi internet, ini mencegah
+// konten admin bergantung pada skrip pihak ketiga saat halaman dibuka.
+await cp(path.join(root, 'node_modules', 'tinymce'), path.join(dist, 'assets', 'vendor', 'tinymce'), { recursive: true });
+
 // Komponen tabel PA DEV ikut apa adanya, di luar Tailwind. Isinya selektor
 // turunan tanpa kandidat utility, jadi ia tidak akan selamat dari pemangkasan
 // kalau dimasukkan ke `input.css`. Ditautkan hanya oleh halaman yang memakainya.
@@ -46,7 +51,7 @@ await cp(path.join(src, 'css', 'padev-um.css'), path.join(dist, 'assets', 'css',
 
 // Sesi nyata (nama pengguna, logout, refresh token) disuntikkan ke seluruh
 // halaman admin di sini, bukan ditulis manual di tiap berkas.
-const session = '<script src="./assets/js/padev-admin-session.js" defer></script>';
+const session = '<script src="./assets/js/padev-feedback.js" defer></script>\n<script src="./assets/js/padev-admin-session.js" defer></script>';
 
 for (const entry of await readdir(path.join(src, 'pages'))) {
   if (!entry.endsWith('.html')) continue;

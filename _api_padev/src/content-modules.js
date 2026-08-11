@@ -60,8 +60,8 @@ export const modules = {
       { name: 'slug', type: 'slug', from: 'title', max: 190 },
       { name: 'type', type: 'string', required: true, max: 80 },
       { name: 'stack', type: 'string', max: 255 },
-      { name: 'price_cents', type: 'int', default: 0, min: 0 },
-      { name: 'currency', type: 'string', max: 3, default: 'USD' },
+      { name: 'price_amount', type: 'int', default: 0, min: 0 },
+      { name: 'currency', type: 'enum', values: ['USD', 'IDR', 'EUR'], default: 'USD' },
       { name: 'url', type: 'string', max: 255 },
       { name: 'image_light', type: 'image' },
       { name: 'image_dark', type: 'image' },
@@ -79,12 +79,117 @@ export const modules = {
     // Isi pesan datang dari pengunjung dan tidak boleh diubah admin — yang
     // boleh disunting hanya status dan catatan internal.
     adminEditable: ['status', 'note'],
+    // Pesan hanya lahir dari form kontak publik; panel tidak pernah mengarang
+    // pesan atas nama orang lain.
+    adminCreate: false,
     fields: [
       { name: 'name', type: 'string', required: true, max: 120 },
       { name: 'email', type: 'email', required: true, max: 190 },
       { name: 'service', type: 'string', max: 120 },
       { name: 'message', type: 'text', required: true, max: 5000 },
       { name: 'status', type: 'enum', values: ['new', 'read', 'replied', 'archived'], default: 'new' },
+      { name: 'note', type: 'string', max: 500 },
+    ],
+  },
+
+  testimonials: {
+    table: 'padev_testimonials',
+    label: 'Testimoni',
+    searchColumns: ['author_name', 'company', 'quote'],
+    imagePair: false,
+    fields: [
+      { name: 'author_name', type: 'string', required: true, max: 120 },
+      { name: 'author_role', type: 'string', max: 120 },
+      { name: 'company', type: 'string', max: 120 },
+      { name: 'quote', type: 'string', required: true, max: 800 },
+      { name: 'rating', type: 'int', default: 5, min: 1, max: 5 },
+      // Foto orang, bukan visual bertema: satu berkas, tanpa pasangan gelap.
+      { name: 'avatar', type: 'image' },
+      { name: 'status', type: 'enum', values: ENUM_STATUS, default: 'draft' },
+      { name: 'position', type: 'int', default: 0 },
+    ],
+  },
+
+  companies: {
+    table: 'padev_companies',
+    label: 'Company',
+    searchColumns: ['name', 'url'],
+    imagePair: false,
+    fields: [
+      { name: 'name', type: 'string', required: true, max: 190 },
+      { name: 'url', type: 'url', required: true, max: 255 },
+      { name: 'status', type: 'enum', values: ENUM_STATUS, default: 'draft' },
+      { name: 'position', type: 'int', default: 0 },
+    ],
+  },
+
+  faq: {
+    table: 'padev_faq',
+    label: 'FAQ',
+    searchColumns: ['question', 'answer', 'category'],
+    imagePair: false,
+    fields: [
+      { name: 'question', type: 'string', required: true, max: 255 },
+      { name: 'answer', type: 'text', required: true, max: 5000 },
+      { name: 'category', type: 'string', max: 80 },
+      { name: 'status', type: 'enum', values: ENUM_STATUS, default: 'draft' },
+      { name: 'position', type: 'int', default: 0 },
+    ],
+  },
+
+  /* Modul ini memegang PAKET HARGA di landing (Starter / Professional /
+   * Enterprise), bukan delapan kartu kemampuan berikon di seksi "End-to-End
+   * Digital Solutions".
+   *
+   * Pembedaannya penting karena bentuk datanya berbeda: paket punya harga,
+   * daftar isi paket, dan tombol ajakan; kartu kemampuan hanya judul dan satu
+   * kalimat yang menempel pada sebuah ikon. Kolom di bawah — deliverables,
+   * price, cta — memang milik paket. */
+  services: {
+    table: 'padev_services',
+    label: 'Paket layanan',
+    searchColumns: ['title', 'tagline', 'slug'],
+    imagePair: false,
+    fields: [
+      { name: 'title', type: 'string', required: true, max: 190 },
+      { name: 'slug', type: 'slug', from: 'title', max: 190 },
+      { name: 'tagline', type: 'string', max: 255 },
+      { name: 'description', type: 'text', max: 5000 },
+      // Isi paket: teks dipisah koma, sama seperti `stack` pada portfolio.
+      // Landing menderetkannya sebagai daftar bercentang.
+      { name: 'deliverables', type: 'string', max: 500 },
+      // Nilai penuh mata uangnya, bukan sen — lihat catatan migrasi di
+      // `content-db.js`.
+      { name: 'price_amount', type: 'int', default: 0, min: 0 },
+      { name: 'currency', type: 'enum', values: ['USD', 'IDR', 'EUR'], default: 'USD' },
+      /* Dipakai saat harganya bukan angka. Kalau terisi, ia MENGGANTIKAN
+       * tampilan `price_amount` — "Custom" tidak bisa dinyatakan sebagai
+       * bilangan, dan memaksakannya menghasilkan "$0". */
+      { name: 'price_label', type: 'string', max: 40 },
+      { name: 'price_suffix', type: 'string', max: 40 },
+      { name: 'cta_label', type: 'string', max: 60 },
+      { name: 'cta_url', type: 'string', max: 255 },
+      { name: 'is_featured', type: 'int', default: 0, min: 0, max: 1 },
+      { name: 'status', type: 'enum', values: ENUM_STATUS, default: 'draft' },
+      { name: 'position', type: 'int', default: 0 },
+    ],
+  },
+
+  subscribers: {
+    table: 'padev_subscribers',
+    label: 'Subscriber',
+    searchColumns: ['email', 'name', 'source'],
+    orderBy: 'id DESC',
+    imagePair: false,
+    // Alamat langganan datang dari pemiliknya sendiri. Admin boleh mencatat
+    // dan mencabut, tetapi mengubah alamat orang lain bukan kewenangan panel —
+    // itu akan mengirim surat ke tujuan yang tidak pernah mendaftar.
+    adminEditable: ['status', 'note'],
+    fields: [
+      { name: 'email', type: 'email', required: true, max: 190 },
+      { name: 'name', type: 'string', max: 120 },
+      { name: 'source', type: 'string', max: 80 },
+      { name: 'status', type: 'enum', values: ['active', 'unsubscribed'], default: 'active' },
       { name: 'note', type: 'string', max: 500 },
     ],
   },
@@ -108,6 +213,8 @@ export class ValidationError extends Error {
 }
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const HTTP_URL = /^https?:\/\/[^\s]+$/i;
 
 /**
  * Menyusun payload yang aman untuk ditulis ke database.
@@ -149,6 +256,9 @@ export const buildPayload = (modul, body, { partial = false, allow = null } = {}
         const angka = Number.parseInt(nilai, 10);
         if (!Number.isFinite(angka)) errors[field.name] = 'Harus berupa angka.';
         else if (field.min !== undefined && angka < field.min) errors[field.name] = `Minimal ${field.min}.`;
+        // Batas atas ikut ditegakkan: rating bintang 1–5 kehilangan artinya
+        // begitu ada baris bernilai 9 yang lolos masuk.
+        else if (field.max !== undefined && angka > field.max) errors[field.name] = `Maksimal ${field.max}.`;
         else payload[field.name] = angka;
         break;
       }
@@ -161,6 +271,24 @@ export const buildPayload = (modul, body, { partial = false, allow = null } = {}
         const teks = String(nilai).trim().toLowerCase();
         if (!EMAIL.test(teks)) errors[field.name] = 'Alamat email tidak valid.';
         else payload[field.name] = teks.slice(0, field.max);
+        break;
+      }
+      case 'url': {
+        const teks = String(nilai).trim();
+        if (!HTTP_URL.test(teks)) {
+          errors[field.name] = 'URL harus diawali http:// atau https://.';
+        } else {
+          try {
+            const url = new URL(teks);
+            if (!['http:', 'https:'].includes(url.protocol) || !url.hostname) {
+              errors[field.name] = 'URL situs tidak valid.';
+            } else {
+              payload[field.name] = teks.slice(0, field.max);
+            }
+          } catch {
+            errors[field.name] = 'URL situs tidak valid.';
+          }
+        }
         break;
       }
       case 'datetime': {

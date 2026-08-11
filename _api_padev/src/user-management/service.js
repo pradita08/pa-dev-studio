@@ -71,7 +71,8 @@ export const permissionKeysOf = async (userId) => {
  */
 export const loadSessionUser = async (userId) => {
   const [rows] = await getPool().query(
-    `SELECT u.MstUserId, u.MstUserEmail, u.MstUserFullName, u.MstUserStatus,
+    `SELECT u.MstUserId, u.MstUserEmail, u.MstUserFullName, u.MstUserUsername,
+            u.MstUserAvatarUrl, u.MstUserStatus,
             u.MstUserGroupId, g.MstUserGroupName, g.MstUserGroupSlug
        FROM mst_user u
        LEFT JOIN mst_user_group g ON g.MstUserGroupId = u.MstUserGroupId
@@ -85,6 +86,8 @@ export const loadSessionUser = async (userId) => {
     id: Number(user.MstUserId),
     email: user.MstUserEmail,
     name: user.MstUserFullName,
+    username: user.MstUserUsername || null,
+    avatarUrl: user.MstUserAvatarUrl || null,
     status: user.MstUserStatus,
     groupId: user.MstUserGroupId === null ? null : Number(user.MstUserGroupId),
     role: user.MstUserGroupName || 'Tanpa role',
@@ -317,6 +320,49 @@ export const deleteUser = async (userId) => {
   await assertLastAdministratorRemains({ userId, status: 'DISABLED', permissionKeys: [] });
   await getPool().query('DELETE FROM mst_user WHERE MstUserId = ?', [userId]);
   return true;
+};
+
+/**
+ * Menyunting identitas milik sesi yang berjalan.
+ *
+ * Sengaja BUKAN `updateUser`: yang boleh disentuh pemiliknya sendiri hanya
+ * nama dan email. Role, status, dan izin tidak ikut, karena akun yang bisa
+ * menaikkan izinnya sendiri membuat seluruh model izin kehilangan artinya.
+ *
+ * Kata sandi juga tidak pernah tersentuh di sini — penggantiannya adalah niat
+ * terpisah lewat `changeOwnPassword` (PADF-UM-001 pasal 5).
+ */
+export const updateOwnProfile = async (userId, { name, email }) => {
+  const lama = await getUser(userId);
+  if (!lama) return null;
+
+  const emailBaru = email === undefined ? lama.email : String(email).trim().toLowerCase();
+  const namaBaru = name === undefined ? lama.name : String(name).trim();
+  validateUser({ ...lama, name: namaBaru, email: emailBaru }, { requirePassword: false });
+
+  if (emailBaru !== lama.email && await findUserByEmail(emailBaru)) {
+    throw new ValidationError({ email: 'Email ini sudah terdaftar.' });
+  }
+
+  await getPool().query(
+    'UPDATE mst_user SET MstUserFullName = ?, MstUserEmail = ?, MstUserUpdatedBy = ? WHERE MstUserId = ?',
+    [namaBaru, emailBaru, lama.email, userId],
+  );
+  return getUser(userId);
+};
+
+/**
+ * Menyimpan URL foto profil dan mengembalikan URL lama supaya pemanggilnya
+ * bisa menghapus berkas yang tidak lagi dirujuk siapa pun.
+ */
+export const setOwnAvatar = async (userId, url) => {
+  const [rows] = await getPool().query(
+    'SELECT MstUserAvatarUrl FROM mst_user WHERE MstUserId = ?',
+    [userId],
+  );
+  if (!rows[0]) return null;
+  await getPool().query('UPDATE mst_user SET MstUserAvatarUrl = ? WHERE MstUserId = ?', [url, userId]);
+  return { sebelumnya: rows[0].MstUserAvatarUrl || null, sekarang: url };
 };
 
 export const changeOwnPassword = async (userId, { current, next }) => {

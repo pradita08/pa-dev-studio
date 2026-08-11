@@ -8,13 +8,14 @@ import { Router } from 'express';
 import {
   ConflictError, ValidationError,
   changeOwnPassword, createGroup, createUser, defaultKeysOfGroup, deleteGroup, deleteUser,
-  getGroup, getUser, listGroups, listUsers, permissionCatalog,
-  templateKeysOfGroup, updateGroup, updateUser,
+  getGroup, getUser, listGroups, listUsers, permissionCatalog, setOwnAvatar,
+  templateKeysOfGroup, updateGroup, updateOwnProfile, updateUser,
 } from './service.js';
 import {
   createMenu, daftarPathTersedia, deleteMenu, getMenu, listMenus, menuTreeFor, updateMenu,
 } from './menu-service.js';
 import { requireApiAuth, requirePermission } from '../session.js';
+import { hapusBerkas, uploadGambar, urlUntuk } from '../uploads.js';
 import { revokeAllRefreshTokensOf } from '../db.js';
 
 export const userManagementRouter = Router();
@@ -43,6 +44,52 @@ userManagementRouter.use(requireApiAuth);
 // pengguna itu sendiri, dan menu tersembunyi bukan mekanisme otorisasi.
 userManagementRouter.get('/me/menus', bungkus(async (request, response) => {
   response.json({ data: await menuTreeFor(request.user.permissions) });
+}));
+
+/* Identitas sendiri. Tidak menuntut izin User Management: setiap akun boleh
+ * memperbaiki namanya dan emailnya sendiri, dan yang bisa disentuh di sini
+ * memang hanya itu — role, status, dan izin tidak ikut. */
+userManagementRouter.patch('/me', bungkus(async (request, response) => {
+  const user = await updateOwnProfile(request.user.id, {
+    name: request.body?.name,
+    email: request.body?.email,
+  });
+  if (!user) { response.status(404).json({ error: 'Not Found', message: 'Akun tidak ditemukan.' }); return; }
+  response.json({ data: user, message: 'Identitas diperbarui.' });
+}));
+
+/* Foto profil. Memakai penerima berkas yang sama dengan modul konten, jadi
+ * batas ukuran, daftar tipe (SVG ditolak), dan penamaan ulang berbasis UUID
+ * berlaku tanpa ditulis ulang. */
+userManagementRouter.post('/me/avatar', (request, response, next) => {
+  uploadGambar.single('file')(request, response, async (error) => {
+    if (error) {
+      const terlaluBesar = error.code === 'LIMIT_FILE_SIZE';
+      response.status(terlaluBesar ? 413 : 422).json({
+        error: terlaluBesar ? 'Payload Too Large' : 'Unprocessable Entity',
+        message: terlaluBesar ? 'Ukuran foto maksimal 4 MB.' : error.message,
+      });
+      return;
+    }
+    if (!request.file) {
+      response.status(422).json({ error: 'Unprocessable Entity', message: 'Tidak ada berkas yang dikirim.' });
+      return;
+    }
+    try {
+      const hasil = await setOwnAvatar(request.user.id, urlUntuk(request.file.path));
+      // Foto lama tidak dirujuk siapa pun lagi setelah baris diperbarui.
+      if (hasil?.sebelumnya) await hapusBerkas(hasil.sebelumnya);
+      response.status(201).json({ url: hasil?.sekarang, message: 'Foto profil diperbarui.' });
+    } catch (galat) {
+      next(galat);
+    }
+  });
+});
+
+userManagementRouter.delete('/me/avatar', bungkus(async (request, response) => {
+  const hasil = await setOwnAvatar(request.user.id, null);
+  if (hasil?.sebelumnya) await hapusBerkas(hasil.sebelumnya);
+  response.json({ status: 'ok', message: 'Foto profil dihapus.' });
 }));
 
 userManagementRouter.post('/me/password', bungkus(async (request, response) => {

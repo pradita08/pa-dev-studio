@@ -68,6 +68,7 @@
   document.body.append(toastRegion);
 
   const toast = (pesan, jenis = 'danger') => {
+    if (window.PADevToast) return window.PADevToast(pesan, jenis === 'danger' ? 'error' : jenis);
     const k = el('article', `ui-toast ui-feedback--${jenis}`);
     k.setAttribute('role', jenis === 'danger' ? 'alert' : 'status');
     const isi = el('div');
@@ -75,12 +76,6 @@
     k.append(isi);
     toastRegion.append(k);
     window.setTimeout(() => k.remove(), 5000);
-  };
-
-  /** Pesan sukses dititipkan ke halaman daftar; halaman ini keburu ditinggalkan. */
-  const kembali = (tujuan, pesan) => {
-    window.sessionStorage?.setItem('padev-um-pesan', pesan);
-    window.location.assign(tujuan);
   };
 
   const isi = (nama, nilai) => {
@@ -266,7 +261,7 @@
       method: sunting ? 'PATCH' : 'POST',
       body: JSON.stringify(payload),
     });
-    kembali('./padev-users.html', sunting ? 'Pengguna diperbarui.' : 'Pengguna ditambahkan.');
+    return sunting ? 'Pengguna diperbarui.' : 'Pengguna ditambahkan.';
   };
 
   /* =============================== Role =============================== */
@@ -306,7 +301,7 @@
       method: sunting ? 'PATCH' : 'POST',
       body: JSON.stringify(payload),
     });
-    kembali('./padev-user-groups.html', sunting ? 'Role diperbarui.' : 'Role ditambahkan.');
+    return sunting ? 'Role diperbarui.' : 'Role ditambahkan.';
   };
 
   /* =============================== Menu ===============================
@@ -502,7 +497,7 @@
       method: sunting ? 'PATCH' : 'POST',
       body: JSON.stringify(payload),
     });
-    kembali('./padev-menu-permissions.html', sunting ? 'Menu diperbarui.' : 'Menu ditambahkan.');
+    return sunting ? 'Menu diperbarui.' : 'Menu ditambahkan.';
   };
 
   /* ============================== Jalankan ============================== */
@@ -525,7 +520,10 @@
     const semula = tombolSimpan.textContent;
     tombolSimpan.textContent = tombolSimpan.dataset.loadingLabel || 'Menyimpan…';
     try {
-      await halaman.simpan();
+      const pesan = await halaman.simpan();
+      tombolSimpan.disabled = false;
+      tombolSimpan.textContent = semula;
+      toast(pesan, 'success');
     } catch (error) {
       tombolSimpan.disabled = false;
       tombolSimpan.textContent = semula;

@@ -122,6 +122,28 @@ window.PADevI18n.register('id', {
   'nav.group.business': 'Bisnis',
   'nav.group.storage': 'Penyimpanan',
 
+  /* Menu PA DEV Studio. Kunci diturunkan dari label menu oleh sidebar.js
+   * (`nav.<slug>` untuk induk, `nav.item.<slug>` untuk anak), jadi label di
+   * registry menu dan kunci di sini harus tetap sepadan. */
+  'nav.user-management': 'Manajemen Pengguna',
+  'nav.content': 'Konten',
+  'nav.portfolio-and-business': 'Portofolio & Bisnis',
+  'nav.leads': 'Prospek',
+  'nav.settings': 'Pengaturan',
+
+  'nav.item.users': 'Pengguna',
+  'nav.item.groups': 'Grup',
+  'nav.item.permissions': 'Izin',
+  'nav.item.homepage': 'Beranda',
+  'nav.item.insights': 'Insight',
+  'nav.item.testimonials': 'Testimoni',
+  'nav.item.faq': 'FAQ',
+  'nav.item.services': 'Layanan',
+  'nav.item.templates': 'Template',
+  'nav.item.projects': 'Proyek',
+  'nav.item.messages': 'Pesan',
+  'nav.item.subscribers': 'Pelanggan',
+
   'customizer.open': 'Buka Pengatur Tema',
   'customizer.close': 'Tutup Pengatur Tema',
   'customizer.title': 'Pengatur Tema',

@@ -25,6 +25,7 @@ const PETA_LAMA = new Map([
   ['adminpanel/articles', '/adminpanel/padev-articles.html'],
   ['adminpanel/projects', '/adminpanel/padev-projects.html'],
   ['adminpanel/templates', '/adminpanel/padev-templates.html'],
+  ['adminpanel/companies', '/adminpanel/padev-companies.html'],
   ['adminpanel/users', '/adminpanel/padev-users.html'],
   ['adminpanel/user-groups', '/adminpanel/padev-user-groups.html'],
   ['adminpanel/menu-permissions', '/adminpanel/padev-menu-permissions.html'],

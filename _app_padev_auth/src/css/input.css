@@ -2168,6 +2168,35 @@ html[dir='rtl'] .dropdown-panel { left:0; right:auto; transform-origin:top left;
     @apply pointer-events-none absolute inset-x-0 top-0 -z-10 h-[36rem];
     background: radial-gradient(58% 50% at 50% 0%, color-mix(in srgb, var(--color-primary) 14%, transparent) 0%, transparent 74%);
   }
+  /* Tombol terang/gelap mandiri — dipakai halaman login saja.
+   * Login satu-satunya halaman auth tanpa topbar, jadi tombol tema yang di
+   * halaman lain menumpang di navbar kehilangan rumahnya. Versi fixed ini
+   * menggantikannya: selalu terjangkau dan tidak menambah baris baru di
+   * layout dua kolom. Kontrak atributnya sama persis dengan tombol navbar
+   * ([data-theme-toggle] + [data-theme-icon]), sehingga auth.js menanganinya
+   * tanpa kode tambahan. */
+  .auth-theme-toggle {
+    @apply fixed right-4 top-4 z-30 inline-flex h-11 w-11 items-center justify-center rounded-pa-lg border text-ink-body;
+    border-color: var(--color-border);
+    background-color: var(--color-surface);
+    box-shadow: 0 18px 36px -20px rgb(15 23 42 / .4);
+    transition: background-color var(--au-fast) var(--au-ease),
+                color var(--au-fast) var(--au-ease),
+                transform var(--au-fast) var(--au-ease);
+  }
+  .auth-theme-toggle:hover {
+    background-color: color-mix(in srgb, var(--color-primary) 8%, var(--color-surface));
+    color: rgb(var(--primary-700));
+    transform: translateY(-1px);
+  }
+  .auth-theme-toggle:active { transform: translateY(1px); }
+  .auth-theme-toggle svg { @apply h-5 w-5; transition: transform var(--au-fast) var(--au-ease); }
+  .auth-theme-toggle:hover svg { transform: rotate(8deg); }
+  /* Layar lebar: ikut gutter container supaya tidak menempel panel form. */
+  @media (min-width: 1280px) {
+    .auth-theme-toggle { @apply right-6 top-6; }
+  }
+
   .auth-grid { @apply grid items-start gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,26rem)] lg:gap-14; }
   .auth-grid--wide { @apply lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]; }
 

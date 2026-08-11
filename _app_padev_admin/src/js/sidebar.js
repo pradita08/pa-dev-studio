@@ -89,6 +89,20 @@
     const nav = sidebar.querySelector('.sidebar-nav[data-sidebar-canonical="runtime"]');
     if (!nav) return;
     const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+    /**
+     * Halaman tambah/edit TIDAK punya entri menunya sendiri — registry hanya
+     * menyimpan halaman daftarnya. Tanpa pemetaan ini, membuka
+     * padev-users-form.html membuat seluruh sidebar tidak ada yang tersorot
+     * dan submenu induknya ikut tertutup.
+     *
+     * Konvensi repo: `<daftar>-form.html` adalah anak dari `<daftar>.html`,
+     * jadi cukup lepas akhiran `-form` untuk menemukan pemiliknya.
+     */
+    const ownerPage = currentPage.replace(/-form\.html$/, '.html');
+    const isActive = (href) => {
+      const target = href?.split('#')[0];
+      return target === `./${currentPage}` || target === `./${ownerPage}`;
+    };
     const icon = (pathData, className = 'h-5 w-5') => `<svg class="${className}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${pathData}"></path></svg>`;
     /**
      * Sidebar dirakit runtime sehingga tidak pernah tersentuh pemindai i18n
@@ -102,7 +116,7 @@
     const i18nAttr = (prefix, text) => ` data-i18n="${prefix}${slug(text)}"`;
 
     const link = ([label, href]) => {
-      const active = href?.split('#')[0] === `./${currentPage}`;
+      const active = isActive(href);
       return `<li><a href="${href}" class="sidebar-sublink${active ? ' sidebar-sublink-active' : ''}"${active ? ' aria-current="page"' : ''}><span class="sidebar-dot"></span><span class="sidebar-label flex-1 truncate"${i18nAttr('nav.item.', label)}>${label}</span></a></li>`;
     };
     const group = (entry) => {
@@ -112,12 +126,12 @@
       // dirender sebagai tombol submenu kosong yang tidak bisa diklik ke mana
       // pun. Registry menu di database memakai bentuk ini juga.
       if (entry.path && !entry.items) {
-        const active = entry.path.split('#')[0] === `./${currentPage}`;
+        const active = isActive(entry.path);
         return `<li><a href="${entry.path}" class="sidebar-link${active ? ' sidebar-link-active' : ''}"${active ? ' aria-current="page"' : ''}>${icon(entry.icon)}<span class="sidebar-label flex-1 truncate text-left"${i18nAttr('nav.', entry.label)}>${entry.label}</span></a></li>`;
       }
 
       const allItems = entry.items || entry.groups?.flatMap(([, items]) => items) || [];
-      const active = allItems.some(([, href]) => href?.split('#')[0] === `./${currentPage}`);
+      const active = allItems.some(([, href]) => isActive(href));
       const children = entry.groups
         ? entry.groups.map(([heading, items]) => `<li class="sidebar-subheading" aria-hidden="true"${i18nAttr('nav.group.', heading)}>${heading}</li>${items.map(link).join('')}`).join('')
         : allItems.map(link).join('');
@@ -135,8 +149,11 @@
     window.PADevI18n?.apply(nav);
     if (!nav.dataset.i18nBound) {
       nav.dataset.i18nBound = 'true';
-      window.addEventListener('padev:locale-change', () => window.PADevI18n?.apply(nav));
-      window.addEventListener('padev:locale-ready', () => window.PADevI18n?.apply(nav));
+      // Kedua peristiwa dikirim `document.dispatchEvent` TANPA `bubbles`, jadi
+      // tidak pernah sampai ke window. Menyimaknya di window membuat sidebar
+      // diam saat bahasa diganti — termasuk kotak pencarian menunya.
+      document.addEventListener('padev:locale-change', () => window.PADevI18n?.apply(nav));
+      document.addEventListener('padev:locale-ready', () => window.PADevI18n?.apply(nav));
     }
     revealActiveItem(nav);
   }
@@ -162,6 +179,31 @@
     });
   }
 
+  /**
+   * Memasang tiga lekukan penyambung pada item sidebar yang sedang aktif.
+   *
+   * Pill item aktif berwarna canvas dan menyatu dengan area konten di
+   * kanannya. Tanpa lekukan ini, sudut kanan-atas dan kanan-bawahnya bertemu
+   * latar sidebar dengan sudut siku — terlihat seperti kotak yang ditempel,
+   * bukan lidah yang menyambung.
+   *
+   * Dipakai bersama oleh induk submenu DAN menu tunggal: keduanya memakai pill
+   * aktif yang sama, jadi keduanya butuh sambungan yang sama. CSS-nya sudah
+   * menyiapkan keduanya (`.sidebar-link-active > .sidebar-mini-connector`);
+   * sebelumnya hanya induk submenu yang benar-benar dipasangi.
+   */
+  function attachActiveConnectors(item) {
+    if (!item.querySelector(':scope > .sidebar-expanded-connector-top')) {
+      item.append(createExpandedConnector('top'));
+    }
+    if (!item.querySelector(':scope > .sidebar-expanded-connector-bottom')) {
+      item.append(createExpandedConnector('bottom'));
+    }
+    if (!item.querySelector(':scope > .sidebar-mini-connector')) {
+      item.append(createMiniConnector());
+    }
+  }
+
   function enhanceSubmenuParent(toggle) {
     const outlineIcon = Array.from(toggle.children).find((child) => (
       child.tagName.toLowerCase() === 'svg'
@@ -185,15 +227,7 @@
     else if (outlineIcon) outlineIcon.insertAdjacentElement('afterend', filledIcon);
     else toggle.prepend(filledIcon);
 
-    if (!toggle.querySelector(':scope > .sidebar-expanded-connector-top')) {
-      toggle.append(createExpandedConnector('top'));
-    }
-    if (!toggle.querySelector(':scope > .sidebar-expanded-connector-bottom')) {
-      toggle.append(createExpandedConnector('bottom'));
-    }
-    if (!toggle.querySelector(':scope > .sidebar-mini-connector')) {
-      toggle.append(createMiniConnector());
-    }
+    attachActiveConnectors(toggle);
   }
 
   function createSidebarMenuSearch(nav, menuList) {
@@ -218,6 +252,7 @@
     label.className = 'sr-only';
     label.htmlFor = inputId;
     label.textContent = 'Cari menu navigasi';
+    label.dataset.i18n = 'sidebar.searchMenu';
 
     const icon = document.createElementNS(SVG_NAMESPACE, 'svg');
     icon.setAttribute('class', 'sidebar-menu-search-icon');
@@ -240,6 +275,11 @@
     input.className = 'sidebar-menu-search-input';
     input.type = 'search';
     input.placeholder = 'Cari menu...';
+    // Kotak ini dibangun runtime, jadi pemindai i18n statis tidak pernah
+    // melihatnya. Kuncinya sudah lama ada di kamus; yang belum ada hanya
+    // atribut penghubungnya, sehingga placeholder-nya tetap Indonesia
+    // meski bahasa panel diganti.
+    input.dataset.i18nPlaceholder = 'sidebar.searchMenu';
     input.autocomplete = 'off';
     input.spellcheck = false;
     input.setAttribute('aria-controls', listId);
@@ -250,6 +290,8 @@
 
     wrapper.append(label, icon, input, status);
     nav.insertBefore(wrapper, menuList);
+    // Dipasang setelah apply() awal pada nav, jadi perlu diterjemahkan sendiri.
+    window.PADevI18n?.apply(wrapper);
 
     return { input, status };
   }
@@ -499,6 +541,10 @@
       if (controller) submenuControllers.push(controller);
     });
 
+    // Menu tunggal yang sedang dibuka: pill-nya sama dengan induk submenu aktif,
+    // jadi sambungannya juga harus sama. Tanpa ini sudut kanannya siku.
+    sidebar.querySelectorAll('a.sidebar-link-active').forEach(attachActiveConnectors);
+
     const nav = sidebar.querySelector('.sidebar-nav');
     const menuList = nav?.querySelector(':scope > ul');
     let menuSearchController = null;
@@ -548,9 +594,11 @@
         });
 
         if (searchElements.status) {
+          // Pengumuman pembaca layar ikut bahasa panel; kuncinya sudah ada di
+          // kamus dan `{n}` diisi oleh t().
           searchElements.status.textContent = searching
-            ? `${resultCount} menu ditemukan`
-            : 'Semua menu ditampilkan';
+            ? (window.PADevI18n?.t('sidebar.menuFound', { n: resultCount }) ?? `${resultCount} menu ditemukan`)
+            : (window.PADevI18n?.t('sidebar.menuAll') ?? 'Semua menu ditampilkan');
         }
       }
 

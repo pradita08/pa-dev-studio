@@ -48,6 +48,41 @@ export const halaman = [
     eyebrow: 'Marketplace',
     deskripsi: 'Produk template beserta harganya pada bagian Templates.',
   },
+  {
+    berkas: 'padev-testimonials.html',
+    modul: 'testimonials',
+    judul: 'Testimoni',
+    eyebrow: 'Bukti sosial',
+    deskripsi: 'Kutipan klien yang tampil pada bagian Testimonials di landing.',
+  },
+  {
+    berkas: 'padev-companies.html',
+    modul: 'companies',
+    judul: 'Company',
+    eyebrow: 'Trust strip',
+    deskripsi: 'Nama dan tautan website yang tampil sebagai perusahaan tepercaya di landing.',
+  },
+  {
+    berkas: 'padev-faq.html',
+    modul: 'faq',
+    judul: 'FAQ',
+    eyebrow: 'Pertanyaan umum',
+    deskripsi: 'Pertanyaan yang berulang beserta jawabannya.',
+  },
+  {
+    berkas: 'padev-services.html',
+    modul: 'services',
+    judul: 'Paket Layanan',
+    eyebrow: 'Penawaran',
+    deskripsi: 'Paket harga pada bagian Pricing Plans di landing. Kartu kemampuan berikon di seksi Services tidak dikelola dari sini — keduanya bagian yang berbeda.',
+  },
+  {
+    berkas: 'padev-subscribers.html',
+    modul: 'subscribers',
+    judul: 'Subscriber',
+    eyebrow: 'Prospek',
+    deskripsi: 'Alamat yang mendaftar dari landing. Alamatnya tidak disunting dari sini — hanya ditandai berhenti atau dibuang.',
+  },
 ];
 
 export const halamanUm = [
@@ -72,12 +107,47 @@ export const halamanUm = [
     eyebrow: 'User Management',
     deskripsi: 'Susunan sidebar beserta izin yang menjaganya. Menu tampil bagi seseorang bila ia memegang izin <code>:read</code>-nya — tetapi yang menegakkan akses adalah route, bukan tampil atau tidaknya menu.',
   },
+];
+
+/**
+ * Profil Saya — permukaan layanan-diri, bukan halaman daftar.
+ *
+ * Susunannya mengikuti rujukan `api_bridge_gateway` (`profile.ejs`): kepala
+ * halaman, pita metrik, lalu kartu-kartu. Ia sengaja TIDAK memakai kerangka
+ * `basic-section` seperti halaman daftar — tidak ada tabel di sini, dan
+ * membungkus form layanan-diri dengan kerangka daftar hanya menyamarkan
+ * bedanya.
+ */
+export const halamanProfil = [
   {
     berkas: 'padev-profile.html',
     modul: 'profile',
     judul: 'Profil Saya',
-    eyebrow: 'Akun',
-    deskripsi: 'Identitas akun dan penggantian kata sandi.',
+    eyebrow: 'Akun saya',
+  },
+];
+
+/**
+ * Halaman setelan.
+ *
+ * Bukan daftar dan bukan CRUD: isinya sekumpulan nilai yang disunting, jadi
+ * kerangkanya kepala halaman + slot yang diisi kartu formulir. Daftar fieldnya
+ * datang dari server (`settings-modules.js`), bukan ditulis di sini.
+ */
+export const halamanSetelan = [
+  {
+    berkas: 'padev-homepage.html',
+    modul: 'homepage',
+    judul: 'Homepage',
+    eyebrow: 'Konten',
+    deskripsi: 'Teks yang tampil pada bagian utama landing.',
+  },
+  {
+    berkas: 'padev-settings.html',
+    modul: 'settings',
+    judul: 'Settings',
+    eyebrow: 'Sistem',
+    deskripsi: 'Identitas situs, kontak, media sosial, dan ketersediaan.',
   },
 ];
 
@@ -101,37 +171,29 @@ export const halamanUmForm = [
   { berkas: 'padev-menu-permissions-form.html', modul: 'menus', judul: 'Menu & izin', daftar: 'padev-menu-permissions.html' },
 ];
 
+/**
+ * Kerangka halaman modul konten.
+ *
+ * Bentuknya SAMA dengan halaman daftar User Management di bawah: satu
+ * `basic-section` membawa judul dan aksi halaman, body-nya sebuah slot kosong
+ * yang diisi kartu tabel saat data tiba. Halaman tidak lagi menggambar
+ * toolbar, kepala tabel, maupun keadaan kosongnya sendiri — semuanya milik
+ * mesin tabel, supaya empat halaman modul tidak pelan-pelan berbeda dari
+ * halaman User Management.
+ */
 const isiMain = (item) => `        <main id="konten-utama" class="mx-auto w-full max-w-container flex-1 p-4 md:p-6 xl:p-8"
               data-padev-module="${item.modul}">
 
-            <section class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
-                <div class="min-w-0">
-                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-primary-600">${item.eyebrow}</p>
-                    <h1 class="page-title mt-1">${item.judul}</h1>
-                    <p class="mt-2 text-sm text-ink-muted">${item.deskripsi}</p>
+            <section class="basic-section padev-table-section">
+                <div class="basic-section-header">
+                    <div>
+                        <p class="basic-eyebrow">${item.eyebrow}</p>
+                        <h2>${item.judul}</h2>
+                        <p>${item.deskripsi}</p>
+                    </div>
+                    <div class="basic-section-actions" data-padev-actions></div>
                 </div>
-                <div class="flex flex-wrap items-center gap-2" data-padev-actions></div>
-            </section>
-
-            <section class="mt-6 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-center">
-                <label class="relative block">
-                    <span class="sr-only">Cari</span>
-                    <input type="search" class="ui-form-input" placeholder="Cari…" data-padev-search>
-                </label>
-                <select class="ui-form-input" data-padev-filter aria-label="Saring status"></select>
-                <p class="text-sm text-ink-muted" data-padev-summary aria-live="polite"></p>
-            </section>
-
-            <section class="mt-4 rounded-xl border border-line bg-surface shadow-elevation-xs">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm" data-padev-table>
-                        <thead class="border-b border-line bg-canvas text-xs uppercase tracking-wide text-ink-muted">
-                            <tr data-padev-head></tr>
-                        </thead>
-                        <tbody class="divide-y divide-line" data-padev-body></tbody>
-                    </table>
-                </div>
-                <p class="hidden p-8 text-center text-sm text-ink-muted" data-padev-empty>Belum ada data.</p>
+                <div class="basic-section-body" data-padev-panel></div>
             </section>
 
         </main>`;
@@ -160,6 +222,38 @@ const isiMainUm = (item) => `        <main id="konten-utama" class="mx-auto w-fu
 
         </main>`;
 
+const isiMainProfil = (item) => `        <main id="konten-utama" class="mx-auto w-full max-w-container flex-1 p-4 md:p-6 xl:p-8"
+              data-padev-um="${item.modul}">
+
+            <div class="page-heading">
+                <div>
+                    <p class="eyebrow">${item.eyebrow}</p>
+                    <h1 data-profil-nama>Memuat…</h1>
+                    <p class="muted" data-profil-ringkas></p>
+                </div>
+                <div class="basic-section-actions" data-padev-actions></div>
+            </div>
+
+            <div data-padev-panel></div>
+
+        </main>`;
+
+const isiMainSetelan = (item) => `        <main id="konten-utama" class="mx-auto w-full max-w-container flex-1 p-4 md:p-6 xl:p-8"
+              data-padev-settings="${item.modul}">
+
+            <div class="page-heading">
+                <div>
+                    <p class="eyebrow">${item.eyebrow}</p>
+                    <h1>${item.judul}</h1>
+                    <p class="muted">${item.deskripsi}</p>
+                </div>
+                <div class="basic-section-actions" data-padev-actions></div>
+            </div>
+
+            <div data-padev-panel></div>
+
+        </main>`;
+
 /* ====================== Kerangka halaman formulir ======================
  *
  * Markup di bawah adalah salinan susunan rujukan, bukan hasil rendering
@@ -174,11 +268,11 @@ const kepalaForm = (eyebrow, daftar) => `            <div class="page-heading">
                     <h1 data-form-title>Memuat…</h1>
                     <p class="muted" data-form-subtitle></p>
                 </div>
-                <a class="ui-button ui-button--secondary ui-button--sm" href="./${daftar}">Kembali</a>
+                <a class="ui-button ui-button--outline ui-button--sm" href="./${daftar}">Kembali</a>
             </div>`;
 
 const kakiForm = (daftar) => `                <div class="form-actions">
-                    <a class="ui-button ui-button--secondary" href="./${daftar}">Batal</a>
+                    <a class="ui-button ui-button--outline" href="./${daftar}">Batal</a>
                     <button class="ui-button ui-button--primary" type="submit" data-loading-label="Menyimpan…" data-form-submit>Simpan</button>
                 </div>`;
 
@@ -190,8 +284,8 @@ const panelIzin = (judul, keterangan, tersembunyi) => `                <section 
                             <p class="muted">${keterangan}</p>
                         </div>
                         <div class="table-actions">
-                            <button class="ui-button ui-button--secondary ui-button--sm" type="button" data-permission-all>Centang semua</button>
-                            <button class="ui-button ui-button--secondary ui-button--sm" type="button" data-permission-none>Bersihkan</button>
+                            <button class="ui-button ui-button--outline ui-button--sm" type="button" data-permission-all>Centang semua</button>
+                            <button class="ui-button ui-button--outline ui-button--sm" type="button" data-permission-none>Bersihkan</button>
                         </div>
                     </div>
                     <div data-permission-catalog></div>
@@ -331,8 +425,8 @@ const formMenu = (item) => `${kepalaForm('Menu &amp; izin', item.daftar)}
                             <span class="icon-picker">
                                 <span class="icon-preview" data-icon-preview aria-hidden="true">—</span>
                                 <input type="hidden" name="icon" data-icon-value data-menu-toplevel value="">
-                                <button class="ui-button ui-button--secondary ui-button--sm" type="button" data-icon-open data-menu-toplevel>Pilih ikon</button>
-                                <button class="ui-button ui-button--secondary ui-button--sm" type="button" data-icon-clear data-menu-toplevel>Kosongkan</button>
+                                <button class="ui-button ui-button--outline ui-button--sm" type="button" data-icon-open data-menu-toplevel>Pilih ikon</button>
+                                <button class="ui-button ui-button--outline ui-button--sm" type="button" data-icon-clear data-menu-toplevel>Kosongkan</button>
                             </span>
                             <small>Dipilih dari galeri; tidak perlu menulis path SVG sendiri.</small>
                         </label>
@@ -392,17 +486,39 @@ export const buatHalaman = async () => {
     konten: {
       daftar: halaman,
       main: isiMain,
-      css: [],
-      js: ['padev-admin-crud.js'],
+      // Halaman modul kini memakai kartu tabel yang sama dengan User
+      // Management, jadi ia butuh gaya tabel DAN `.padev-table-section` yang
+      // membungkusnya.
+      css: ['padev-tables.css', 'padev-um.css'],
+      vendorJs: ['tinymce/tinymce.min.js'],
+      js: ['padev-tables.js', 'padev-table-build.js', 'padev-admin-crud.js'],
     },
     umDaftar: {
       daftar: halamanUm,
       main: isiMainUm,
       css: ['padev-tables.css', 'padev-um.css'],
-      // Mesin tabel dimuat SEBELUM `padev-admin-um.js`: keduanya `defer`, jadi
-      // urutan tag menentukan urutan eksekusi, dan `padev-admin-um.js`
-      // memanggil `window.PADevTables.mount()` segera setelah tabelnya digambar.
-      js: ['padev-tables.js', 'padev-admin-um.js'],
+      // Mesin tabel dimuat SEBELUM skrip halaman: semuanya `defer`, jadi
+      // urutan tag menentukan urutan eksekusi. `padev-table-build.js`
+      // menyiapkan `window.PADevTableBuild` yang dipakai skrip halaman, dan
+      // skrip halaman memanggil `window.PADevTables.mount()` segera setelah
+      // tabelnya digambar.
+      js: ['padev-tables.js', 'padev-table-build.js', 'padev-admin-um.js'],
+    },
+    setelan: {
+      daftar: halamanSetelan,
+      main: isiMainSetelan,
+      css: ['padev-um.css'],
+      js: ['padev-admin-settings.js'],
+    },
+    profil: {
+      daftar: halamanProfil,
+      main: isiMainProfil,
+      css: ['padev-um.css'],
+      // `padev-table-build.js` ikut walau halaman ini tidak bertabel: ia juga
+      // pemilik `berIkon` dan kumpulan bentuk ikon yang dipakai pita metrik.
+      // Mesin tabelnya sendiri (`padev-tables.js`) tidak ikut — tidak ada tabel
+      // yang perlu dipasangi.
+      js: ['padev-table-build.js', 'padev-admin-um.js'],
     },
     umForm: {
       daftar: halamanUmForm,
@@ -436,7 +552,7 @@ export const buatHalaman = async () => {
       html += jenis.main(item);
       html += ekor.replace(
         '</body>',
-        `${jenis.js.map((berkas) => `<script src="./assets/js/${berkas}" defer></script>`).join('\n')}\n</body>`,
+        `${(jenis.vendorJs || []).map((berkas) => `<script src="./assets/vendor/${berkas}" defer></script>`).join('\n')}\n${jenis.js.map((berkas) => `<script src="./assets/js/${berkas}" defer></script>`).join('\n')}\n</body>`,
       );
 
       await writeFile(path.join(pagesDir, item.berkas), html);

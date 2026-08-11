@@ -99,6 +99,24 @@ export const migrateUserManagement = async () => {
     console.log('[um] kolom mst_user.MstUserUsername ditambahkan');
   }
 
+  /* Foto profil, ditambahkan belakangan dengan penjaga yang sama seperti
+   * `MstUserUsername` di atas: `CREATE TABLE IF NOT EXISTS` tidak pernah
+   * menyentuh tabel yang sudah berisi data.
+   *
+   * Yang disimpan hanya URL publik hasil unggahan (`/uploads/...`), bukan
+   * berkasnya: berkas hidup di volume Docker supaya tidak ikut hilang setiap
+   * kali image dibangun ulang. */
+  const [[kolomAvatar]] = await db.query(
+    `SELECT COUNT(*) AS n FROM information_schema.COLUMNS
+      WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'mst_user' AND COLUMN_NAME = 'MstUserAvatarUrl'`,
+  );
+  if (kolomAvatar.n === 0) {
+    await db.query(
+      'ALTER TABLE mst_user ADD COLUMN MstUserAvatarUrl VARCHAR(255) NULL AFTER MstUserFullName',
+    );
+    console.log('[um] kolom mst_user.MstUserAvatarUrl ditambahkan');
+  }
+
   await db.query(`
     CREATE TABLE IF NOT EXISTS mst_user_group_permission (
       MstUserGroupId   BIGINT UNSIGNED NOT NULL,

@@ -30,6 +30,9 @@ RUN npm ci --omit=dev && npm cache clean --force
 
 COPY _api_padev/server.js ./server.js
 COPY _api_padev/src ./src
+# Perkakas pemeliharaan yang dijalankan manual di dalam container, mis.
+# `npm run menu:apply` untuk menyusun ulang registry menu.
+COPY _api_padev/scripts ./scripts
 
 COPY --from=auth-build /build/dist ./public/auth
 COPY --from=admin-build /build/dist ./public/adminpanel

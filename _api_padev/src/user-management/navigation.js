@@ -63,22 +63,55 @@ export const DEFAULT_MENUS = [
     label: 'User Management',
     icon: 'M16 20v-1.5a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4V20M9.5 10.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7M18 8v6M21 11h-6',
     children: [
-      { label: 'Pengguna', path: '/adminpanel/padev-users.html', actions: ACTIONS, isSystem: 1 },
-      { label: 'Role & Grup', path: '/adminpanel/padev-user-groups.html', actions: ACTIONS, isSystem: 1 },
-      { label: 'Menu & Izin', path: '/adminpanel/padev-menu-permissions.html', actions: ACTIONS, isSystem: 1 },
+      { label: 'Users', path: '/adminpanel/padev-users.html', actions: ACTIONS, isSystem: 1 },
+      { label: 'Groups', path: '/adminpanel/padev-user-groups.html', actions: ACTIONS, isSystem: 1 },
+      { label: 'Permissions', path: '/adminpanel/padev-menu-permissions.html', actions: ACTIONS, isSystem: 1 },
     ],
   },
 
-  { heading: 'PA DEV Studio' },
   {
-    label: 'Konten',
+    label: 'Content',
     icon: 'M4 5h16v14H4zM4 9h16M9 9v10',
     children: [
-      { label: 'Inquiry', path: '/adminpanel/padev-inquiries.html', actions: ['read', 'update', 'delete'] },
-      { label: 'Artikel', path: '/adminpanel/padev-articles.html', actions: ACTIONS },
-      { label: 'Portfolio', path: '/adminpanel/padev-projects.html', actions: ACTIONS },
-      { label: 'Template', path: '/adminpanel/padev-templates.html', actions: ACTIONS },
+      { label: 'Homepage', path: '/adminpanel/padev-homepage.html', actions: ['read', 'update'] },
+      { label: 'Insights', path: '/adminpanel/padev-articles.html', actions: ACTIONS },
+      { label: 'Testimonials', path: '/adminpanel/padev-testimonials.html', actions: ACTIONS },
+      { label: 'Company', path: '/adminpanel/padev-companies.html', actions: ACTIONS },
+      { label: 'FAQ', path: '/adminpanel/padev-faq.html', actions: ACTIONS },
     ],
+  },
+
+  {
+    label: 'Portfolio & Business',
+    icon: 'M3 7h18v13H3zM8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12h18',
+    children: [
+      { label: 'Services', path: '/adminpanel/padev-services.html', actions: ACTIONS },
+      { label: 'Templates', path: '/adminpanel/padev-templates.html', actions: ACTIONS },
+      { label: 'Projects', path: '/adminpanel/padev-projects.html', actions: ACTIONS },
+    ],
+  },
+
+  {
+    label: 'Leads',
+    icon: 'M3 6h18v12H3zM3 7l9 6 9-6',
+    children: [
+      // Pesan masuk tidak pernah dibuat dari panel — hanya dibaca, ditandai,
+      // dan dibuang. Karena itu tanpa `create`.
+      { label: 'Messages', path: '/adminpanel/padev-inquiries.html', actions: ['read', 'update', 'delete'] },
+      /* `update` ikut karena kolom status ada gunanya: menandai seseorang
+       * berhenti berlangganan jauh lebih benar daripada menghapus barisnya —
+       * alamat yang dihapus bisa masuk lagi lewat form dan dikirimi surat
+       * ulang. Yang boleh disunting tetap dibatasi di `content-modules.js`:
+       * status dan catatan saja, tidak pernah alamatnya. */
+      { label: 'Subscribers', path: '/adminpanel/padev-subscribers.html', actions: ACTIONS },
+    ],
+  },
+
+  {
+    label: 'Settings',
+    path: '/adminpanel/padev-settings.html',
+    icon: 'M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1',
+    actions: ['read', 'update'],
   },
 
 ];
