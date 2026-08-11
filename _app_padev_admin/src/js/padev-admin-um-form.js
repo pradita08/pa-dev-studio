@@ -64,6 +64,7 @@
   };
 
   const toastRegion = el('div', 'ui-toast-region');
+  toastRegion.dataset.padevToastRegion = 'true';
   toastRegion.setAttribute('aria-live', 'polite');
   document.body.append(toastRegion);
 
@@ -516,19 +517,25 @@
     if (!form.reportValidity()) return;
 
     bersihkanGalat();
-    tombolSimpan.disabled = true;
     const semula = tombolSimpan.textContent;
-    tombolSimpan.textContent = tombolSimpan.dataset.loadingLabel || 'Menyimpan…';
+    const labelMemuat = tombolSimpan.dataset.loadingLabel || 'Menyimpan…';
+    const memakaiFeedback = Boolean(window.PADevButton?.busy(tombolSimpan, labelMemuat));
+    if (!memakaiFeedback) {
+      tombolSimpan.disabled = true;
+      tombolSimpan.textContent = labelMemuat;
+    }
     try {
       const pesan = await halaman.simpan();
-      tombolSimpan.disabled = false;
-      tombolSimpan.textContent = semula;
       toast(pesan, 'success');
     } catch (error) {
-      tombolSimpan.disabled = false;
-      tombolSimpan.textContent = semula;
       tampilkanGalat(error.errors);
       toast(error.message);
+    } finally {
+      if (memakaiFeedback) window.PADevButton.idle(tombolSimpan);
+      else {
+        tombolSimpan.disabled = false;
+        tombolSimpan.textContent = semula;
+      }
     }
   });
 

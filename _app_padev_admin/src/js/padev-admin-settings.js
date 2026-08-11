@@ -50,6 +50,7 @@
   };
 
   const toastRegion = el('div', 'ui-toast-region');
+  toastRegion.dataset.padevToastRegion = 'true';
   toastRegion.setAttribute('aria-live', 'polite');
   document.body.append(toastRegion);
 
@@ -126,9 +127,12 @@
       event.preventDefault();
       form.querySelectorAll('[data-galat]').forEach((n) => { n.textContent = ''; });
       const isi = Object.fromEntries(new FormData(form).entries());
-      simpan.disabled = true;
       const semula = simpan.textContent;
-      simpan.textContent = 'Menyimpan…';
+      const memakaiFeedback = Boolean(window.PADevButton?.busy(simpan, 'Menyimpan…'));
+      if (!memakaiFeedback) {
+        simpan.disabled = true;
+        simpan.textContent = 'Menyimpan…';
+      }
       try {
         const hasil = await minta(`/api/admin/settings/${grup}`, {
           method: 'PUT',
@@ -142,8 +146,11 @@
         });
         toast(error.message, 'danger');
       } finally {
-        simpan.disabled = false;
-        simpan.textContent = semula;
+        if (memakaiFeedback) window.PADevButton.idle(simpan);
+        else {
+          simpan.disabled = false;
+          simpan.textContent = semula;
+        }
       }
     });
 

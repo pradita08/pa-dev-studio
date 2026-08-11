@@ -71,6 +71,7 @@
   };
 
   const toastRegion = el('div', 'ui-toast-region');
+  toastRegion.dataset.padevToastRegion = 'true';
   toastRegion.setAttribute('aria-live', 'polite');
   document.body.append(toastRegion);
 
@@ -95,18 +96,6 @@
     window.setTimeout(() => toast(pesanTertunda), 60);
   }
 
-  /* `padev-tables.js` melaporkan hasil aksi massal lewat global opsional ini.
-   * Nadanya dipetakan ke dua nada yang dipunyai toast halaman ini.
-   *
-   * Mesin memanggilnya tepat sekali di akhir satu putaran aksi massal, jadi ia
-   * sekaligus menjadi tanda putaran itu selesai. Halaman lalu digambar ulang
-   * dari data server: kartu metrik dan lencana status yang ikut berubah tidak
-   * ditebak di layar. */
-  window.PADevToast = (pesan, nada) => {
-    toast(pesan, nada === 'success' ? 'success' : 'danger');
-    if (perluMuatUlang) { perluMuatUlang = false; muat(); }
-  };
-
   /* ======================== Aksi massal ========================
    *
    * Mesin tabel memanggil endpoint SATUAN yang sudah ada, satu per satu — tidak
@@ -119,6 +108,13 @@
    * tidak pernah menafsirkannya, jadi di sini isinya JSON.
    */
   let perluMuatUlang = false;
+
+  /* `padev-tables.js` tetap memiliki satu toast bersama. Hook terpisah ini
+   * menjaga perilaku lama: daftar dimuat ulang setelah aksi massal selesai,
+   * tanpa menimpa kontrak toast dan tanpa membuat pemanggilan berulang. */
+  window.PADevToastRefresh = () => {
+    if (perluMuatUlang) { perluMuatUlang = false; muat(); }
+  };
 
   const kirimMassal = async ({ url, key, extra }) => {
     await (key === 'delete'
@@ -751,6 +747,16 @@
     status.setAttribute('aria-live', 'polite');
     status.textContent = user.avatarUrl ? 'Foto profil terpasang.' : 'Belum ada foto profil.';
 
+    const setUploadStatus = (message, loading = false) => {
+      status.replaceChildren();
+      if (loading) {
+        const spinner = el('span', 'ui-form-spinner');
+        spinner.setAttribute('aria-hidden', 'true');
+        status.append(spinner);
+      }
+      status.append(String(message));
+    };
+
     const berkas = document.createElement('input');
     berkas.type = 'file';
     berkas.className = 'sr-only';
@@ -778,16 +784,16 @@
     const unggah = async (file) => {
       const data = new FormData();
       data.append('file', file);
-      status.textContent = 'Mengunggah…';
+      setUploadStatus('Mengunggah…', true);
       try {
         const hasil = await minta('/api/admin/me/avatar', { method: 'POST', body: data });
         gambarkanPratinjau(hasil.url);
-        status.textContent = 'Foto profil terpasang.';
+        setUploadStatus('Foto profil terpasang.');
         hapus.disabled = false;
         toast(hasil.message);
         sesudahBerubah();
       } catch (error) {
-        status.textContent = 'Foto gagal diunggah.';
+        setUploadStatus('Foto gagal diunggah.');
         toast(error.message, 'danger');
       }
     };
@@ -827,15 +833,29 @@
     hapus.type = 'button';
     hapus.disabled = !user.avatarUrl;
     hapus.addEventListener('click', async () => {
+      const semula = hapus.textContent;
+      const memakaiFeedback = Boolean(window.PADevButton?.busy(hapus, 'Menghapus…'));
+      if (!memakaiFeedback) {
+        hapus.disabled = true;
+        hapus.textContent = 'Menghapus…';
+      }
+      let berhasil = false;
       try {
         const hasil = await minta('/api/admin/me/avatar', { method: 'DELETE' });
         gambarkanPratinjau(null);
-        status.textContent = 'Belum ada foto profil.';
-        hapus.disabled = true;
+        setUploadStatus('Belum ada foto profil.');
+        berhasil = true;
         toast(hasil.message);
         sesudahBerubah();
       } catch (error) {
         toast(error.message, 'danger');
+      } finally {
+        if (memakaiFeedback) window.PADevButton.idle(hapus);
+        else {
+          hapus.disabled = false;
+          hapus.textContent = semula;
+        }
+        if (berhasil) hapus.disabled = true;
       }
     });
 
@@ -903,6 +923,12 @@
       event.preventDefault();
       bersihkanGalat(formIdentitas);
       const data = new FormData(formIdentitas);
+      const semula = simpanIdentitas.textContent;
+      const memakaiFeedback = Boolean(window.PADevButton?.busy(simpanIdentitas, 'Menyimpan…'));
+      if (!memakaiFeedback) {
+        simpanIdentitas.disabled = true;
+        simpanIdentitas.textContent = 'Menyimpan…';
+      }
       try {
         const hasil = await minta('/api/admin/me', {
           method: 'PATCH',
@@ -913,6 +939,12 @@
       } catch (error) {
         tampilkanGalat(formIdentitas, error.errors);
         toast(error.message, 'danger');
+      } finally {
+        if (memakaiFeedback) window.PADevButton.idle(simpanIdentitas);
+        else {
+          simpanIdentitas.disabled = false;
+          simpanIdentitas.textContent = semula;
+        }
       }
     });
 
@@ -933,6 +965,12 @@
       event.preventDefault();
       bersihkanGalat(formSandi);
       const data = new FormData(formSandi);
+      const semula = simpanSandi.textContent;
+      const memakaiFeedback = Boolean(window.PADevButton?.busy(simpanSandi, 'Menyimpan…'));
+      if (!memakaiFeedback) {
+        simpanSandi.disabled = true;
+        simpanSandi.textContent = 'Menyimpan…';
+      }
       try {
         const hasil = await minta('/api/admin/me/password', {
           method: 'POST',
@@ -950,6 +988,12 @@
           new_password: error.errors?.next,
         });
         toast(error.message, 'danger');
+      } finally {
+        if (memakaiFeedback) window.PADevButton.idle(simpanSandi);
+        else {
+          simpanSandi.disabled = false;
+          simpanSandi.textContent = semula;
+        }
       }
     });
 

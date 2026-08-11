@@ -603,7 +603,10 @@
 
       const token = bulk?.dataset.padevCsrf || '';
       const controls = root.querySelectorAll('[data-padev-bulk-action], [data-padev-bulk-clear]');
-      controls.forEach((item) => { item.disabled = true; });
+      const memakaiFeedback = Boolean(window.PADevButton?.busy(button, 'Memproses…'));
+      controls.forEach((item) => {
+        if (item !== button) item.disabled = true;
+      });
       let done = 0;
       const failures = [];
       for (const { row, url } of targets) {
@@ -631,13 +634,17 @@
           failures.push(`${row.dataset.bulkLabel || 'baris'}: ${error.message}`);
         }
       }
-      controls.forEach((item) => { item.disabled = false; });
+      controls.forEach((item) => {
+        if (item === button && memakaiFeedback) window.PADevButton.idle(item);
+        else item.disabled = false;
+      });
       render();
       if (failures.length) {
         window.PADevToast?.(`${done} berhasil, ${failures.length} gagal — ${failures[0]}`, done ? 'warning' : 'error');
       } else {
         window.PADevToast?.(`${done} ${countLabel} diproses.`, 'success');
       }
+      window.PADevToastRefresh?.();
     };
     root.querySelectorAll('[data-padev-bulk-action]').forEach((button) => button.addEventListener('click', () => runBulk(button)));
 

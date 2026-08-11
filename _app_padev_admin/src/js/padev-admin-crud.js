@@ -283,6 +283,7 @@
   // Toast memakai region dan kelas milik tema, bukan kotak mengambang buatan
   // sendiri, supaya posisi dan animasinya sama dengan notifikasi lain.
   const toastRegion = el('div', 'ui-toast-region');
+  toastRegion.dataset.padevToastRegion = 'true';
   toastRegion.setAttribute('aria-live', 'polite');
   document.body.append(toastRegion);
 
@@ -488,6 +489,16 @@
     const status = el('span', 'text-xs text-ink-muted', 'PNG, JPG, WebP, atau AVIF — maksimal 4 MB.');
     const galat = el('p', 'hidden text-xs text-danger');
 
+    const setUploadStatus = (message, loading = false) => {
+      status.replaceChildren();
+      if (loading) {
+        const spinner = el('span', 'ui-form-spinner');
+        spinner.setAttribute('aria-hidden', 'true');
+        status.append(spinner);
+      }
+      status.append(String(message));
+    };
+
     const tampilkan = (url) => {
       pratinjau.replaceChildren();
       if (!url) {
@@ -507,7 +518,7 @@
       const berkas = input.files?.[0];
       if (!berkas) return;
       galat.classList.add('hidden');
-      status.textContent = 'Mengunggah…';
+      setUploadStatus('Mengunggah…', true);
 
       const data = new FormData();
       data.append('file', berkas);
@@ -517,9 +528,9 @@
         const hasil = await minta('/api/admin/uploads', { method: 'POST', body: data });
         tersembunyi.value = hasil.url;
         tampilkan(hasil.url);
-        status.textContent = `Terunggah — ${(hasil.size / 1024).toFixed(0)} KB`;
+        setUploadStatus(`Terunggah — ${(hasil.size / 1024).toFixed(0)} KB`);
       } catch (error) {
-        status.textContent = 'PNG, JPG, WebP, atau AVIF — maksimal 4 MB.';
+        setUploadStatus('PNG, JPG, WebP, atau AVIF — maksimal 4 MB.');
         galat.textContent = error.message;
         galat.classList.remove('hidden');
         toast(error.message, 'danger');
@@ -619,8 +630,12 @@
       window.tinymce?.triggerSave();
       const data = Object.fromEntries(new FormData(form).entries());
 
-      simpan.disabled = true;
-      simpan.textContent = 'Menyimpan…';
+      const semula = simpan.textContent;
+      const memakaiFeedback = Boolean(window.PADevButton?.busy(simpan, 'Menyimpan…'));
+      if (!memakaiFeedback) {
+        simpan.disabled = true;
+        simpan.textContent = 'Menyimpan…';
+      }
 
       try {
         await minta(sunting ? `${api}/${baris.id}` : api, {
@@ -632,8 +647,6 @@
         toast(sunting ? 'Perubahan tersimpan.' : `${def.judul} ditambahkan.`);
         muat();
       } catch (error) {
-        simpan.disabled = false;
-        simpan.textContent = 'Simpan';
         // Pesan galat ditempel di kolomnya masing-masing, bukan ditumpuk di atas.
         Object.entries(error.errors || {}).forEach(([nama, pesan]) => {
           const slot = form.querySelector(`[data-padev-field="${nama}"] p`);
@@ -643,6 +656,12 @@
           }
         });
         toast(error.message, 'danger');
+      } finally {
+        if (memakaiFeedback) window.PADevButton.idle(simpan);
+        else {
+          simpan.disabled = false;
+          simpan.textContent = semula;
+        }
       }
     });
 
