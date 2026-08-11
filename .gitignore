@@ -16,3 +16,4 @@ _app_padev_auth/node_modules/
 _app_padev_auth/dist/
 _app_padev_admin/node_modules/
 _app_padev_admin/dist/
+reference_project/*
